@@ -7,6 +7,9 @@ make.py.lnk
 *.ir
 *.o
 
+# ACC error file extension
+*.err
+
 # don't include built pk3s
 *.pk3
 *.pk7
