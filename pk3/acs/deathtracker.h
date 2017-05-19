@@ -55,6 +55,7 @@ function void BDeath_UnmarkSector(int tag)
 
 
 
+int BDeath_MarkedByTags[BDEATH_MAXMARKEDSECTORS];
 int BDeath_MarkedByList[BDEATH_MAXMARKEDSECTORS];
 int BDeath_MarkedByCount;
 
@@ -64,9 +65,14 @@ function int BDeath_CheckSectorMarks(int tag)
     
     for (int i = 0; i < BDeath_MarkCount; i++)
     {
-        if (BDeath_MarkedSectors[i][0] == tag)
+        int thisTag = BDeath_MarkedSectors[i][0];
+        int thisPln = BDeath_MarkedSectors[i][1];
+        
+        if (BDeath_MarkedSectors[i][0] == thisTag)
         {
-            BDeath_MarkedByList[BDeath_MarkedByCount++] = BDeath_MarkedSectors[i][1];
+            BDeath_MarkedByTags[BDeath_MarkedByCount] = thisTag;
+            BDeath_MarkedByList[BDeath_MarkedByCount] = thisPln;
+            BDeath_MarkedByCount++;
         }
     }
     
@@ -86,16 +92,27 @@ function int BDeath_FindSectorMarks(int targetTID)
     
     for (int i = 0; i < BDeath_MarkCount; i++)
     {
-        if (ThingCountSector(0, checkTID, BDeath_MarkedSectors[i][0]) > 0)
+        int thisTag = BDeath_MarkedSectors[i][0];
+        int thisPln = BDeath_MarkedSectors[i][1];
+        
+        if (ThingCountSector(0, checkTID, thisTag) > 0)
         {
-            BDeath_MarkedByList[BDeath_MarkedByCount++] = BDeath_MarkedSectors[i][1];
+            BDeath_MarkedByTags[BDeath_MarkedByCount] = thisTag;
+            BDeath_MarkedByList[BDeath_MarkedByCount] = thisPln;
+            BDeath_MarkedByCount++;
         }
     }
     
     return BDeath_MarkedByCount;
 }
 
-function int BDeath_MarkedByResult(int index)
+function int BDeath_CheckResult_Tag(int index)
+{
+    if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }   
+    return BDeath_MarkedByTags[index];
+}
+
+function int BDeath_CheckResult_Player(int index)
 {
     if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }   
     return BDeath_MarkedByList[index];

@@ -21,8 +21,9 @@ script "BMaps_Death" death
     
     for (int i = 0; i < markCount; i++)
     {
-        if (i > 0) { markStr = StrParam(s:markStr, s:", ", d:BDeath_MarkedByResult(i)); }
-        else       { markStr = StrParam(s:markStr,         d:BDeath_MarkedByResult(i)); }
+        if (i > 0) { markStr = StrParam(s:markStr, s:", "); }
+        
+        markStr = StrParam(s:markStr, s:"<", d:BDeath_CheckResult_Player(i), s:" for tag ", d:BDeath_CheckResult_Tag(i), s:">");
     }
     
     Log(s:"Sector marks: ", s:markStr);
