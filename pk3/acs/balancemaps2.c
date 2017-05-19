@@ -39,3 +39,8 @@ script "BMaps_Respawn" respawn
         Print(s:"You should be a spooky ghost right now");
     }
 }
+
+script "BMaps_Disconnect" (int pln) disconnect
+{    
+    BDeath_Disassociate(pln);
+}

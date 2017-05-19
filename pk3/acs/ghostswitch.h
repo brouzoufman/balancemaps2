@@ -32,7 +32,7 @@ function int BSwitch_FindNearest(int myX, int myY, int myZ, int ignoreCooldown)
     int ymin = safeAdd(myY, -BSWITCH_CHECKDIST), ymax = safeAdd(myY, BSWITCH_CHECKDIST);
     int zmin = safeAdd(myZ, -BSWITCH_CHECKDIST), zmax = safeAdd(myZ, BSWITCH_CHECKDIST);
     
-    int curNearestTID  = -1;
+    int curNearest     = -1;
     int curNearestDist = 0x7FFFFFFF;
     
     for (int i = 0; i < BSwitch_SwitchCount; i++)
@@ -54,16 +54,16 @@ function int BSwitch_FindNearest(int myX, int myY, int myZ, int ignoreCooldown)
             int thisDist = distance(myX, myY, myZ, thisX, thisY, thisZ);
             if (thisDist > BSWITCH_CHECKDIST || thisDist > curNearestDist) { continue; }
             
-            curNearestTID  = thisTID;
+            curNearest     = i;
             curNearestDist = thisDist;
         }
     }
     
-    return curNearestTID;
+    return curNearest;
 }
 
 
-script "BSwitch_ActivateNearest" (void)
+script "BSwitch_TryToActivate" (void)
 {
     int pln = PlayerNumber();
     if (pln == -1)
@@ -77,4 +77,43 @@ script "BSwitch_ActivateNearest" (void)
     int myZ = GetActorZ(0);
     
     int nearestSwitch = BSwitch_FindNearest(myX, myY, myZ, false);
+    
+    if (nearestSwitch == -1)
+    {
+        Print(s:"No nearby switch.");
+    }
+    else
+    {
+        ACS_NamedExecuteWithResult("BSwitch_ActivateSwitch", nearestSwitch, pln);
+    }
+}
+
+script "BSwitch_ActivateSwitch" (int switchID, int pln)
+{
+    // if we run this as a player, the script might terminate prematurely -
+    //  specifically, if they disconnect or become a spectator
+    // 
+    // so we move to the world for our activator
+    SetActivator(0);
+    
+    int switchTID      = BSwitch_RegisteredSwitches[switchID][0];
+    int switchScript   = BSwitch_RegisteredSwitches[switchID][1];
+    int switchCooldown = BSwitch_RegisteredSwitches[switchID][2];
+    
+    // Turn on trap
+    ACS_ExecuteWithResult(switchScript, true, pln);
+    GiveActorInventory(switchTID, "GhostSwitchOnCooldown", 1);
+    SetActorState(switchTID, "SwitchOn");
+    
+    for (int tic = 0; tic < switchCooldown; tic++)
+    {
+        // Disassociation handled in disconnect script
+        Delay(1);
+        if (!PlayerInGame(pln)) { pln = -1; }
+    }
+    
+    // Turn off trap
+    ACS_ExecuteWithResult(switchScript, false, pln);
+    TakeActorInventory(switchTID, "GhostSwitchOnCooldown", 0x7FFFFFFF);
+    SetActorState(switchTID, "SwitchOff");
 }

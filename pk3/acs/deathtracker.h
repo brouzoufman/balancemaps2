@@ -53,6 +53,22 @@ function void BDeath_UnmarkSector(int tag)
     }
 }
 
+function int BDeath_Disassociate(int pln)
+{
+    int ret = 0;
+    
+    for (int i = 0; i < BDeath_MarkCount; i++)
+    {
+        if (BDeath_MarkedSectors[i][1] == pln)
+        {
+            BDeath_MarkedSectors[i][1] = -1;
+            ret++;
+        }
+    }
+    
+    return ret;
+}
+
 
 
 int BDeath_MarkedByTags[BDEATH_MAXMARKEDSECTORS];
