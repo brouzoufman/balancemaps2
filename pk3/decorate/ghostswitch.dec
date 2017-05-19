@@ -20,7 +20,7 @@ actor GhostSwitch 27501
         loop
       
       SwitchOn:
-        PLSE ABCDE 8 bright
+        PLSE ABCDE 6 bright
         TNT1 A -1
         loop
       

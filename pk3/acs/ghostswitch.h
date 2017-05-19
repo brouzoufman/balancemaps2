@@ -101,7 +101,7 @@ script "BSwitch_ActivateSwitch" (int switchID, int pln)
     int switchCooldown = BSwitch_RegisteredSwitches[switchID][2];
     
     // Turn on trap
-    ACS_ExecuteWithResult(switchScript, true, pln);
+    ACS_ExecuteWithResult(switchScript, true, switchID, pln);
     GiveActorInventory(switchTID, "GhostSwitchOnCooldown", 1);
     SetActorState(switchTID, "SwitchOn");
     
@@ -113,7 +113,7 @@ script "BSwitch_ActivateSwitch" (int switchID, int pln)
     }
     
     // Turn off trap
-    ACS_ExecuteWithResult(switchScript, false, pln);
+    ACS_ExecuteWithResult(switchScript, false, switchID, pln);
     TakeActorInventory(switchTID, "GhostSwitchOnCooldown", 0x7FFFFFFF);
     SetActorState(switchTID, "SwitchOff");
 }

@@ -3,7 +3,7 @@
 
 int BDeath_AccumulatedDeaths[PLAYERMAX];
 
-int BDeath_MarkedSectors[BDEATH_MAXMARKEDSECTORS][2];
+int BDeath_MarkedSectors[BDEATH_MAXMARKEDSECTORS][3];
 int BDeath_MarkCount = 0;
 
 
@@ -24,7 +24,7 @@ function void BDeath_ModDeaths(int pln, int i)
 }
 
 
-function void BDeath_MarkSector(int tag, int pln)
+function void BDeath_MarkSector(int id, int tag, int pln)
 {
     int index = BDeath_MarkCount;
     
@@ -36,22 +36,43 @@ function void BDeath_MarkSector(int tag, int pln)
     
     BDeath_MarkedSectors[index][0] = tag;
     BDeath_MarkedSectors[index][1] = pln;
+    BDeath_MarkedSectors[index][2] = id;
     BDeath_MarkCount++;
 }
 
 
-function void BDeath_UnmarkSector(int tag, int pln)
+function void BDeath_UnmarkSector(int id, int tag)
 {
     for (int i = 0; i < BDeath_MarkCount; i++)
     {
         int thisTag = BDeath_MarkedSectors[i][0];
-        int thisPln = BDeath_MarkedSectors[i][1];
+        int thisID  = BDeath_MarkedSectors[i][2];
         
-        if (thisTag == tag && thisPln == pln)
+        if (thisTag == tag && thisID == id)
         {
             BDeath_MarkCount--;
             BDeath_MarkedSectors[i][0] = BDeath_MarkedSectors[BDeath_MarkCount][0];
             BDeath_MarkedSectors[i][1] = BDeath_MarkedSectors[BDeath_MarkCount][1];
+            BDeath_MarkedSectors[i][2] = BDeath_MarkedSectors[BDeath_MarkCount][2];
+            i--; // Check this index again, since it's got something new in it
+        }
+    }
+}
+
+
+function void BDeath_UnmarkByID(int id)
+{
+    for (int i = 0; i < BDeath_MarkCount; i++)
+    {
+        int thisID  = BDeath_MarkedSectors[i][2];
+        
+        if (thisID == id)
+        {
+            BDeath_MarkCount--;
+            BDeath_MarkedSectors[i][0] = BDeath_MarkedSectors[BDeath_MarkCount][0];
+            BDeath_MarkedSectors[i][1] = BDeath_MarkedSectors[BDeath_MarkCount][1];
+            BDeath_MarkedSectors[i][2] = BDeath_MarkedSectors[BDeath_MarkCount][2];
+            i--; // Check this index again, since it's got something new in it
         }
     }
 }
@@ -74,8 +95,9 @@ function int BDeath_Disassociate(int pln)
 
 
 
-int BDeath_MarkedByTags[BDEATH_MAXMARKEDSECTORS];
-int BDeath_MarkedByList[BDEATH_MAXMARKEDSECTORS];
+int BDeath_MarkedBy_Tags[BDEATH_MAXMARKEDSECTORS];
+int BDeath_MarkedBy_Players[BDEATH_MAXMARKEDSECTORS];
+int BDeath_MarkedBy_IDs[BDEATH_MAXMARKEDSECTORS];
 int BDeath_MarkedByCount;
 
 function int BDeath_CheckSectorMarks(int tag)
@@ -86,11 +108,13 @@ function int BDeath_CheckSectorMarks(int tag)
     {
         int thisTag = BDeath_MarkedSectors[i][0];
         int thisPln = BDeath_MarkedSectors[i][1];
+        int thisID  = BDeath_MarkedSectors[i][2];
         
         if (BDeath_MarkedSectors[i][0] == thisTag)
         {
-            BDeath_MarkedByTags[BDeath_MarkedByCount] = thisTag;
-            BDeath_MarkedByList[BDeath_MarkedByCount] = thisPln;
+            BDeath_MarkedBy_Tags[BDeath_MarkedByCount]    = thisTag;
+            BDeath_MarkedBy_Players[BDeath_MarkedByCount] = thisPln;
+            BDeath_MarkedBy_IDs[BDeath_MarkedByCount]     = thisID;
             BDeath_MarkedByCount++;
         }
     }
@@ -113,11 +137,13 @@ function int BDeath_FindSectorMarks(int targetTID)
     {
         int thisTag = BDeath_MarkedSectors[i][0];
         int thisPln = BDeath_MarkedSectors[i][1];
+        int thisID  = BDeath_MarkedSectors[i][2];
         
         if (ThingCountSector(0, checkTID, thisTag) > 0)
         {
-            BDeath_MarkedByTags[BDeath_MarkedByCount] = thisTag;
-            BDeath_MarkedByList[BDeath_MarkedByCount] = thisPln;
+            BDeath_MarkedBy_Tags[BDeath_MarkedByCount]    = thisTag;
+            BDeath_MarkedBy_Players[BDeath_MarkedByCount] = thisPln;
+            BDeath_MarkedBy_IDs[BDeath_MarkedByCount]     = thisID;
             BDeath_MarkedByCount++;
         }
     }
@@ -128,27 +154,36 @@ function int BDeath_FindSectorMarks(int targetTID)
 function int BDeath_CheckResult_Tag(int index)
 {
     if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }   
-    return BDeath_MarkedByTags[index];
+    return BDeath_MarkedBy_Tags[index];
 }
 
 function int BDeath_CheckResult_Player(int index)
 {
     if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }   
-    return BDeath_MarkedByList[index];
+    return BDeath_MarkedBy_Players[index];
+}
+
+function int BDeath_CheckResult_ID(int index)
+{
+    if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }   
+    return BDeath_MarkedBy_IDs[index];
 }
 
 
 
-script "BDeath_MarkSectors" (int pln, int tag1, int tag2, int tag3)
+script "BDeath_MarkSectors" (int id, int pln, int tag1, int tag2)
 {
-    if (tag1 != 0) { BDeath_MarkSector(tag1, pln); }
-    if (tag2 != 0) { BDeath_MarkSector(tag2, pln); }
-    if (tag3 != 0) { BDeath_MarkSector(tag3, pln); }
+    if (tag1 != 0) { BDeath_MarkSector(id, tag1, pln); }
+    if (tag2 != 0) { BDeath_MarkSector(id, tag2, pln); }
 }
 
-script "BDeath_UnmarkSectors" (int pln, int tag1, int tag2, int tag3)
+script "BDeath_UnmarkSectors" (int id, int tag1, int tag2)
 {
-    if (tag1 != 0) { BDeath_UnmarkSector(tag1, pln); }
-    if (tag2 != 0) { BDeath_UnmarkSector(tag2, pln); }
-    if (tag3 != 0) { BDeath_UnmarkSector(tag3, pln); }
+    if (tag1 != 0) { BDeath_UnmarkSector(id, tag1); }
+    if (tag2 != 0) { BDeath_UnmarkSector(id, tag2); }
+}
+
+script "BDeath_UnmarkByID" (int id)
+{
+    BDeath_UnmarkByID(id);
 }
