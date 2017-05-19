@@ -1,3 +1,5 @@
+actor GhostSwitchOnCooldown: Inventory {}
+
 actor GhostSwitch 27501
 {
     RenderStyle Add
@@ -10,7 +12,7 @@ actor GhostSwitch 27501
     {
       Spawn:
         PLSE A 0 bright
-        PLSE A 0 bright ACS_NamedExecuteWithResult("BSwitch_Register", args[0])
+        PLSE A 0 bright ACS_NamedExecuteWithResult("BSwitch_Register", args[0], args[1])
         goto Idle
       
       Idle:
@@ -26,6 +28,7 @@ actor GhostSwitch 27501
         goto Idle
     }
 }
+
 
 actor SectorMarkCheck
 {

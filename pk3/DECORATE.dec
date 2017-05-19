@@ -1,1 +1,14 @@
+actor Trigger: CustomInventory
+{
+    Inventory.MaxAmount 0
+    +UNDROPPABLE
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+    }
+}
+
 #include "decorate/ghostswitch.dec"

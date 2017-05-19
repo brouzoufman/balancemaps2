@@ -1,8 +1,9 @@
 #library "balancemaps2"
 #include "zcommon.acs"
 
-#include "funcs_commonFuncs.h"
-#include "funcs_deathtracker.h"
+#include "commonFuncs.h"
+#include "deathtracker.h"
+#include "ghostswitch.h"
 
 script "BMaps_Enter" enter
 {

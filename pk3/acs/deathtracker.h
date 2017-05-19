@@ -1,4 +1,12 @@
-#include "defs_deathtracker.h"
+#define BDEATH_MAXDEATHS            2
+#define BDEATH_MAXMARKEDSECTORS     256
+
+int BDeath_AccumulatedDeaths[PLAYERMAX];
+
+int BDeath_MarkedSectors[BDEATH_MAXMARKEDSECTORS][2];
+int BDeath_MarkCount = 0;
+
+
 
 function int BDeath_GetDeaths(int pln)
 {
@@ -20,7 +28,7 @@ function void BDeath_MarkSector(int tag, int pln)
 {
     int index = BDeath_MarkCount;
     
-    if (index == BDEATH_MAXMARKEDSECTORS)
+    if (index >= BDEATH_MAXMARKEDSECTORS)
     {
         Log(s:"\cgERROR:\ca Ran out of slots to mark sectors with (max: ", d:BDEATH_MAXMARKEDSECTORS, s:")");
         return;
