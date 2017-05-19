@@ -7,6 +7,11 @@ make.py.lnk
 *.ir
 *.o
 
+# GZDoom Builder files
+*.backup[0-9]
+*.backup[0-9][0-9]
+*.dbs
+
 # ACC error file extension
 *.err
 

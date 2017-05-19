@@ -1,0 +1,44 @@
+actor GhostSwitch 27501
+{
+    RenderStyle Add
+    Scale 2
+    Alpha 0.5
+    
+    +NOINTERACTION
+    
+    States
+    {
+      Spawn:
+        PLSE A 0 bright
+        PLSE A 0 bright ACS_NamedExecuteWithResult("BSwitch_Register", args[0])
+        goto Idle
+      
+      Idle:
+        PLSE ABCD 8 bright
+        loop
+      
+      SwitchOn:
+        PLSE ABCDE 8 bright
+        TNT1 A -1
+        loop
+      
+      SwitchOff:
+        goto Idle
+    }
+}
+
+actor SectorMarkCheck
+{
+    +SERVERSIDEONLY
+    +NOINTERACTION
+    
+    Radius 0
+    Height 0
+    
+    States
+    {
+      Spawn:
+        TNT1 A 35
+        stop
+    }
+}

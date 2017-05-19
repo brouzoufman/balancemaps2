@@ -14,6 +14,11 @@ script "BMaps_Death" death
 {
     int pln = PlayerNumber();
     BDeath_ModDeaths(pln, 1);
+    
+    int checkTID = UniqueTID();
+    
+    SpawnForced("SectorMarkCheck", GetActorX(0), GetActorY(0), GetActorZ(0), checkTID);
+    Print(s:"Sector mark: ", d:BDeath_FindSectorMark(checkTID));
 }
 
 script "BMaps_Respawn" respawn
