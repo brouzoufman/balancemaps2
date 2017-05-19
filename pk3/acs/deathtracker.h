@@ -40,11 +40,14 @@ function void BDeath_MarkSector(int tag, int pln)
 }
 
 
-function void BDeath_UnmarkSector(int tag)
+function void BDeath_UnmarkSector(int tag, int pln)
 {
     for (int i = 0; i < BDeath_MarkCount; i++)
     {
-        if (BDeath_MarkedSectors[i][0] == tag)
+        int thisTag = BDeath_MarkedSectors[i][0];
+        int thisPln = BDeath_MarkedSectors[i][1];
+        
+        if (thisTag == tag && thisPln == pln)
         {
             BDeath_MarkCount--;
             BDeath_MarkedSectors[i][0] = BDeath_MarkedSectors[BDeath_MarkCount][0];
@@ -143,9 +146,9 @@ script "BDeath_MarkSectors" (int pln, int tag1, int tag2, int tag3)
     if (tag3 != 0) { BDeath_MarkSector(tag3, pln); }
 }
 
-script "BDeath_UnmarkSectors" (int tag1, int tag2, int tag3)
+script "BDeath_UnmarkSectors" (int pln, int tag1, int tag2, int tag3)
 {
-    if (tag1 != 0) { BDeath_UnmarkSector(tag1); }
-    if (tag2 != 0) { BDeath_UnmarkSector(tag2); }
-    if (tag3 != 0) { BDeath_UnmarkSector(tag3); }
+    if (tag1 != 0) { BDeath_UnmarkSector(tag1, pln); }
+    if (tag2 != 0) { BDeath_UnmarkSector(tag2, pln); }
+    if (tag3 != 0) { BDeath_UnmarkSector(tag3, pln); }
 }
