@@ -53,31 +53,54 @@ function void BDeath_UnmarkSector(int tag)
     }
 }
 
-function int BDeath_CheckSectorMark(int tag)
+
+
+int BDeath_MarkedByList[BDEATH_MAXMARKEDSECTORS];
+int BDeath_MarkedByCount;
+
+function int BDeath_CheckSectorMarks(int tag)
 {
+    BDeath_MarkedByCount = 0;
+    
     for (int i = 0; i < BDeath_MarkCount; i++)
     {
         if (BDeath_MarkedSectors[i][0] == tag)
         {
-            return BDeath_MarkedSectors[i][1];
+            BDeath_MarkedByList[BDeath_MarkedByCount++] = BDeath_MarkedSectors[i][1];
         }
     }
     
-    return -1;
+    return BDeath_MarkedByCount;
 }
 
-function int BDeath_FindSectorMark(int targetTID)
+
+function int BDeath_FindSectorMarks(int targetTID)
 {
+    BDeath_MarkedByCount = 0;
+    
+    int checkTID = UniqueTID();
+    int checkX   = GetActorX(targetTID);
+    int checkY   = GetActorY(targetTID);
+    int checkZ   = GetActorZ(targetTID);
+    SpawnForced("SectorMarkCheck", checkX, checkY, checkZ, checkTID);
+    
     for (int i = 0; i < BDeath_MarkCount; i++)
     {
-        if (ThingCountSector(0, targetTID, BDeath_MarkedSectors[i][0]) > 0)
+        if (ThingCountSector(0, checkTID, BDeath_MarkedSectors[i][0]) > 0)
         {
-            return BDeath_MarkedSectors[i][1];
+            BDeath_MarkedByList[BDeath_MarkedByCount++] = BDeath_MarkedSectors[i][1];
         }
     }
     
-    return -1;
+    return BDeath_MarkedByCount;
 }
+
+function int BDeath_MarkedByResult(int index)
+{
+    if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }   
+    return BDeath_MarkedByList[index];
+}
+
 
 
 script "BDeath_MarkSectors" (int pln, int tag1, int tag2, int tag3)

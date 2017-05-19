@@ -16,10 +16,16 @@ script "BMaps_Death" death
     int pln = PlayerNumber();
     BDeath_ModDeaths(pln, 1);
     
-    int checkTID = UniqueTID();
+    int markCount = BDeath_FindSectorMarks(0);
+    str markStr   = "";
     
-    SpawnForced("SectorMarkCheck", GetActorX(0), GetActorY(0), GetActorZ(0), checkTID);
-    Print(s:"Sector mark: ", d:BDeath_FindSectorMark(checkTID));
+    for (int i = 0; i < markCount; i++)
+    {
+        if (i > 0) { markStr = StrParam(s:markStr, s:", ", d:BDeath_MarkedByResult(i)); }
+        else       { markStr = StrParam(s:markStr,         d:BDeath_MarkedByResult(i)); }
+    }
+    
+    Log(s:"Sector marks: ", s:markStr);
 }
 
 script "BMaps_Respawn" respawn

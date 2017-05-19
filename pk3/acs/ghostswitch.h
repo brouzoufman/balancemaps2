@@ -61,3 +61,20 @@ function int BSwitch_FindNearest(int myX, int myY, int myZ, int ignoreCooldown)
     
     return curNearestTID;
 }
+
+
+script "BSwitch_ActivateNearest" (void)
+{
+    int pln = PlayerNumber();
+    if (pln == -1)
+    {
+        Log(s:"\ckWARNING:\cf Non-player ", n:0, s:" (TID ", d:ActivatorTID(), s:") tried to activate ghost switches");
+        terminate;
+    }
+
+    int myX = GetActorX(0);
+    int myY = GetActorY(0);
+    int myZ = GetActorZ(0);
+    
+    int nearestSwitch = BSwitch_FindNearest(myX, myY, myZ, false);
+}
