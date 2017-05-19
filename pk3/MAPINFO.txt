@@ -1,0 +1,5 @@
+map TESTMAP "test map"
+{
+    music = "D_STALKS"
+    sky1  = "SKY1"
+}
