@@ -81,10 +81,12 @@ script "BSwitch_TryToActivate" (void)
     if (nearestSwitch == -1)
     {
         Print(s:"No nearby switch.");
+        SetResultValue(0);
     }
     else
     {
         ACS_NamedExecuteWithResult("BSwitch_ActivateSwitch", nearestSwitch, pln);
+        SetResultValue(1);
     }
 }
 
