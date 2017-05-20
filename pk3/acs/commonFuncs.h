@@ -1094,7 +1094,11 @@ function int stringBlank(int string)
 // A teleport function that doesn't totally suck
 function int TeleportFunctional(int tid, int target, int fog, int nostop)
 {
-    int moved = SetActorPosition(tid, GetActorX(target), GetActorY(target), GetActorZ(target), fog);
+    int newX = GetActorX(target);
+    int newY = GetActorY(target);
+    int newZ = GetActorZ(target);
+    
+    int moved = SetActorPosition(tid, newX, newY, newZ, false);
     if (!moved) { return false; }
     
 	if (nostop)
@@ -1119,7 +1123,19 @@ function int TeleportFunctional(int tid, int target, int fog, int nostop)
     
     SetActorAngle(tid, GetActorAngle(target));
     SetActorPitch(tid, GetActorPitch(target));
-    SetActorRoll(tid, GetActorRoll(target));
+    SetActorRoll(tid,  GetActorRoll(target));
+    
+    if (fog)
+    {
+        int fogAng   = GetActorAngle(target);
+        int fogPitch = GetActorPitch(target);
+        
+        int fogX = newX + FixedMul(FixedMul(8.0, cos(fogAng)), cos(fogPitch));
+        int fogY = newY + FixedMul(FixedMul(8.0, sin(fogAng)), cos(fogPitch));
+        int fogZ = newZ + FixedMul(8.0, -sin(fogPitch));
+        
+        SpawnForced("TeleportFog", fogX, fogY, fogZ);
+    }
 	
 	return true;
 }
