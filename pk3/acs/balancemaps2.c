@@ -10,7 +10,7 @@ script "BMaps_Enter" enter
 {
     int pln = PlayerNumber();
     BDeath_SetDeaths(pln, 0);
-	BReturn_ResetPlayerPoints();
+    BReturn_ResetPlayerPoints();
 }
 
 script "BMaps_Death" death
@@ -40,13 +40,13 @@ script "BMaps_Respawn" respawn
     {
         Print(s:"You should be a spooky ghost right now");
     }
-	else
-	{
+    else
+    {
         int pointID  = BReturn_GetPlayerPoint(pln);
-		int hookedID = BReturn_TeleportToPoint(0, pointID, false);
+        int hookedID = BReturn_TeleportToPoint(0, pointID, false);
         
-		Print(s:"You should be at point ", d:hookedID, s:" (TID: ", d:BReturn_GetPointTID(pointID), s:", pre-hook ID: ", d:pointID, s:")");
-	}
+        Print(s:"You should be at point ", d:hookedID, s:" (TID: ", d:BReturn_GetPointTID(pointID), s:", pre-hook ID: ", d:pointID, s:")");
+    }
 }
 
 script "BMaps_Disconnect" (int pln) disconnect
