@@ -1,0 +1,84 @@
+//the morph for dead players, and the item to trigger traps
+
+//to-do: 
+//  actually make sprites, maybe have particles coming out the bottom because it'd look neat
+//  make sure the ghost can't die- might still happen with massive environmental damage etc
+//  remove weapon as ghost?
+
+ACTOR SpookyGhost : PlayerPawn
+{
+	Translation "Ice"
+	Opacity 0.5
+	Speed 1.5
+	Gravity 0
+	Painchance 0
+	Mass 0x7FFFFFFF
+	+NOSKIN
+	-SOLID
+	-SHOOTABLE
+	
+	//PainSound "spooky/pain"
+	//DeathSound "spooky/death"
+	Player.SoundClass "Spooky"
+	Player.DisplayName "Spooky"
+	Player.MorphWeapon "Fist"
+	-PICKUP
+	States
+	{
+	Spawn:
+		PLAY A 0 A_GiveInventory("TrapActivate", 1)
+		PLAY A 0 SetPlayerProperty (0, 1, PROP_FLY)
+		PLAY A -1 SetPlayerProperty (0, 1, PROP_BUDDHA)
+		Stop
+	See:
+		PLAY ABCD 4
+		Loop
+	
+	//Melee:
+	//Missile:
+		//Goto Spawn
+	//Pain:
+		//shouldn't ever happen
+		//Goto Spawn
+	Death:
+		//shouldn't ever happen either
+		//but it's still here in case
+		PLAY L -1
+		Stop
+	}
+}
+
+ACTOR TrapActivate : CustomInventory
+{
+	//Inventory.PickupMessage "Became a spooky ghostman."
+	//Inventory.PickupSound "misc/p_pkup"
+	Inventory.MaxAmount 1
+	states
+	{
+	Spawn:
+		TNT1 A -1
+		stop
+	Pickup:
+		TNT1 A 0
+		stop
+	Use:
+		TNT1 A 0 A_JumpIfInventory("TrapCooldown", 0, "TryTrigger")
+		Fail
+	TryTrigger:
+		//player's off cooldown, so let's try activating a trap
+		TNT1 A 0 A_JumpIf(1 == (ACS_ExecuteWithResult("BSwitch_TryToActivate",0,0,0)), "Success")
+		Fail
+	Success:
+		//activating trap worked, put it on cooldown for the player
+		TNT1 A 0 A_GiveInventory("TrapCooldown", 1)
+		Fail
+	}
+}
+
+//use this to determine the cooldown between players using traps
+
+ACTOR TrapCooldown : Powerup
+{
+	Powerup.Color BlueMap
+	Powerup.Duration -10
+}
