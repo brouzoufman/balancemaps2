@@ -3,6 +3,12 @@ nocommit/*
 # shortcut to my pk3 build script - see http://git.jinotra.in/ijon/makepk3
 make.py.lnk
 
+# don't include files from pk3 build script if in folder
+bin_win
+inc
+make.py
+setup.py
+
 # ACS/GDCC object files, ignore
 *.ir
 *.o
