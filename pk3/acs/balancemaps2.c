@@ -42,8 +42,10 @@ script "BMaps_Respawn" respawn
     }
 	else
 	{
-		BReturn_TeleportToPoint(0, BReturn_GetPlayerPoint(PlayerNumber()), 0);
-		Print(s:"You should be at point ", d:BReturn_GetPlayerPoint(PlayerNumber()), s:" TID: ", d:BReturn_GetPlayerPointTID(PlayerNumber()));
+        int pointID  = BReturn_GetPlayerPoint(pln);
+		int hookedID = BReturn_TeleportToPoint(0, pointID, false);
+        
+		Print(s:"You should be at point ", d:hookedID, s:" (TID: ", d:BReturn_GetPointTID(pointID), s:", pre-hook ID: ", d:pointID, s:")");
 	}
 }
 

@@ -23,22 +23,26 @@ function int BReturn_Register(int pointOrder)
     return 1;
 }
 
-// reset player Point IDs to -1
-function void BReturn_ResetPlayerPoints(void)
+
+
+function int BReturn_GetPointTID(int pointID)
 {
-    for(int i = 0; i < PLAYERMAX; i++) BReturn_PlayerPoints[i] = -1;
+    if(pointID < 0 || pointID >= BReturn_PointCount) return 0;
+    return BReturn_PointData[pointID][0];
 }
+
+function int BReturn_GetPointOrder(int pointID)
+{
+    if(pointID < 0 || pointID >= BReturn_PointCount) return 0;
+    return BReturn_PointData[pointID][1];
+}
+
+
 
 function int BReturn_GetPlayerPoint(int pln)
 {
     if(pln < 0 || pln >= PLAYERMAX) return -1;
     return BReturn_PlayerPoints[pln];
-}
-
-function int BReturn_GetPlayerPointTID(int pln)
-{
-    if(pln < 0 || pln >= PLAYERMAX) return -1;
-    return BReturn_PointData[BReturn_PlayerPoints[pln]][0];
 }
 
 function int BReturn_SetPlayerPoint(int pln, int pointID)
@@ -48,6 +52,12 @@ function int BReturn_SetPlayerPoint(int pln, int pointID)
     
     BReturn_PlayerPoints[pln] = pointID;
     return 1;
+}
+
+// reset player Point IDs to -1
+function void BReturn_ResetPlayerPoints(void)
+{
+    for(int i = 0; i < PLAYERMAX; i++) BReturn_PlayerPoints[i] = -1;
 }
 
 
@@ -62,16 +72,22 @@ function int BReturn_TeleportToPoint(int tid, int pointID, int fog)
 {
     int hookedID = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", pointID);
     
-    if (hookedID < 0) { return 0; }
+    if (hookedID < 0) { return -1; }
     if (hookedID >= BReturn_PointCount)
     {
-        Log(s:"\ckWARNING:\cf Tried to teleport to invalid point ID ", d:hookedID, s:" (", d:pointID, s:" before hook)");
-        return 0;
+        Log(s:"\ckWARNING:\cf Tried to teleport to invalid point ", d:hookedID, s:" (", d:pointID, s:" before hook)");
+        return -1;
     }
     
     int pointTID = BReturn_PointData[hookedID][0];
 
-    return TeleportFunctional(tid, pointTID, fog, false);
+    if (!TeleportFunctional(tid, pointTID, fog, false))
+    {
+        Log(s:"\cgERROR:\ca Failed to teleport to point ", d:hookedID);
+        return -1;
+    }
+    
+    return hookedID;
 }
 
 
@@ -81,20 +97,24 @@ script "BReturn_Register" (int pointOrder)
     SetResultValue(BReturn_Register(pointOrder));
 }
 
+script "BReturn_GetPointTID" (int pointID)
+{
+    SetResultValue(BReturn_GetPointTID(pointID));
+}
+
+script "BReturn_GetPointOrder" (int pointID)
+{
+    SetResultValue(BReturn_GetPointOrder(pointID));
+}
+
 script "BReturn_GetPlayerPoint" (int pln)
 {
     SetResultValue(BReturn_GetPlayerPoint(pln));
 }
 
-script "BReturn_GetPlayerPointTID" (int pln)
-{
-    SetResultValue(BReturn_GetPlayerPointTID(pln));
-}
-
 script "BReturn_SetPlayerPoint" (int pln, int pointID)
 {
     SetResultValue(BReturn_SetPlayerPoint(pln, pointID));
-    Print(s:"\cqDEBUG:\cd Set player ", d:pln, s:"'s point to ", d:pointID);
 }
 
 script "BReturn_TeleportToPoint" (int tid, int pointID, int fog)
