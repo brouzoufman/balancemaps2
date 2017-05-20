@@ -67,7 +67,7 @@ function int BReturn_FindPointsWithOrder(int order)
 {
     BReturn_FoundCount = 0;
     
-    for (int i = 0; i < BDeath_MarkCount; i++)
+    for (int i = 0; i < BReturn_PointCount; i++)
     {
         int thisID    = i;
         int thisTID   = BReturn_PointData[i][0];
@@ -87,7 +87,7 @@ function int BReturn_FindPointsWithOrder(int order)
 
 function int BReturn_FirstPointWithOrder(int order)
 {
-    for (int i = 0; i < BDeath_MarkCount; i++)
+    for (int i = 0; i < BReturn_PointCount; i++)
     {
         if (order == BReturn_PointData[i][1]) { return i; }
     }
@@ -112,6 +112,25 @@ function int BReturn_CheckResult_Order(int index)
 {
     if (index < 0 || index >= BReturn_FoundCount) { return -1; }
     return BReturn_FoundData[index][2];
+}
+
+
+function int BReturn_MinOrder(void)
+{
+    if (BReturn_PointCount == 0) { return 0; }
+    
+    int ret = 0x7FFFFFFF;
+    for (int i = 0; i < BReturn_PointCount; i++) { ret = min(ret, BReturn_PointData[i][1]); }
+    return ret;
+}
+
+function int BReturn_MaxOrder(void)
+{
+    if (BReturn_PointCount == 0) { return 0; }
+    
+    int ret = 0x80000000;
+    for (int i = 0; i < BReturn_PointCount; i++) { ret = max(ret, BReturn_PointData[i][1]); }
+    return ret;
 }
 
 
@@ -162,5 +181,8 @@ script "BReturn_FirstPointWithOrder" (int order) { SetResultValue(BReturn_FirstP
 script "BReturn_CheckResult_ID"    (int index) { SetResultValue(BReturn_CheckResult_ID(index)); }
 script "BReturn_CheckResult_TID"   (int index) { SetResultValue(BReturn_CheckResult_TID(index)); }
 script "BReturn_CheckResult_Order" (int index) { SetResultValue(BReturn_CheckResult_Order(index)); }
+
+script "BReturn_MinOrder" (void) { SetResultValue(BReturn_MinOrder()); }
+script "BReturn_MaxOrder" (void) { SetResultValue(BReturn_MaxOrder()); }
 
 script "BReturn_TeleportToPoint" (int tid, int pointID, int fog) { SetResultValue(BReturn_TeleportToPoint(tid, pointID, fog)); }
