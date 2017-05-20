@@ -1,5 +1,3 @@
-#define BSWITCH_MAXSWITCHES     128
-#define BSWITCH_CHECKDIST       320.0
 
 int BSwitch_RegisteredSwitches[BSWITCH_MAXSWITCHES][3];
 int BSwitch_SwitchCount = 0;

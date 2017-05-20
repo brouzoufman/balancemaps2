@@ -1,5 +1,3 @@
-#define BRETURN_MAXPOINTS 128
-
 int BReturn_PlayerPoints[PLAYERMAX];
 int BReturn_PointData[BRETURN_MAXPOINTS][2];
 int BReturn_PointCount = 0;

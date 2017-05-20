@@ -1,6 +1,8 @@
 #library "balancemaps2"
 #include "zcommon.acs"
 
+
+#include "constants.h"
 #include "commonFuncs.h"
 #include "deathtracker.h"
 #include "ghostswitch.h"
