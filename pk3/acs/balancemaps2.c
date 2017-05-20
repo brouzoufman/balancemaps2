@@ -12,7 +12,7 @@ script "BMaps_Enter" enter
 {
     int pln = PlayerNumber();
     BDeath_SetDeaths(pln, 0);
-    BReturn_ResetPlayerPoints();
+    BReturn_ResetPlayerPoint(pln);
 }
 
 script "BMaps_Death" death
