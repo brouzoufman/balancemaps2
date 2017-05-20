@@ -1090,3 +1090,16 @@ function int stringBlank(int string)
     int safeString = StrParam(s:string);
     return StrLen(safeString) == 0;
 }
+
+// A teleport function that doesn't totally suck
+function int TeleportFunctional(int tid, int target, int fog, int conserveAngle)
+{
+	if(!conserveAngle)
+	{
+		SetActorAngle(tid, GetActorAngle(target));
+		SetActorPitch(tid, GetActorPitch(target));
+		SetActorRoll(tid, GetActorRoll(target));
+	}
+	
+	return SetActorPosition(tid, GetActorX(target), GetActorY(target), GetActorZ(target), fog);
+}

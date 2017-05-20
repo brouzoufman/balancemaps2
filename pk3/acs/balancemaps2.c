@@ -4,11 +4,13 @@
 #include "commonFuncs.h"
 #include "deathtracker.h"
 #include "ghostswitch.h"
+#include "returnPoints.h"
 
 script "BMaps_Enter" enter
 {
     int pln = PlayerNumber();
     BDeath_SetDeaths(pln, 0);
+	BReturn_ResetPlayerPoints();
 }
 
 script "BMaps_Death" death
@@ -38,6 +40,11 @@ script "BMaps_Respawn" respawn
     {
         Print(s:"You should be a spooky ghost right now");
     }
+	else
+	{
+		BReturn_TeleportToPoint(0, BReturn_GetPlayerPoint(PlayerNumber()), 0);
+		Print(s:"You should be at point ", d:BReturn_GetPlayerPoint(PlayerNumber()), s:" TID: ", d:BReturn_GetPlayerPointTID(PlayerNumber()));
+	}
 }
 
 script "BMaps_Disconnect" (int pln) disconnect
