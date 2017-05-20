@@ -95,9 +95,7 @@ function int BDeath_Disassociate(int pln)
 
 
 
-int BDeath_MarkedBy_Tags[BDEATH_MAXMARKEDSECTORS];
-int BDeath_MarkedBy_Players[BDEATH_MAXMARKEDSECTORS];
-int BDeath_MarkedBy_IDs[BDEATH_MAXMARKEDSECTORS];
+int BDeath_MarkedByData[BDEATH_MAXMARKEDSECTORS][3];
 int BDeath_MarkedByCount;
 
 function int BDeath_CheckSectorMarks(int tag)
@@ -110,11 +108,11 @@ function int BDeath_CheckSectorMarks(int tag)
         int thisPln = BDeath_MarkedSectors[i][1];
         int thisID  = BDeath_MarkedSectors[i][2];
         
-        if (BDeath_MarkedSectors[i][0] == thisTag)
+        if (tag == thisTag)
         {
-            BDeath_MarkedBy_Tags[BDeath_MarkedByCount]    = thisTag;
-            BDeath_MarkedBy_Players[BDeath_MarkedByCount] = thisPln;
-            BDeath_MarkedBy_IDs[BDeath_MarkedByCount]     = thisID;
+            BDeath_MarkedByData[BDeath_MarkedByCount][0] = thisTag;
+            BDeath_MarkedByData[BDeath_MarkedByCount][1] = thisPln;
+            BDeath_MarkedByData[BDeath_MarkedByCount][2] = thisID;
             BDeath_MarkedByCount++;
         }
     }
@@ -141,9 +139,9 @@ function int BDeath_FindSectorMarks(int targetTID)
         
         if (ThingCountSector(0, checkTID, thisTag) > 0)
         {
-            BDeath_MarkedBy_Tags[BDeath_MarkedByCount]    = thisTag;
-            BDeath_MarkedBy_Players[BDeath_MarkedByCount] = thisPln;
-            BDeath_MarkedBy_IDs[BDeath_MarkedByCount]     = thisID;
+            BDeath_MarkedByData[BDeath_MarkedByCount][0] = thisTag;
+            BDeath_MarkedByData[BDeath_MarkedByCount][1] = thisPln;
+            BDeath_MarkedByData[BDeath_MarkedByCount][2] = thisID;
             BDeath_MarkedByCount++;
         }
     }
@@ -153,20 +151,20 @@ function int BDeath_FindSectorMarks(int targetTID)
 
 function int BDeath_CheckResult_Tag(int index)
 {
-    if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }   
-    return BDeath_MarkedBy_Tags[index];
+    if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }
+    return BDeath_MarkedByData[index][0];
 }
 
 function int BDeath_CheckResult_Player(int index)
 {
-    if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }   
-    return BDeath_MarkedBy_Players[index];
+    if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }
+    return BDeath_MarkedByData[index][1];
 }
 
 function int BDeath_CheckResult_ID(int index)
 {
-    if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }   
-    return BDeath_MarkedBy_IDs[index];
+    if (index < 0 || index >= BDeath_MarkedByCount) { return -1; }
+    return BDeath_MarkedByData[index][2];
 }
 
 
