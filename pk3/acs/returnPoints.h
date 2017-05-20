@@ -62,6 +62,62 @@ function void BReturn_ResetPlayerPoints(void)
 
 
 
+int BReturn_FoundData[BDEATH_MAXMARKEDSECTORS][3];
+int BReturn_FoundCount;
+
+function int BReturn_FindPointsWithOrder(int order)
+{
+    BReturn_FoundCount = 0;
+    
+    for (int i = 0; i < BDeath_MarkCount; i++)
+    {
+        int thisID    = i;
+        int thisTID   = BReturn_PointData[i][0];
+        int thisOrder = BReturn_PointData[i][1];
+        
+        if (order == thisOrder)
+        {
+            BReturn_FoundData[BReturn_FoundCount][0] = thisID;
+            BReturn_FoundData[BReturn_FoundCount][1] = thisTID;
+            BReturn_FoundData[BReturn_FoundCount][2] = thisOrder;
+            BReturn_FoundCount++;
+        }
+    }
+    
+    return BReturn_FoundCount;
+}
+
+function int BReturn_FirstPointWithOrder(int order)
+{
+    for (int i = 0; i < BDeath_MarkCount; i++)
+    {
+        if (order == BReturn_PointData[i][1]) { return i; }
+    }
+    
+    return -1;
+}
+
+
+function int BReturn_CheckResult_ID(int index)
+{
+    if (index < 0 || index >= BReturn_FoundCount) { return -1; }
+    return BReturn_FoundData[index][0];
+}
+
+function int BReturn_CheckResult_TID(int index)
+{
+    if (index < 0 || index >= BReturn_FoundCount) { return 0; }
+    return BReturn_FoundData[index][1];
+}
+
+function int BReturn_CheckResult_Order(int index)
+{
+    if (index < 0 || index >= BReturn_FoundCount) { return -1; }
+    return BReturn_FoundData[index][2];
+}
+
+
+
 script "BReturn_TeleportPointHook" (int pointIn)
 {
     Log(s:"\cqDEBUG: \cdpoint id: ", d:pointIn);
@@ -92,32 +148,21 @@ function int BReturn_TeleportToPoint(int tid, int pointID, int fog)
 
 
 
-script "BReturn_Register" (int pointOrder)
-{
-    SetResultValue(BReturn_Register(pointOrder));
-}
+script "BReturn_Register" (int pointOrder) { SetResultValue(BReturn_Register(pointOrder)); }
 
-script "BReturn_GetPointTID" (int pointID)
-{
-    SetResultValue(BReturn_GetPointTID(pointID));
-}
+script "BReturn_PointCount" (void) { SetResultValue(BReturn_PointCount); }
 
-script "BReturn_GetPointOrder" (int pointID)
-{
-    SetResultValue(BReturn_GetPointOrder(pointID));
-}
+script "BReturn_GetPointTID"   (int pointID) { SetResultValue(BReturn_GetPointTID(pointID)); }
+script "BReturn_GetPointOrder" (int pointID) { SetResultValue(BReturn_GetPointOrder(pointID)); }
 
-script "BReturn_GetPlayerPoint" (int pln)
-{
-    SetResultValue(BReturn_GetPlayerPoint(pln));
-}
+script "BReturn_GetPlayerPoint" (int pln)              { SetResultValue(BReturn_GetPlayerPoint(pln)); }
+script "BReturn_SetPlayerPoint" (int pln, int pointID) { SetResultValue(BReturn_SetPlayerPoint(pln, pointID)); }
 
-script "BReturn_SetPlayerPoint" (int pln, int pointID)
-{
-    SetResultValue(BReturn_SetPlayerPoint(pln, pointID));
-}
+script "BReturn_FindPointsWithOrder" (int order) { SetResultValue(BReturn_FindPointsWithOrder(order)); }
+script "BReturn_FirstPointWithOrder" (int order) { SetResultValue(BReturn_FirstPointWithOrder(order)); }
 
-script "BReturn_TeleportToPoint" (int tid, int pointID, int fog)
-{
-    SetResultValue(BReturn_TeleportToPoint(tid, pointID, fog));
-}
+script "BReturn_CheckResult_ID"    (int index) { SetResultValue(BReturn_CheckResult_ID(index)); }
+script "BReturn_CheckResult_TID"   (int index) { SetResultValue(BReturn_CheckResult_TID(index)); }
+script "BReturn_CheckResult_Order" (int index) { SetResultValue(BReturn_CheckResult_Order(index)); }
+
+script "BReturn_TeleportToPoint" (int tid, int pointID, int fog) { SetResultValue(BReturn_TeleportToPoint(tid, pointID, fog)); }
