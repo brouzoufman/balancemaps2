@@ -38,14 +38,25 @@ function int BReturn_SetPlayerPoint(int pln, int pointID)
 	return 1;
 }
 
+
+
+script "BReturn_TeleportPointHook" (int pointIn)
+{
+    Log(s:"\cqDEBUG: \cdpoint id: ", d:pointIn);
+    SetResultValue(pointIn);
+}
+
 function int BReturn_TeleportToPoint(int tid, int pointID, int fog)
 {
 	if(pointID < 0 || pointID >= BRETURN_MAXPOINTS) return 0;
-	
-	int pointTID = BReturn_PointTIDs[pointID];
+    
+    int hookedID = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", pointID);
+	int pointTID = BReturn_PointTIDs[hookedID];
 
 	return TeleportFunctional(tid, pointTID, fog, 0);
 }
+
+
 
 script "BReturn_RegisterPoint" (int pointID, int pointTID)
 {
@@ -65,7 +76,7 @@ script "BReturn_GetPlayerPointTID" (int pln)
 script "BReturn_SetPlayerPoint" (int pln, int pointID)
 {
 	SetResultValue(BReturn_SetPlayerPoint(pln, pointID));
-	Print(s:"Debug: Set player ", d:pln, s:"'s point to ", d:pointID);
+	Print(s:"\cqDEBUG:\cd Set player ", d:pln, s:"'s point to ", d:pointID);
 }
 
 script "BReturn_TeleportToPoint" (int tid, int pointID, int fog)
