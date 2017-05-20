@@ -12,4 +12,5 @@ actor Trigger: CustomInventory
 }
 
 #include "decorate/ghostswitch.dec"
+#include "decorate/returnpoint.dec"
 #include "decorate/SpookyGhost.dec"

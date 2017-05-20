@@ -44,9 +44,9 @@ function int BSwitch_FindNearest(int myX, int myY, int myZ, int ignoreCooldown)
             continue;
         }
         
-        int thisX   = GetActorX(thisTID);
-        int thisY   = GetActorY(thisTID);
-        int thisZ   = GetActorZ(thisTID);
+        int thisX = GetActorX(thisTID);
+        int thisY = GetActorY(thisTID);
+        int thisZ = GetActorZ(thisTID);
         
         if (thisX >= xmin && thisY >= ymin && thisZ >= zmin
          && thisX <= xmax && thisY <= ymax && thisZ <= zmax)
