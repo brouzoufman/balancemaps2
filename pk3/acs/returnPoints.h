@@ -71,7 +71,7 @@ function int BReturn_TeleportToPoint(int tid, int pointID, int fog)
     
     int pointTID = BReturn_PointData[hookedID][0];
 
-    return TeleportFunctional(tid, pointTID, fog, 0);
+    return TeleportFunctional(tid, pointTID, fog, false);
 }
 
 

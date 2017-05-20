@@ -1092,14 +1092,34 @@ function int stringBlank(int string)
 }
 
 // A teleport function that doesn't totally suck
-function int TeleportFunctional(int tid, int target, int fog, int conserveAngle)
+function int TeleportFunctional(int tid, int target, int fog, int nostop)
 {
-	if(!conserveAngle)
+    int moved = SetActorPosition(tid, GetActorX(target), GetActorY(target), GetActorZ(target), fog);
+    if (!moved) { return false; }
+    
+	if (nostop)
 	{
-		SetActorAngle(tid, GetActorAngle(target));
-		SetActorPitch(tid, GetActorPitch(target));
-		SetActorRoll(tid, GetActorRoll(target));
+        int velX = GetActorVelX(tid);
+        int velY = GetActorVelY(tid);
+        int velZ = GetActorVelZ(tid);
+        
+        int velMag = magnitudeTwo_f(velX, velY);
+        int velAng = VectorAngle(velX, velY) - GetActorAngle(tid);
+        
+        int newAng = GetActorAngle(target) + velAng;
+        
+        SetActorVelocity(tid, FixedMul(velMag, cos(newAng)),
+                              FixedMul(velMag, sin(newAng)),
+                              velZ, false, false);
+    }
+    else
+    {
+        SetActorVelocity(tid, 0,0,0, false, true);
 	}
+    
+    SetActorAngle(tid, GetActorAngle(target));
+    SetActorPitch(tid, GetActorPitch(target));
+    SetActorRoll(tid, GetActorRoll(target));
 	
-	return SetActorPosition(tid, GetActorX(target), GetActorY(target), GetActorZ(target), fog);
+	return true;
 }
