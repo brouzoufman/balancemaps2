@@ -47,7 +47,7 @@ function int BReturn_GetPlayerPoint(int pln)
 function int BReturn_SetPlayerPoint(int pln, int pointID)
 {
     if(pln < 0 || pln >= PLAYERMAX) return 0;
-    if(pointID < 0 || pointID >= BReturn_PointCount) return 0;
+    if(pointID < -1 || pointID >= BReturn_PointCount) return 0;
     
     BReturn_PlayerPoints[pln] = pointID;
     return 1;
@@ -55,11 +55,23 @@ function int BReturn_SetPlayerPoint(int pln, int pointID)
 
 function int BReturn_SetMyPoint(int pointOrder, int direction)
 {
-    int pointID = BReturn_FirstPointWithOrder(pointOrder);
-    if (pointID == -1) { return 0; }
-    
     int pln = PlayerNumber();
     if (pln < 0) { return 0; }
+    
+    int pointID = BReturn_FirstPointWithOrder(pointOrder);
+    if (pointID == -1)
+    {
+        // Special case - clear point if pointOrder is 0 and there's no point
+        //  with order 0 defined
+        if (pointOrder == 0)
+        {
+            BReturn_PlayerPoints[pln] = -1;
+            return 1;
+        }
+        
+        return 0;
+    }
+    
     if (direction == 0) { return BReturn_SetPlayerPoint(pln, pointID); }
     
     int curPoint = BReturn_GetPlayerPoint(pln);
@@ -75,10 +87,8 @@ function int BReturn_SetMyPoint(int pointOrder, int direction)
 }
 
 
-
-
-// Called on enter - the only time a player's return point should be negative
-function int BReturn_ResetPlayerPoint(int pln)
+// Called on enter
+function int BReturn_SetupDefaultPoint(int pln)
 {
     if(pln < 0 || pln >= PLAYERMAX) return 0;
     
@@ -89,6 +99,23 @@ function int BReturn_ResetPlayerPoint(int pln)
     BReturn_DefaultPoint[pln][3] = GetActorAngle(0);
     BReturn_DefaultPoint[pln][4] = GetActorPitch(0);
     BReturn_DefaultPoint[pln][5] = GetActorRoll(0);
+    BReturn_DefaultPoint[pln][6] = true; // do we exist
+    return 1;
+}
+
+// Called on disconnect
+function int BReturn_UnsetDefaultPoint(int pln)
+{
+    if(pln < 0 || pln >= PLAYERMAX) return 0;
+    
+    BReturn_PlayerPoints[pln] = -1;
+    BReturn_DefaultPoint[pln][0] = 0;
+    BReturn_DefaultPoint[pln][1] = 0;
+    BReturn_DefaultPoint[pln][2] = 0;
+    BReturn_DefaultPoint[pln][3] = 0;
+    BReturn_DefaultPoint[pln][4] = 0;
+    BReturn_DefaultPoint[pln][5] = 0;
+    BReturn_DefaultPoint[pln][6] = false; // we do not exist
     return 1;
 }
 
@@ -171,13 +198,13 @@ function int BReturn_MaxOrder(void)
 
 script "BReturn_TeleportPointHook" (int pointIn)
 {
-    Log(s:"\cqDEBUG: \cdpoint id: ", d:pointIn);
     SetResultValue(pointIn);
 }
 
 function int BReturn_TeleportToPoint(int tid, int pointID, int nofog)
 {
     int hookedID = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", pointID);
+    Log(s:"\cqDEBUG: \cdpoint id: ", d:hookedID, s:" (", d:pointID, s:" pre-hook)");
     
     if (hookedID < 0) { return -1; }
     if (hookedID >= BReturn_PointCount)
@@ -197,30 +224,48 @@ function int BReturn_TeleportToPoint(int tid, int pointID, int nofog)
     return hookedID;
 }
 
+function int BReturn_TeleportToDefault(int tid, int pln, int nofog)
+{
+    if (!BReturn_DefaultPoint[pln][6])
+    {
+        Log(s:"\ckWARNING:\cf Tried to teleport to default point of nonexistent player #", d:pln);
+        return 0;
+    }
+    
+    int hookedID = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", -1);
+    Log(s:"\cqDEBUG: \cdpoint id: ", d:hookedID, s:" (-1 pre-hook, since default)");
+    if (hookedID > 0 && hookedID < BReturn_PointCount) { return BReturn_TeleportToPoint(tid, hookedID, nofog); }
+    
+    int x     = BReturn_DefaultPoint[pln][0];
+    int y     = BReturn_DefaultPoint[pln][1];
+    int z     = BReturn_DefaultPoint[pln][2];
+    int toTID = UniqueTID();
+    
+    SpawnForced("MapSpot", x,y,z, toTID);
+    SetActorAngle(toTID, BReturn_DefaultPoint[pln][3]);
+    SetActorPitch(toTID, BReturn_DefaultPoint[pln][4]);
+    SetActorRoll(toTID,  BReturn_DefaultPoint[pln][5]);
+    
+    int ret = TeleportFunctional(tid, toTID, !nofog, false);
+    Thing_Remove(toTID);
+    
+    if (!ret)
+    {
+        Log(s:"\ckWARNING:\cf Failed to teleport to default point of player #", d:pln, s:" at <", f:x, s:", ", f:y, s:", ", f:z, s:">");
+        return 0;
+    }
+    
+    return ret;
+}
+
+
 function int BReturn_ReturnToPoint(int nofog)
 {
     int pln = PlayerNumber();
     if (pln < 0) { return -1; }
     
     int playerPoint = BReturn_GetPlayerPoint(pln);
-    
-    if (playerPoint == -1)
-    {
-        int x   = BReturn_DefaultPoint[pln][0];
-        int y   = BReturn_DefaultPoint[pln][1];
-        int z   = BReturn_DefaultPoint[pln][2];
-        int tid = UniqueTID();
-        
-        SpawnForced("MapSpot", x,y,z, tid);
-        SetActorAngle(tid, BReturn_DefaultPoint[pln][3]);
-        SetActorPitch(tid, BReturn_DefaultPoint[pln][4]);
-        SetActorRoll(tid,  BReturn_DefaultPoint[pln][5]);
-        
-        int ret = TeleportFunctional(0, tid, !nofog, false);
-        Thing_Remove(tid);
-        
-        return ret;
-    }
+    if (playerPoint == -1) { return BReturn_TeleportToDefault(0, pln, nofog); }
     
     return BReturn_TeleportToPoint(0, playerPoint, nofog);
 }
@@ -248,5 +293,6 @@ script "BReturn_CheckResult_Order" (int index) { SetResultValue(BReturn_CheckRes
 script "BReturn_MinOrder" (void) { SetResultValue(BReturn_MinOrder()); }
 script "BReturn_MaxOrder" (void) { SetResultValue(BReturn_MaxOrder()); }
 
-script "BReturn_TeleportToPoint" (int tid, int pointID, int nofog) { SetResultValue(BReturn_TeleportToPoint(tid, pointID, nofog)); }
+script "BReturn_TeleportToPoint"   (int tid, int pointID, int nofog) { SetResultValue(BReturn_TeleportToPoint(tid, pointID, nofog)); }
+script "BReturn_TeleportToDefault" (int tid, int pln,     int nofog) { SetResultValue(BReturn_TeleportToDefault(tid, pln, nofog)); }
 script "BReturn_ReturnToPoint"   (int nofog)                       { SetResultValue(BReturn_ReturnToPoint(nofog)); }

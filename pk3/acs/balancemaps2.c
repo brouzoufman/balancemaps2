@@ -12,7 +12,7 @@ script "BMaps_Enter" enter
 {
     int pln = PlayerNumber();
     BDeath_SetDeaths(pln, 0);
-    BReturn_ResetPlayerPoint(pln);
+    BReturn_SetupDefaultPoint(pln);
 }
 
 script "BMaps_Death" death
@@ -54,4 +54,5 @@ script "BMaps_Respawn" respawn
 script "BMaps_Disconnect" (int pln) disconnect
 {    
     BDeath_Disassociate(pln);
+    BReturn_UnsetDefaultPoint(pln);
 }
