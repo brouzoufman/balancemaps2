@@ -251,7 +251,7 @@ function int BReturn_TeleportToDefault(int tid, int pln, int nofog, int nohook)
     else
     {
         hookedID = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", -1);
-        Log(s:"\cqDEBUG: \cddefault cdpoint id: ", d:hookedID, s:" (-1 pre-hook)");
+        Log(s:"\cqDEBUG: \cddefault point id: ", d:hookedID, s:" (-1 pre-hook)");
     }
     
     if (hookedID > 0 && hookedID < BReturn_PointCount)

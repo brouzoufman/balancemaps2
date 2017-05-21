@@ -165,7 +165,6 @@ function int BDeath_CheckResult_ID(int index)
 }
 
 
-
 script "BDeath_MarkSectors" (int id, int pln, int tag1, int tag2)
 {
     if (tag1 != 0) { BDeath_MarkSector(id, tag1, pln); }

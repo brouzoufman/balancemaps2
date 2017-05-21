@@ -1,5 +1,7 @@
 //the morph for dead players, and the item to trigger traps
 
+actor ShouldBeGhost: Boolean {}
+
 //to-do: 
 //  actually make sprites, maybe have particles coming out the bottom because it'd look neat
 //  make sure the ghost can't die- might still happen with massive environmental damage etc
@@ -76,6 +78,19 @@ actor SpookyGhostMorphPackage: Trigger
         TNT1 A 0 SetPlayerProperty(0, 1, PROP_BUDDHA)
         TNT1 A 0 SetPlayerProperty(0, 1, PROP_NOTARGET)
         TNT1 A 0 A_GiveInventory("GhostSwitchActivator")
+        stop
+    }
+}
+
+actor SpookyGhostUnmorphPackage: Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 SetPlayerProperty(0, 0, PROP_FLY)
+        TNT1 A 0 SetPlayerProperty(0, 0, PROP_BUDDHA)
+        TNT1 A 0 SetPlayerProperty(0, 0, PROP_NOTARGET)
+        TNT1 A 0 A_TakeInventory("GhostSwitchActivator")
         stop
     }
 }
