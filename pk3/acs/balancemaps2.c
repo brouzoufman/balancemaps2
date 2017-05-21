@@ -10,10 +10,37 @@
 
 script "BMaps_Enter" enter
 {
-    int pln = PlayerNumber();
-    BDeath_SetDeaths(pln, 0);
-    BReturn_SetupDefaultPoint(pln);
+    ACS_NamedExecuteWithResult("BMaps_Spawn", true);
 }
+
+script "BMaps_Respawn" respawn
+{
+    ACS_NamedExecuteWithResult("BMaps_Spawn", false);
+}
+
+script "BMaps_Spawn" (int entering)
+{
+    int pln       = PlayerNumber();
+    
+    if (entering)
+    {
+        BDeath_SetDeaths(pln, 0);
+        BReturn_SetupDefaultPoint(pln);
+    }
+    else
+    {
+        int curDeaths = BDeath_GetDeaths(pln);
+        if (curDeaths >= BDEATH_MAXDEATHS)
+        {
+            MorphActor(0, "SpookyGhost", "", 0x7FFFFFFF, MRF_TRANSFERTRANSLATION | MRF_FULLHEALTH, "NoFog", "NoFog");
+            GiveInventory("SpookyGhostMorphPackage", 1);
+        }
+    }
+    
+    BReturn_ReturnToPoint(false);
+}
+
+
 
 script "BMaps_Death" death
 {
@@ -31,23 +58,6 @@ script "BMaps_Death" death
     }
     
     Log(s:"Sector marks: ", s:markStr);
-}
-
-script "BMaps_Respawn" respawn
-{
-    int pln       = PlayerNumber();
-    int curDeaths = BDeath_GetDeaths(pln);
-    
-    if (curDeaths >= BDEATH_MAXDEATHS)
-    {
-        Print(s:"You should be a spooky ghost right now");
-    }
-    else
-    {
-        int gotoID = BReturn_ReturnToPoint(false);
-        
-        Print(s:"You should be at point ", d:gotoID);
-    }
 }
 
 script "BMaps_Disconnect" (int pln) disconnect
