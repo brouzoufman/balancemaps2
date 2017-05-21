@@ -33,7 +33,7 @@ ACTOR SpookyGhost : PlayerPawn
 	//DeathSound "spooky/death"
 	Player.SoundClass "Spooky"
 	Player.DisplayName "Spooky"
-	Player.MorphWeapon "Fist"
+	Player.MorphWeapon "GhostWeapon"
 	-PICKUP
     
     var int user_deathlooper;
@@ -75,6 +75,8 @@ ACTOR SpookyGhost : PlayerPawn
         wait
 	}
 }
+
+
 
 actor SpookyGhostMorphPackage: Trigger
 {
@@ -139,6 +141,8 @@ ACTOR TrapCooldown : Powerup
 	Powerup.Duration -10
 }
 
+
+
 actor NoFog
 {
     +NOINTERACTION
@@ -149,5 +153,36 @@ actor NoFog
       Spawn:
         TNT1 A 0
         stop
+    }
+}
+
+actor GhostWeapon: Weapon
+{
+    Tag "Ghost"
+    +NOALERT
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+      
+      Select:
+        TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
+        TNT1 A 1 A_Raise
+        loop
+      
+      Deselect:
+        TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+        TNT1 A 1 A_Lower
+        loop
+      
+      Ready:
+        TNT1 A 1 A_WeaponReady
+        loop
+      
+      Fire:
+        TNT1 A 1
+        goto Ready
     }
 }
