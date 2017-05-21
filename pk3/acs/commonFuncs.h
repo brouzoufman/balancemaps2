@@ -1094,48 +1094,35 @@ function int stringBlank(int string)
 // A teleport function that doesn't totally suck
 function int TeleportFunctional(int tid, int target, int fog, int nostop)
 {
-    int newX = GetActorX(target);
-    int newY = GetActorY(target);
-    int newZ = GetActorZ(target);
+    int newX   = GetActorX(target);
+    int newY   = GetActorY(target);
+    int newZ   = GetActorZ(target);
+    int newAng = GetActorAngle(target);
     
-    int moved = SetActorPosition(tid, newX, newY, newZ, false);
-    if (!moved) { return false; }
+    int velX  = GetActorVelX(tid);
+    int velY  = GetActorVelY(tid);
+    int velZ  = GetActorVelZ(tid);
+    int angle = GetActorAngle(tid);
     
-	if (nostop)
+    int tpTID = UniqueTID();
+    SpawnForced("TeleportDest2", newX, newY, newZ, tpTID);
+    SetActorAngle(tpTID, newAng);
+    
+    int moved;
+    if (tid == 0) { moved = Teleport(tpTID, 0, !fog); }
+    else { moved = TeleportOther(tid, tpTID, fog); }
+
+    
+	if (moved && nostop)
 	{
-        int velX = GetActorVelX(tid);
-        int velY = GetActorVelY(tid);
-        int velZ = GetActorVelZ(tid);
+        int velMag = VectorLength(velX, velY);
+        int velAng = VectorAngle(velX, velY) - angle;
         
-        int velMag = magnitudeTwo_f(velX, velY);
-        int velAng = VectorAngle(velX, velY) - GetActorAngle(tid);
-        
-        int newAng = GetActorAngle(target) + velAng;
-        
-        SetActorVelocity(tid, FixedMul(velMag, cos(newAng)),
-                              FixedMul(velMag, sin(newAng)),
+        SetActorVelocity(tid, FixedMul(velMag, cos(velAng + newAng)),
+                              FixedMul(velMag, sin(velAng + newAng)),
                               velZ, false, false);
     }
-    else
-    {
-        SetActorVelocity(tid, 0,0,0, false, true);
-	}
-    
-    SetActorAngle(tid, GetActorAngle(target));
-    SetActorPitch(tid, GetActorPitch(target));
-    SetActorRoll(tid,  GetActorRoll(target));
-    
-    if (fog)
-    {
-        int fogAng   = GetActorAngle(target);
-        int fogPitch = GetActorPitch(target);
-        
-        int fogX = newX + FixedMul(FixedMul(8.0, cos(fogAng)), cos(fogPitch));
-        int fogY = newY + FixedMul(FixedMul(8.0, sin(fogAng)), cos(fogPitch));
-        int fogZ = newZ + FixedMul(8.0, -sin(fogPitch));
-        
-        SpawnForced("TeleportFog", fogX, fogY, fogZ);
-    }
 	
-	return true;
+    Thing_Remove(tpTID);
+	return moved;
 }

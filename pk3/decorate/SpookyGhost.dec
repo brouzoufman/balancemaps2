@@ -18,6 +18,7 @@ ACTOR SpookyGhost : PlayerPawn
 	-SOLID
 	-SHOOTABLE
     +THRUACTORS
+    +CROUCHABLEMORPH
 	
 	//PainSound "spooky/pain"
 	//DeathSound "spooky/death"
@@ -112,6 +113,19 @@ actor GhostSwitchActivator: CustomInventory
 
 ACTOR TrapCooldown : Powerup
 {
-	Powerup.Color BlueMap
+	Powerup.Color "80 40 FF", 0.1
 	Powerup.Duration -10
+}
+
+actor NoFog
+{
+    +NOINTERACTION
+    +SERVERSIDEONLY
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+    }
 }

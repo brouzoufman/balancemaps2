@@ -1,9 +1,11 @@
 #library "balancemaps2"
 #include "zcommon.acs"
 
+#include "commonFuncs.h"
+
+int BMaps_PlayerTIDs[PLAYERMAX];
 
 #include "constants.h"
-#include "commonFuncs.h"
 #include "deathtracker.h"
 #include "ghostswitch.h"
 #include "returnPoints.h"
@@ -20,12 +22,18 @@ script "BMaps_Respawn" respawn
 
 script "BMaps_Spawn" (int entering)
 {
-    int pln       = PlayerNumber();
+    int pln = PlayerNumber();
     
     if (entering)
     {
         BDeath_SetDeaths(pln, 0);
         BReturn_SetupDefaultPoint(pln);
+        
+        while (true)
+        {
+            BMaps_PlayerTIDs[pln] = defaultTID(-1);
+            Delay(1);
+        }
     }
     else
     {
@@ -37,7 +45,7 @@ script "BMaps_Spawn" (int entering)
         }
     }
     
-    BReturn_ReturnToPoint(false);
+    BReturn_ReturnToPoint(true);
 }
 
 
@@ -52,12 +60,20 @@ script "BMaps_Death" death
     
     for (int i = 0; i < markCount; i++)
     {
-        if (i > 0) { markStr = StrParam(s:markStr, s:", "); }
+        int killerPln = BDeath_CheckResult_Player(i);
         
-        markStr = StrParam(s:markStr, s:"<player ", d:BDeath_CheckResult_Player(i), s:" for switch ", d:BDeath_CheckResult_ID(i), s:">");
+        if (pln == killerPln)
+        {
+            Print(s:"You killed yourself you idiot");
+        }
+        else if (killerPln >= 0)
+        {
+            SetActivator(BMaps_PlayerTIDs[killerPln]);
+            Print(s:"You killed ", n:pln+1);
+        }
     }
     
-    Log(s:"Sector marks: ", s:markStr);
+    SetActivatorToPlayer(pln);
 }
 
 script "BMaps_Disconnect" (int pln) disconnect
