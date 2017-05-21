@@ -37,6 +37,8 @@ function int BSwitch_FindNearest(int myX, int myY, int myZ, int ignoreCooldown)
     {
         int thisTID = BSwitch_RegisteredSwitches[i][0];
         
+        if (CheckActorInventory(thisTID, "GhostSwitchDormant")) { continue; }
+        
         if (!ignoreCooldown && CheckActorInventory(thisTID, "GhostSwitchOnCooldown"))
         {
             continue;
