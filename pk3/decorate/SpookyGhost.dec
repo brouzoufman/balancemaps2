@@ -1,6 +1,7 @@
 //the morph for dead players, and the item to trigger traps
 
 actor ShouldBeGhost: Boolean {}
+actor WillBeGhost:   Boolean {}
 
 //to-do: 
 //  actually make sprites, maybe have particles coming out the bottom because it'd look neat
@@ -16,11 +17,17 @@ ACTOR SpookyGhost : PlayerPawn
 	Gravity 0
 	Painchance 0
 	Mass 0x7FFFFFFF
+    Species "Player"
+    
 	+NOSKIN
 	-SOLID
 	-SHOOTABLE
     +THRUACTORS
+    +THRUSPECIES
     +CROUCHABLEMORPH
+    
+    DamageFactor "Telefrag", 0
+    +NOTELEFRAG
 	
 	//PainSound "spooky/pain"
 	//DeathSound "spooky/death"

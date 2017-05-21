@@ -77,7 +77,7 @@ script "BMaps_Death" death
         {
             killerTID = BMaps_PlayerTIDs[killerPln];
             
-            if (CheckActorInventory(killerTID, "ShouldBeGhost"))
+            if (CheckActorInventory(killerTID, "ShouldBeGhost") && !CheckActorInventory(killerTID, "WillBeGhost"))
             {
                 ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
                 SetActivator(killerTID);
@@ -94,7 +94,7 @@ script "BMaps_Death" death
     
     if (killerPln > -1 && pln != killerPln)
     {
-        if (CheckInventory("ShouldBeGhost"))
+        if (CheckInventory("ShouldBeGhost") && !CheckInventory("WillBeGhost"))
         {
             ACS_NamedExecuteWithResult("BMaps_RewardKill", pln);
             SetActivator(myTID);
@@ -137,14 +137,16 @@ script "BMaps_BecomeGhost" (int killerPln)
 
 script "BMaps_RewardKill" (int killedPln)
 {
-    if (!CheckInventory("ShouldBeGhost")) { terminate; }
+    if (CheckInventory("WillBeGhost") || !CheckInventory("ShouldBeGhost")) { terminate; }
     
+    GiveInventory("WillBeGhost", 1);
     Print(s:"You killed ", n:killedPln+1, s:"\c- and claimed their physical form.\n\nNow take their place, and steal their glory.");
     Delay(70);
     
     int pln = PlayerNumber();
     BDeath_SetDeaths(pln, 0);
-    TakeInventory("ShouldBeGhost", 1);
+    TakeInventory("ShouldBeGhost", 0x7FFFFFFF);
+    TakeInventory("WillBeGhost",   0x7FFFFFFF);
     
     int theirPoint = BReturn_GetPlayerPoint(killedPln);
     BReturn_SetPlayerPoint(pln, theirPoint);
