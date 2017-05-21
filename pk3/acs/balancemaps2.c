@@ -58,21 +58,16 @@ script "BMaps_Respawn" respawn
 script "BMaps_Death" death
 {
     int pln   = PlayerNumber();
-    int myTID = defaultTID(-1);
-    
-    BDeath_ModDeaths(pln, 1);
-    
-    if (BDeath_GetDeaths(pln) >= BDEATH_MAXDEATHS)
-    {
-        ACS_NamedExecuteWithResult("BMaps_BecomeGhost", -1);
-    }
+    int myTID = ActivatorTID();
     
     int markCount = BDeath_FindSectorMarks(0);
     str markStr   = "";
     
+    int killerPln, killerTID;
+    
     for (int i = 0; i < markCount; i++)
     {
-        int killerPln = BDeath_CheckResult_Player(i);
+        killerPln = BDeath_CheckResult_Player(i);
         
         if (pln == killerPln)
         {
@@ -80,23 +75,39 @@ script "BMaps_Death" death
         }
         else if (killerPln >= 0)
         {
-            ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
+            killerTID = BMaps_PlayerTIDs[killerPln];
             
-            SetActivator(BMaps_PlayerTIDs[killerPln]);
-            ACS_NamedExecuteWithResult("BMaps_RewardKill", pln);
-            SetActivator(myTID);
+            if (CheckActorInventory(killerTID, "ShouldBeGhost"))
+            {
+                ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
+                SetActivator(killerTID);
+                ACS_NamedExecuteWithResult("BMaps_RewardKill", pln);
+                SetActivator(myTID);
+            }
         }
     }
     
     // A direct kill should never happen, but if it does, reward that too
     SetActivatorToTarget(0);
     killerPln = PlayerNumber();
+    killerTID = ActivatorTID();
     
     if (killerPln > -1 && pln != killerPln)
     {
-        ACS_NamedExecuteWithResult("BMaps_RewardKill", pln);
-        SetActivator(myTID);
-        ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
+        if (CheckInventory("ShouldBeGhost"))
+        {
+            ACS_NamedExecuteWithResult("BMaps_RewardKill", pln);
+            SetActivator(myTID);
+            ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
+        }
+    }
+    
+    SetActivator(myTID);
+    BDeath_ModDeaths(pln, 1);
+    
+    if (BDeath_GetDeaths(pln) >= BDEATH_MAXDEATHS)
+    {
+        ACS_NamedExecuteWithResult("BMaps_BecomeGhost", -1);
     }
 }
 
@@ -110,7 +121,6 @@ script "BMaps_Disconnect" (int pln) disconnect
 script "BMaps_BecomeGhost" (int killerPln)
 {
     if (CheckInventory("ShouldBeGhost")) { terminate; }
-        
     GiveInventory("ShouldBeGhost", 1);
     
     if (killerPln == -1)
