@@ -1,3 +1,8 @@
+gameinfo
+{
+    playerclasses = "BalancePlayer"
+}
+
 map TESTMAP "test map"
 {
     music = "D_STALKS"
