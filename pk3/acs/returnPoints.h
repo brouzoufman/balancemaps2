@@ -201,10 +201,20 @@ script "BReturn_TeleportPointHook" (int pointIn)
     SetResultValue(pointIn);
 }
 
-function int BReturn_TeleportToPoint(int tid, int pointID, int nofog)
+function int BReturn_TeleportToPoint(int tid, int pointID, int nofog, int nohook)
 {
-    int hookedID = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", pointID);
-    Log(s:"\cqDEBUG: \cdpoint id: ", d:hookedID, s:" (", d:pointID, s:" pre-hook)");
+    int hookedID;
+    if (nohook)
+    {
+        hookedID = pointID;
+        Log(s:"\cqDEBUG: \cdpoint id: ", d:hookedID, s:" (not hooked)");
+    }
+    else
+    {
+        hookedID = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", pointID);
+        Log(s:"\cqDEBUG: \cdpoint id: ", d:hookedID, s:" (", d:pointID, s:" pre-hook)");
+    }
+    
     
     if (hookedID < 0) { return -1; }
     if (hookedID >= BReturn_PointCount)
@@ -233,8 +243,8 @@ function int BReturn_TeleportToDefault(int tid, int pln, int nofog)
     }
     
     int hookedID = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", -1);
-    Log(s:"\cqDEBUG: \cdpoint id: ", d:hookedID, s:" (-1 pre-hook, since default)");
-    if (hookedID > 0 && hookedID < BReturn_PointCount) { return BReturn_TeleportToPoint(tid, hookedID, nofog); }
+    Log(s:"\cqDEBUG: \cddefault point id: ", d:hookedID, s:" (-1 pre-hook)");
+    if (hookedID > 0 && hookedID < BReturn_PointCount) { return BReturn_TeleportToPoint(tid, hookedID, nofog, true); }
     
     int x     = BReturn_DefaultPoint[pln][0];
     int y     = BReturn_DefaultPoint[pln][1];
@@ -267,7 +277,7 @@ function int BReturn_ReturnToPoint(int nofog)
     int playerPoint = BReturn_GetPlayerPoint(pln);
     if (playerPoint == -1) { return BReturn_TeleportToDefault(0, pln, nofog); }
     
-    return BReturn_TeleportToPoint(0, playerPoint, nofog);
+    return BReturn_TeleportToPoint(0, playerPoint, nofog, false);
 }
 
 
@@ -293,6 +303,6 @@ script "BReturn_CheckResult_Order" (int index) { SetResultValue(BReturn_CheckRes
 script "BReturn_MinOrder" (void) { SetResultValue(BReturn_MinOrder()); }
 script "BReturn_MaxOrder" (void) { SetResultValue(BReturn_MaxOrder()); }
 
-script "BReturn_TeleportToPoint"   (int tid, int pointID, int nofog) { SetResultValue(BReturn_TeleportToPoint(tid, pointID, nofog)); }
+script "BReturn_TeleportToPoint"   (int tid, int pointID, int nofog) { SetResultValue(BReturn_TeleportToPoint(tid, pointID, nofog, false)); }
 script "BReturn_TeleportToDefault" (int tid, int pln,     int nofog) { SetResultValue(BReturn_TeleportToDefault(tid, pln, nofog)); }
-script "BReturn_ReturnToPoint"   (int nofog)                       { SetResultValue(BReturn_ReturnToPoint(nofog)); }
+script "BReturn_ReturnToPoint"     (int nofog)                       { SetResultValue(BReturn_ReturnToPoint(nofog)); }
