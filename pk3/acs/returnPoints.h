@@ -53,20 +53,24 @@ function int BReturn_SetPlayerPoint(int pln, int pointID)
     return 1;
 }
 
-function int BReturn_SetMyPoint(int pointOrder, int onlyUp)
+function int BReturn_SetMyPoint(int pointOrder, int direction)
 {
     int pointID = BReturn_FirstPointWithOrder(pointOrder);
     if (pointID == -1) { return 0; }
     
     int pln = PlayerNumber();
     if (pln < 0) { return 0; }
-    if (!onlyUp) { return BReturn_SetPlayerPoint(pln, pointID); }
+    if (direction == 0) { return BReturn_SetPlayerPoint(pln, pointID); }
     
     int curPoint = BReturn_GetPlayerPoint(pln);
-    if (curPoint == -1) { return BReturn_SetPlayerPoint(pln, pointID); }
+    int curOrder = cond(curPoint == -1, 0, BReturn_GetPointOrder(curPoint));
     
-    int curOrder = BReturn_GetPointOrder(curPoint);
-    if (pointOrder > curOrder) { return BReturn_SetPlayerPoint(pln, pointID); }
+    if ((direction > 0 && pointOrder > curOrder)
+     || (direction < 0 && pointOrder < curOrder))
+    {
+        return BReturn_SetPlayerPoint(pln, pointID);
+    }
+    
     return 0;
 }
 
