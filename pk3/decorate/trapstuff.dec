@@ -1,17 +1,4 @@
 actor TinierRocket: Rocket
 {
     Radius 4
-    
-    States
-    {
-      Spawn:
-        MISL A 1 A_JumpIfCloser(20, "Boom")
-        loop
-      
-      Boom:
-        MISL A 0 A_Stop
-        MISL A 0 A_Scream
-        MISL A 0 A_RearrangePointers(AAPTR_NULL, AAPTR_DEFAULT, AAPTR_DEFAULT)
-        goto Death
-    }
 }
