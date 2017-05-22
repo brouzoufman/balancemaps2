@@ -4,7 +4,6 @@ int BDeath_MarkedSectors[BDEATH_MAXMARKEDSECTORS][3];
 int BDeath_MarkCount = 0;
 
 
-
 function int BDeath_GetDeaths(int pln)
 {
     return BDeath_AccumulatedDeaths[pln];
@@ -180,4 +179,34 @@ script "BDeath_UnmarkSectors" (int id, int tag1, int tag2)
 script "BDeath_UnmarkByID" (int id)
 {
     BDeath_UnmarkByID(id);
+}
+
+
+// Mark the thing, and disassociate if the player leaves
+script "BDeath_MarkThing" (int tid, int pln)
+{
+    TakeActorInventory(tid, "MarkedByPlayer", 0x7FFFFFFF);
+    GiveActorInventory(tid, "MarkedByPlayer", pln+1);
+    
+    if (CheckActorInventory(tid, "AlreadyMarked")) { terminate; }
+    GiveActorInventory(tid, "AlreadyMarked", 1);
+    
+    SetActivator(0);
+    while (IsTIDUsed(tid) && CheckActorInventory(tid, "AlreadyMarked"))
+    {
+        if (!PlayerInGame(pln))
+        {
+            TakeActorInventory(tid, "MarkedByPlayer", 0x7FFFFFFF);
+            TakeActorInventory(tid, "AlreadyMarked",  0x7FFFFFFF);
+            break;
+        }
+        
+        Delay(1);
+    }
+}
+
+script "BDeath_UnmarkThing" (int tid)
+{
+    TakeActorInventory(tid, "MarkedByPlayer", 0x7FFFFFFF);
+    TakeActorInventory(tid, "AlreadyMarked",  0x7FFFFFFF);
 }

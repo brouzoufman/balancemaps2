@@ -8,8 +8,23 @@ int BMaps_RanEnter[PLAYERMAX];
 
 #include "constants.h"
 #include "deathtracker.h"
+#include "deathmarks.h"
 #include "ghostswitch.h"
 #include "returnPoints.h"
+
+script "BMaps_Open" open
+{
+    while (true)
+    {
+        for (int i = 0; i < PLAYERMAX; i++)
+        {
+            if (PlayerInGame(i)) { BMark_PruneMarks(i); }
+        }
+        
+        Delay(1);
+    }
+}
+
 
 script "BMaps_Enter" enter
 {
@@ -62,39 +77,67 @@ script "BMaps_Disconnect" (int pln) disconnect
 {    
     BDeath_Disassociate(pln);
     BReturn_UnsetDefaultPoint(pln);
+    BMark_ClearMarks(pln);
     BMaps_RanEnter[pln] = false;
 }
 
-
+int BMaps_WhoKilledMe[PLAYERMAX];
 
 script "BMaps_Death" death
 {
     int pln   = PlayerNumber();
     int myTID = ActivatorTID();
-    int killerPln;
+    int killerPln = -1;
+    int i;
+    
+    for (i = 0; i < PLAYERMAX; i++) { BMaps_WhoKilledMe[i] = false; }
     
     // First, check our direct killer
-    SetActivatorToTarget(0);
-    killerPln = PlayerNumber();
-    
-    // Might not be a player itself, but something marked by that player
-    if (killerPln == -1)
+    if (SetActivatorToTarget(0))
     {
-        int markedBy = CheckInventory("MarkedByPlayer") - 1;
-        if (markedBy > -1) { killerPln = markedBy; }
+        killerPln = PlayerNumber();
+        
+        // Might not be a player itself, but something marked by that player
+        if (killerPln == -1)
+        {
+            int markedBy = CheckInventory("MarkedByPlayer") - 1;
+            if (markedBy > -1) { killerPln = markedBy; }
+        }
+        
+        if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
     }
     
-    // Who cares if killerPln is negative, the script can handle that
-    ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
+    
+    // Now check who marked us for death
+    int markCount = BMark_PlayerMarkCount[pln];
+    for (i = 0; i < markCount; i++)
+    {
+        killerPln = BMark_PlayerMarks[pln][i][0];
+        if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
+    }
+
+    BMark_ClearMarks(pln);
+    
     
     // Then find active sector marks
-    int markCount = BDeath_FindSectorMarks(0);
-    
-    for (int i = 0; i < markCount; i++)
+    markCount = BDeath_FindSectorMarks(0);
+    for (i = 0; i < markCount; i++)
     {
         killerPln = BDeath_CheckResult_Player(i);
-        ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
+        if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
     }
+    
+    
+    // Now credit those assholes.
+    for (i = 0; i < PLAYERMAX; i++)
+    {
+        if (BMaps_WhoKilledMe[i])
+        {
+            if (i == pln) { Print(s:"You killed yourself you idiot"); }
+            ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, i);
+        }
+    }
+    
     
     // And finally, dying just because you're bad
     SetActivator(myTID);
@@ -141,7 +184,7 @@ script "BMaps_BecomeGhost" (int killerPln)
     }
     else
     {
-        Print(n:killerPln+1, s:"\c- has claimed your physical form.\n\nSend someone to their doom, and mete your revenge.");
+        Print(s:"Your physical form has been stolen.\n\nSend someone to their doom, and mete your revenge.");
     }
         
 }

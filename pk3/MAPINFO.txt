@@ -6,7 +6,6 @@ gameinfo
 defaultmap
 {
     AllowRespawn
-    TeamDamage = 1
 }
 
 map TESTMAP "test map"
