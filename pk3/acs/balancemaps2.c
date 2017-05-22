@@ -34,8 +34,11 @@ script "BMaps_Enter" enter
     BDeath_SetDeaths(pln, 0);
     BReturn_SetupDefaultPoint(pln);
     
-    // This is mainly in case there's a teleport hook
-    BReturn_ReturnToPoint(true);
+    // In case there's a teleport hook that reacts to point -1
+    if (ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", -1) != -1)
+    {
+        BReturn_ReturnToPoint(true);
+    }
     
     while (true)
     {
