@@ -25,6 +25,7 @@ ACTOR SpookyGhost : PlayerPawn
     +THRUACTORS
     +THRUSPECIES
     +CROUCHABLEMORPH
+    +NOTRIGGER
     
     DamageFactor "Telefrag", 0
     +NOTELEFRAG
