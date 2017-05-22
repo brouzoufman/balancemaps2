@@ -60,7 +60,7 @@ script "BMark_MarkFromProjectile" (int time, int ptr)
 }
 
 
-script "BMark_MarkInRadius" (int time, int radius)
+script "BMark_MarkInRadius" (int time, int radius, int sphere)
 {
     radius = itof(radius);
     
@@ -90,8 +90,10 @@ script "BMark_MarkInRadius" (int time, int radius)
         if (plX < xmin || plY < ymin || plZ < zmin
          || plX > xmax || plY > ymax || plZ > zmax) { continue; }
         
-        int distBetween = distance(myX, myY, myZ, plX, plY, plz);
-        if (distBetween <= radius)
+        int counts = !sphere;
+        if (sphere) { counts = (radius >= distance(myX, myY, myZ, plX, plY, plz)); }
+        
+        if (counts)
         {
             BMark_MarkPlayer(pln, playerMark, time);
         }
