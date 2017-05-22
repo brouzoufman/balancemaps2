@@ -4,6 +4,7 @@
 #include "commonFuncs.h"
 
 int BMaps_PlayerTIDs[PLAYERMAX];
+int BMaps_RanEnter[PLAYERMAX];
 
 #include "constants.h"
 #include "deathtracker.h"
@@ -13,6 +14,7 @@ int BMaps_PlayerTIDs[PLAYERMAX];
 script "BMaps_Enter" enter
 {
     int pln = PlayerNumber();
+    BMaps_RanEnter[pln] = true;
     
     BDeath_SetDeaths(pln, 0);
     BReturn_SetupDefaultPoint(pln);
@@ -50,6 +52,9 @@ script "BMaps_Enter" enter
 
 script "BMaps_Respawn" respawn
 {
+    int pln = PlayerNumber();
+    if (!BMaps_RanEnter[pln]) { ACS_ExecuteWithResult("BMaps_Enter"); }
+    
     BReturn_ReturnToPoint(true);
 }
 
@@ -79,10 +84,10 @@ script "BMaps_Death" death
             
             if (CheckActorInventory(killerTID, "ShouldBeGhost") && !CheckActorInventory(killerTID, "WillBeGhost"))
             {
+                SetActivator(myTID);
                 ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
                 SetActivator(killerTID);
                 ACS_NamedExecuteWithResult("BMaps_RewardKill", pln);
-                SetActivator(myTID);
             }
         }
     }
@@ -115,6 +120,7 @@ script "BMaps_Disconnect" (int pln) disconnect
 {    
     BDeath_Disassociate(pln);
     BReturn_UnsetDefaultPoint(pln);
+    BMaps_RanEnter[pln] = false;
 }
 
 
