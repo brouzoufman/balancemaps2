@@ -81,7 +81,7 @@ script "BMaps_Disconnect" (int pln) disconnect
     BMaps_RanEnter[pln] = false;
 }
 
-
+int BMaps_WhoKilledMe[PLAYERMAX];
 
 script "BMaps_Death" death
 {
@@ -89,6 +89,8 @@ script "BMaps_Death" death
     int myTID = ActivatorTID();
     int killerPln = -1;
     int i;
+    
+    for (i = 0; i < PLAYERMAX; i++) { BMaps_WhoKilledMe[i] = false; }
     
     // First, check our direct killer
     if (SetActivatorToTarget(0))
@@ -102,8 +104,7 @@ script "BMaps_Death" death
             if (markedBy > -1) { killerPln = markedBy; }
         }
         
-        // Who cares if killerPln is negative, the script can handle that
-        ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
+        if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
     }
     
     
@@ -112,7 +113,7 @@ script "BMaps_Death" death
     for (i = 0; i < markCount; i++)
     {
         killerPln = BMark_PlayerMarks[pln][i][0];
-        ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
+        if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
     }
 
     BMark_ClearMarks(pln);
@@ -123,7 +124,18 @@ script "BMaps_Death" death
     for (i = 0; i < markCount; i++)
     {
         killerPln = BDeath_CheckResult_Player(i);
-        ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
+        if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
+    }
+    
+    
+    // Now credit those assholes.
+    for (i = 0; i < PLAYERMAX; i++)
+    {
+        if (BMaps_WhoKilledMe[i])
+        {
+            if (i == pln) { Print(s:"You killed yourself you idiot"); }
+            ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, i);
+        }
     }
     
     
