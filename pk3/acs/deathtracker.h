@@ -234,6 +234,7 @@ script "BDeath_MarkPlayer_Projectile" (int time, int ptr)
     for (int i = 0; i < time; i++)
     {
         if (CheckInventory("DeathMarkTracker") != trackerNum) { terminate; }
+        if (isDead(0)) { break; }
         
         Delay(1);
     }

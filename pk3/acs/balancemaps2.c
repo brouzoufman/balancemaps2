@@ -71,27 +71,29 @@ script "BMaps_Death" death
 {
     int pln   = PlayerNumber();
     int myTID = ActivatorTID();
-    int killerPln;
+    int killerPln = -1;
     
     // First, check our direct killer
-    SetActivatorToTarget(0);
-    killerPln = PlayerNumber();
-    
-    // Might not be a player itself, but something marked by that player
-    if (killerPln == -1)
+    if (SetActivatorToTarget(0))
     {
-        int markedBy = CheckInventory("MarkedByPlayer") - 1;
-        if (markedBy > -1) { killerPln = markedBy; }
+        killerPln = PlayerNumber();
+        
+        // Might not be a player itself, but something marked by that player
+        if (killerPln == -1)
+        {
+            int markedBy = CheckInventory("MarkedByPlayer") - 1;
+            if (markedBy > -1) { killerPln = markedBy; }
+        }
+        
+        // Who cares if killerPln is negative, the script can handle that
+        ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
     }
-    
-    // Who cares if killerPln is negative, the script can handle that
-    ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
     
     
     // Now check if a projectile or whatever marked us for death
     SetActivator(myTID);
     markedBy = CheckInventory("MarkedForDeath") - 1;
-    ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, markedBy);
+    if (markedBy > -1) { ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, markedBy); }
     
     
     // Then find active sector marks
