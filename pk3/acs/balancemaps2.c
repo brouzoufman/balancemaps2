@@ -4,6 +4,7 @@
 #include "commonFuncs.h"
 
 int BMaps_PlayerTIDs[PLAYERMAX];
+int BMaps_RanEnter[PLAYERMAX];
 
 #include "constants.h"
 #include "deathtracker.h"
@@ -13,6 +14,7 @@ int BMaps_PlayerTIDs[PLAYERMAX];
 script "BMaps_Enter" enter
 {
     int pln = PlayerNumber();
+    BMaps_RanEnter[pln] = true;
     
     BDeath_SetDeaths(pln, 0);
     BReturn_SetupDefaultPoint(pln);
@@ -50,7 +52,17 @@ script "BMaps_Enter" enter
 
 script "BMaps_Respawn" respawn
 {
+    int pln = PlayerNumber();
+    if (!BMaps_RanEnter[pln]) { ACS_ExecuteWithResult("BMaps_Enter"); }
+    
     BReturn_ReturnToPoint(true);
+}
+
+script "BMaps_Disconnect" (int pln) disconnect
+{    
+    BDeath_Disassociate(pln);
+    BReturn_UnsetDefaultPoint(pln);
+    BMaps_RanEnter[pln] = false;
 }
 
 
@@ -59,49 +71,32 @@ script "BMaps_Death" death
 {
     int pln   = PlayerNumber();
     int myTID = ActivatorTID();
+    int killerPln;
     
+    // First, check our direct killer
+    SetActivatorToTarget(0);
+    killerPln = PlayerNumber();
+    
+    // Might not be a player itself, but something marked by that player
+    if (killerPln == -1)
+    {
+        int markedBy = CheckInventory("MarkedByPlayer") - 1;
+        if (markedBy > -1) { killerPln = markedBy; }
+    }
+    
+    // Who cares if killerPln is negative, the script can handle that
+    ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
+    
+    // Then find active sector marks
     int markCount = BDeath_FindSectorMarks(0);
-    str markStr   = "";
-    
-    int killerPln, killerTID;
     
     for (int i = 0; i < markCount; i++)
     {
         killerPln = BDeath_CheckResult_Player(i);
-        
-        if (pln == killerPln)
-        {
-            Print(s:"You killed yourself you idiot");
-        }
-        else if (killerPln >= 0)
-        {
-            killerTID = BMaps_PlayerTIDs[killerPln];
-            
-            if (CheckActorInventory(killerTID, "ShouldBeGhost") && !CheckActorInventory(killerTID, "WillBeGhost"))
-            {
-                ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
-                SetActivator(killerTID);
-                ACS_NamedExecuteWithResult("BMaps_RewardKill", pln);
-                SetActivator(myTID);
-            }
-        }
+        ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
     }
     
-    // A direct kill should never happen, but if it does, reward that too
-    SetActivatorToTarget(0);
-    killerPln = PlayerNumber();
-    killerTID = ActivatorTID();
-    
-    if (killerPln > -1 && pln != killerPln)
-    {
-        if (CheckInventory("ShouldBeGhost") && !CheckInventory("WillBeGhost"))
-        {
-            ACS_NamedExecuteWithResult("BMaps_RewardKill", pln);
-            SetActivator(myTID);
-            ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
-        }
-    }
-    
+    // And finally, dying just because you're bad
     SetActivator(myTID);
     BDeath_ModDeaths(pln, 1);
     
@@ -111,10 +106,27 @@ script "BMaps_Death" death
     }
 }
 
-script "BMaps_Disconnect" (int pln) disconnect
-{    
-    BDeath_Disassociate(pln);
-    BReturn_UnsetDefaultPoint(pln);
+
+script "BMaps_HandleKilledBy" (int killedPln, int killerPln)
+{
+    Log(s:"Player ", d:killedPln, s:" killed by player ", d:killerPln);
+    if (killedPln < 0 || killerPln < 0 || killerPln == killedPln) { terminate; }
+    
+    // At this point, the killed player was killed by a different player
+    int killedTID = BMaps_PlayerTIDs[killedPln];
+    int killerTID = BMaps_PlayerTIDs[killerPln];
+    
+    // Only people without a body of their own can steal one...
+    if (!CheckActorInventory(killerTID, "ShouldBeGhost")) { terminate; }
+    
+    // ... and only live players can have their body stolen.
+    if (CheckActorInventory(killedTID, "GhostSwitchActivator")) { terminate; }
+    
+    SetActivator(killedTID);
+    ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
+    
+    SetActivator(killerTID);
+    ACS_NamedExecuteWithResult("BMaps_RewardKill", killedPln);
 }
 
 

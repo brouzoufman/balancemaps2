@@ -18,6 +18,9 @@ setup.py
 *.backup[0-9][0-9]
 *.dbs
 
+# SLADE backups
+*.bak
+
 # ACC error file extension
 *.err
 

@@ -3,9 +3,20 @@ gameinfo
     playerclasses = "BalancePlayer"
 }
 
+defaultmap
+{
+    AllowRespawn
+    TeamDamage = 1
+}
+
 map TESTMAP "test map"
 {
     music = "D_STALKS"
     sky1  = "SKY1"
-	AllowRespawn
+}
+
+map MAP02 "Ben's Stronghold"
+{
+    music = "D_DDTBLU"
+    sky1  = "SKY1"
 }
