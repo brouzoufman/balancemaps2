@@ -40,6 +40,9 @@ actor Trigger: CustomInventory
 actor MarkedByPlayer: Counter {}
 actor AlreadyMarked:  Boolean {}
 
+actor MarkedForDeath:   Counter {}
+actor DeathMarkTracker: Counter {}
+
 
 #include "decorate/ghostswitch.dec"
 #include "decorate/returnpoint.dec"
@@ -47,4 +50,5 @@ actor AlreadyMarked:  Boolean {}
 #include "decorate/balanceplayer.dec"
 #include "decorate/SpookyGhost.dec"
 
+#include "decorate/decorations.dec"
 #include "decorate/trapstuff.dec"

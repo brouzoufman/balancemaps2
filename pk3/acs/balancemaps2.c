@@ -87,6 +87,13 @@ script "BMaps_Death" death
     // Who cares if killerPln is negative, the script can handle that
     ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
     
+    
+    // Now check if a projectile or whatever marked us for death
+    SetActivator(myTID);
+    markedBy = CheckInventory("MarkedForDeath") - 1;
+    ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, markedBy);
+    
+    
     // Then find active sector marks
     int markCount = BDeath_FindSectorMarks(0);
     
@@ -95,6 +102,7 @@ script "BMaps_Death" death
         killerPln = BDeath_CheckResult_Player(i);
         ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
     }
+    
     
     // And finally, dying just because you're bad
     SetActivator(myTID);
