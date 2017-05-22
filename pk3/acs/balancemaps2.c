@@ -60,6 +60,10 @@ script "BMaps_Enter" enter
                 }
             }
         }
+        else
+        {
+            BMark_ClearMarks(pln);
+        }
         
         Delay(1);
     }
