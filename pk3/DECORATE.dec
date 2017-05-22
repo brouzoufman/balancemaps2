@@ -42,3 +42,5 @@ actor Trigger: CustomInventory
 
 #include "decorate/balanceplayer.dec"
 #include "decorate/SpookyGhost.dec"
+
+#include "decorate/trapstuff.dec"
