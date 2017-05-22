@@ -184,7 +184,7 @@ script "BMaps_BecomeGhost" (int killerPln)
     }
     else
     {
-        Print(n:killerPln+1, s:"\c- has claimed your physical form.\n\nSend someone to their doom, and mete your revenge.");
+        Print(s:"Your physical form has been stolen.\n\nSend someone to their doom, and mete your revenge.");
     }
         
 }
