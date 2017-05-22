@@ -37,6 +37,9 @@ actor Trigger: CustomInventory
     }
 }
 
+actor MarkedByPlayer: Counter {}
+
+
 #include "decorate/ghostswitch.dec"
 #include "decorate/returnpoint.dec"
 
