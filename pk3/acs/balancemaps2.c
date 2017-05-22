@@ -107,6 +107,7 @@ script "BMaps_Death" death
         if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
     }
     
+    SetActivator(myTID);
     
     // Now check who marked us for death
     int markCount = BMark_PlayerMarkCount[pln];
