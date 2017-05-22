@@ -1,5 +1,3 @@
-#define BSWITCH_MAXSWITCHES     128
-#define BSWITCH_CHECKDIST       320.0
 
 int BSwitch_RegisteredSwitches[BSWITCH_MAXSWITCHES][3];
 int BSwitch_SwitchCount = 0;
@@ -39,14 +37,16 @@ function int BSwitch_FindNearest(int myX, int myY, int myZ, int ignoreCooldown)
     {
         int thisTID = BSwitch_RegisteredSwitches[i][0];
         
+        if (CheckActorInventory(thisTID, "GhostSwitchDormant")) { continue; }
+        
         if (!ignoreCooldown && CheckActorInventory(thisTID, "GhostSwitchOnCooldown"))
         {
             continue;
         }
         
-        int thisX   = GetActorX(thisTID);
-        int thisY   = GetActorY(thisTID);
-        int thisZ   = GetActorZ(thisTID);
+        int thisX = GetActorX(thisTID);
+        int thisY = GetActorY(thisTID);
+        int thisZ = GetActorZ(thisTID);
         
         if (thisX >= xmin && thisY >= ymin && thisZ >= zmin
          && thisX <= xmax && thisY <= ymax && thisZ <= zmax)
@@ -81,10 +81,12 @@ script "BSwitch_TryToActivate" (void)
     if (nearestSwitch == -1)
     {
         Print(s:"No nearby switch.");
+        SetResultValue(0);
     }
     else
     {
         ACS_NamedExecuteWithResult("BSwitch_ActivateSwitch", nearestSwitch, pln);
+        SetResultValue(1);
     }
 }
 

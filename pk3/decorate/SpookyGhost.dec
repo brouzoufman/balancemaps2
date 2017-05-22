@@ -1,0 +1,188 @@
+//the morph for dead players, and the item to trigger traps
+
+actor ShouldBeGhost: Boolean {}
+actor WillBeGhost:   Boolean {}
+
+//to-do: 
+//  actually make sprites, maybe have particles coming out the bottom because it'd look neat
+//  make sure the ghost can't die- might still happen with massive environmental damage etc
+//  remove weapon as ghost?
+
+ACTOR SpookyGhost : PlayerPawn
+{
+	Translation "Ice"
+    RenderStyle Add
+	Alpha 0.5
+	Speed 1.5
+	Gravity 0
+	Painchance 0
+	Mass 0x7FFFFFFF
+    Species "Player"
+    
+	+NOSKIN
+	-SOLID
+	-SHOOTABLE
+    +THRUACTORS
+    +THRUSPECIES
+    +CROUCHABLEMORPH
+    
+    DamageFactor "Telefrag", 0
+    +NOTELEFRAG
+	
+	//PainSound "spooky/pain"
+	//DeathSound "spooky/death"
+	Player.SoundClass "Spooky"
+	Player.DisplayName "Spooky"
+	Player.MorphWeapon "GhostWeapon"
+	-PICKUP
+    
+    var int user_deathlooper;
+    
+	States
+	{
+	  Spawn:
+		PLAY A -1
+		stop
+        
+	  See:
+		PLAY ABCD 4
+		loop
+	
+	  Melee:
+	  Missile:
+		PLAY A 0
+		goto Spawn
+    
+	  Pain:
+		PLAY A 0
+		goto Spawn
+        
+	  Death:
+		PLAY G 10
+        PLAY G 0 A_PlaySound("skull/death", CHAN_VOICE)
+        goto DeathLoop
+      
+      DeathLoop:
+        PLAY G 0 A_SetUserVar("user_deathlooper", user_deathlooper + 1)
+        PLAY G 0 A_ScaleVelocity(0.9)
+        PLAY G 0 A_FadeOut(0.02, 0)
+        PLAY G 1 A_JumpIf(user_deathlooper >= 50, "DeathEnd")
+        loop
+      
+      DeathEnd:
+        PLAY G 0 A_Stop
+        PLAY G 1 A_CheckPlayerDone
+        wait
+	}
+}
+
+
+
+actor SpookyGhostMorphPackage: Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 SetPlayerProperty(0, 1, PROP_FLY)
+        TNT1 A 0 SetPlayerProperty(0, 1, PROP_BUDDHA)
+        TNT1 A 0 SetPlayerProperty(0, 1, PROP_NOTARGET)
+        TNT1 A 0 A_GiveInventory("GhostSwitchActivator")
+        stop
+    }
+}
+
+actor SpookyGhostUnmorphPackage: Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 SetPlayerProperty(0, 0, PROP_FLY)
+        TNT1 A 0 SetPlayerProperty(0, 0, PROP_BUDDHA)
+        TNT1 A 0 SetPlayerProperty(0, 0, PROP_NOTARGET)
+        TNT1 A 0 A_TakeInventory("GhostSwitchActivator")
+        stop
+    }
+}
+
+actor GhostSwitchActivator: CustomInventory
+{
+	Inventory.MaxAmount 1
+    Inventory.Icon "PLSSA0"
+    +UNDROPPABLE
+    +INVBAR
+    
+	States
+	{
+	  Spawn:
+		TNT1 A -1
+		stop
+        
+	  Use:
+		TNT1 A 0 A_JumpIfInventory("TrapCooldown", 1, "OnCooldown")
+		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("BSwitch_TryToActivate") == 1, "UsedSwitch")
+		fail
+      
+      OnCooldown:
+        TNT1 A 0
+        fail
+        
+	  UsedSwitch:
+		//activating trap worked, put it on cooldown for the player
+		TNT1 A 0 A_GiveInventory("TrapCooldown", 1)
+		fail
+	}
+}
+
+//use this to determine the cooldown between players using traps
+
+ACTOR TrapCooldown : Powerup
+{
+	Powerup.Color "80 40 FF", 0.1
+	Powerup.Duration -10
+}
+
+
+
+actor NoFog
+{
+    +NOINTERACTION
+    +SERVERSIDEONLY
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+    }
+}
+
+actor GhostWeapon: Weapon
+{
+    Tag "Ghost"
+    +NOALERT
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+      
+      Select:
+        TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
+        TNT1 A 1 A_Raise
+        loop
+      
+      Deselect:
+        TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+        TNT1 A 1 A_Lower
+        loop
+      
+      Ready:
+        TNT1 A 1 A_WeaponReady
+        loop
+      
+      Fire:
+        TNT1 A 1
+        goto Ready
+    }
+}

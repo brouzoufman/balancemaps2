@@ -1,0 +1,19 @@
+actor ReturnPoint 27502
+{
+    RenderStyle Add
+    Alpha 0.5
+    
+    +NOINTERACTION
+    
+    States
+    {
+      Spawn:
+        PLSS A 0 bright
+        PLSS A 0 bright ACS_NamedExecuteWithResult("BReturn_Register", args[0])
+        goto Idle
+      
+      Idle:
+        PLSS AB 6 bright
+        loop
+    }
+}

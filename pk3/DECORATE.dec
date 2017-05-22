@@ -1,3 +1,29 @@
+actor Boolean: Inventory
+{
+    Inventory.MaxAmount 1
+    +UNDROPPABLE
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+    }
+}
+
+actor Counter: Inventory
+{
+    Inventory.MaxAmount 0x7FFFFFFF
+    +UNDROPPABLE
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+    }
+}
+
 actor Trigger: CustomInventory
 {
     Inventory.MaxAmount 0
@@ -12,3 +38,7 @@ actor Trigger: CustomInventory
 }
 
 #include "decorate/ghostswitch.dec"
+#include "decorate/returnpoint.dec"
+
+#include "decorate/balanceplayer.dec"
+#include "decorate/SpookyGhost.dec"
