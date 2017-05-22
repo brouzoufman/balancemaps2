@@ -181,3 +181,27 @@ script "BDeath_UnmarkByID" (int id)
 {
     BDeath_UnmarkByID(id);
 }
+
+
+// Mark the thing, and disassociate if the player leaves
+script "BDeath_MarkThing" (int tid, int pln)
+{
+    TakeActorInventory(tid, "MarkedByPlayer", 0x7FFFFFFF);
+    GiveActorInventory(tid, "MarkedByPlayer", pln+1);
+    
+    if (CheckActorInventory(tid, "AlreadyMarked")) { terminate; }
+    GiveActorInventory(tid, "AlreadyMarked", 1);
+    
+    SetActivator(0);
+    while (IsTIDUsed(tid))
+    {
+        if (!PlayerInGame(pln))
+        {
+            TakeActorInventory(tid, "MarkedByPlayer", 0x7FFFFFFF);
+            TakeActorInventory(tid, "AlreadyMarked",  0x7FFFFFFF);
+            break;
+        }
+        
+        Delay(1);
+    }
+}
