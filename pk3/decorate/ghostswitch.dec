@@ -8,6 +8,7 @@ actor GhostSwitch 27501
     Alpha 0.5
     
     +NOINTERACTION
+    VisibleToPlayerClass "SpookyGhost"
     
     States
     {
