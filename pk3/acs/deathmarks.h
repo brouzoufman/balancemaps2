@@ -87,13 +87,43 @@ script "BMark_MarkInRadius" (int time, int radius, int sphere)
         int plY   = GetActorY(plTID);
         int plZ   = GetActorZ(plTID);
         
-        if (plX < xmin || plY < ymin || plZ < zmin
-         || plX > xmax || plY > ymax || plZ > zmax) { continue; }
+        int plRadius = GetActorProperty(plTID, APROP_Radius);
+        int plHeight = GetActorProperty(plTID, APROP_Height);
         
-        int counts = !sphere;
-        if (sphere) { counts = (radius >= distance(myX, myY, myZ, plX, plY, plz)); }
+        int plXMin = safeAdd(plX, -plRadius), plXMax = safeAdd(plX, plRadius);
+        int plYMin = safeAdd(plY, -plRadius), plYMax = safeAdd(plY, plRadius);
+        int plZMin = plZ,                     plZMax = safeAdd(plZ, plHeight);
         
-        if (counts)
+        int collides = false;
+        
+        if (sphere)
+        {
+            // Find closest point in player AABB to sphere center
+            int xNearest = middle(plXMin, myX, plXMax);
+            int yNearest = middle(plYMin, myY, plYMax);
+            int zNearest = middle(plZMin, myZ, plZMax);
+            
+            // Eliminate if that point isn't even in bounding box
+            if (xNearest < xmin || yNearest < ymin || zNearest < zmin
+             || xNearest > xmax || yNearest > ymax || zNearest > zmax)
+            {
+                collides = false;
+            }
+            else
+            {
+                collides = distance(myX, myY, myZ, xNearest, yNearest, zNearest) <= radius;
+            }
+        }
+        else
+        {
+            int collidesOnX = xmin <= plXMax && xmax >= plXMin;
+            int collidesOnY = ymin <= plYMax && ymax >= plYMin;
+            int collidesOnZ = xmin <= plXMax && xmax >= plXMin;
+            
+            collides = collidesOnX && collidesOnY && collidesOnZ;
+        }
+        
+        if (collides)
         {
             BMark_MarkPlayer(pln, playerMark, time);
         }
