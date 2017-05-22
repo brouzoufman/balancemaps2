@@ -1,6 +1,14 @@
 map TESTMAP "test map"
 {
-    music = "D_STALKS"
-    sky1  = "SKY1"
+	music = "D_STALKS"
+	sky1  = "SKY1"
 	AllowRespawn
+}
+
+map HEX01 "I sure love timing puzzles"
+{
+	music = ""
+	sky1  = "SKY3"
+	AllowRespawn
+	UsePlayerStartZ 
 }
