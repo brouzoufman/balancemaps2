@@ -11,7 +11,7 @@ actor CacodemonBall_Trap: CacodemonBall
     States
     {
       Death:
-        "----" A 0 ACS_NamedExecuteWithResult("BDeath_MarkPlayer_Projectile", 175, AAPTR_TRACER)
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_TRACER)
         goto Super::Death
     }
 }
@@ -62,7 +62,7 @@ actor GravelordRevenantTracer: RevenantTracer
     States
     {
       Death:
-        "----" A 0 ACS_NamedExecuteWithResult("BDeath_MarkPlayer_Projectile", 175, AAPTR_MASTER)
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_MASTER)
         goto Super::Death
     }
 }

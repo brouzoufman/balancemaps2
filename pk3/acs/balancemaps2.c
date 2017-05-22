@@ -8,8 +8,23 @@ int BMaps_RanEnter[PLAYERMAX];
 
 #include "constants.h"
 #include "deathtracker.h"
+#include "deathmarks.h"
 #include "ghostswitch.h"
 #include "returnPoints.h"
+
+script "BMaps_Open" open
+{
+    while (true)
+    {
+        for (int i = 0; i < PLAYERMAX; i++)
+        {
+            if (PlayerInGame(i)) { BMark_PruneMarks(i); }
+        }
+        
+        Delay(1);
+    }
+}
+
 
 script "BMaps_Enter" enter
 {
@@ -62,6 +77,7 @@ script "BMaps_Disconnect" (int pln) disconnect
 {    
     BDeath_Disassociate(pln);
     BReturn_UnsetDefaultPoint(pln);
+    BMark_ClearMarks(pln);
     BMaps_RanEnter[pln] = false;
 }
 
@@ -72,6 +88,7 @@ script "BMaps_Death" death
     int pln   = PlayerNumber();
     int myTID = ActivatorTID();
     int killerPln = -1;
+    int i;
     
     // First, check our direct killer
     if (SetActivatorToTarget(0))
@@ -90,16 +107,20 @@ script "BMaps_Death" death
     }
     
     
-    // Now check if a projectile or whatever marked us for death
-    SetActivator(myTID);
-    markedBy = CheckInventory("MarkedForDeath") - 1;
-    if (markedBy > -1) { ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, markedBy); }
+    // Now check who marked us for death
+    int markCount = BMark_PlayerMarkCount[pln];
+    for (i = 0; i < markCount; i++)
+    {
+        killerPln = BMark_PlayerMarks[pln][i][0];
+        ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);
+    }
+
+    BMark_ClearMarks(pln);
     
     
     // Then find active sector marks
-    int markCount = BDeath_FindSectorMarks(0);
-    
-    for (int i = 0; i < markCount; i++)
+    markCount = BDeath_FindSectorMarks(0);
+    for (i = 0; i < markCount; i++)
     {
         killerPln = BDeath_CheckResult_Player(i);
         ACS_NamedExecuteWithResult("BMaps_HandleKilledBy", pln, killerPln);

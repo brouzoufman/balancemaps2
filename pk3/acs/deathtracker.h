@@ -4,7 +4,6 @@ int BDeath_MarkedSectors[BDEATH_MAXMARKEDSECTORS][3];
 int BDeath_MarkCount = 0;
 
 
-
 function int BDeath_GetDeaths(int pln)
 {
     return BDeath_AccumulatedDeaths[pln];
@@ -210,35 +209,4 @@ script "BDeath_UnmarkThing" (int tid)
 {
     TakeActorInventory(tid, "MarkedByPlayer", 0x7FFFFFFF);
     TakeActorInventory(tid, "AlreadyMarked",  0x7FFFFFFF);
-}
-
-
-
-// This is for marking a player for death from a projectile
-script "BDeath_MarkPlayer_Projectile" (int time, int ptr)
-{
-    int myTID = defaultTID(-1);
-    
-    if (!SetActivator(0, AAPTR_TARGET)) { terminate; }
-    int playerMark = CheckInventory("MarkedByPlayer") - 1;
-    if (playerMark < 0) { terminate; }
-    
-    if (!SetActivator(myTID, ptr)) { terminate; }
-    GiveInventory("DeathMarkTracker", 1);
-    int trackerNum = CheckInventory("DeathMarkTracker");
-    
-    TakeInventory("MarkedForDeath", 0x7FFFFFFF);
-    GiveInventory("MarkedForDeath", playerMark+1);
-    
-    // If anything else marks this guy for death, stop
-    for (int i = 0; i < time; i++)
-    {
-        if (CheckInventory("DeathMarkTracker") != trackerNum) { terminate; }
-        if (isDead(0)) { break; }
-        
-        Delay(1);
-    }
-    
-    TakeInventory("MarkedForDeath",   0x7FFFFFFF);
-    TakeInventory("DeathMarkTracker", 0x7FFFFFFF);
 }
