@@ -6,7 +6,7 @@
 int BMaps_PlayerTIDs[PLAYERMAX];
 int BMaps_TIDUpdater[PLAYERMAX];
 int BMaps_RanEnter[PLAYERMAX];
-int BMaps_SpawnTic[PLAYERMAX] = {-1};
+int BMaps_SpawnTic[PLAYERMAX];
 
 #include "constants.h"
 #include "deathtracker.h"
@@ -43,7 +43,7 @@ script "BMaps_Enter" enter
         BReturn_ReturnToPoint(true);
     }
     
-    BMaps_SpawnTic[pln] = Timer();
+    if (!isDead(0)) { BMaps_SpawnTic[pln] = Timer() + 1; }
     
     while (true)
     {
@@ -81,7 +81,7 @@ script "BMaps_Respawn" respawn
     int pln = PlayerNumber();
     if (!BMaps_RanEnter[pln]) { ACS_NamedExecuteWithResult("BMaps_Enter"); }
     
-    BMaps_SpawnTic[pln] = Timer();
+    if (!isDead(0)) { BMaps_SpawnTic[pln] = Timer() + 1; }
     ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
     BReturn_ReturnToPoint(true);
 }
@@ -92,7 +92,7 @@ script "BMaps_Disconnect" (int pln) disconnect
     BReturn_UnsetDefaultPoint(pln);
     BMark_ClearMarks(pln);
     BMaps_RanEnter[pln] = false;
-    BMaps_SpawnTic[pln] = -1;
+    BMaps_SpawnTic[pln] = 0;
 }
 
 int BMaps_WhoKilledMe[PLAYERMAX];
@@ -109,10 +109,14 @@ script "BMaps_Death" death
     int i;
     
     // This is specifically so instant deaths (aka telefrags) don't count.
-    if (BMaps_SpawnTic[pln] <= Timer())
-    {
-        terminate;
-    }
+    int spawnTic = BMaps_SpawnTic[pln] - 1;
+    Log(s:"spawnTic for player ", d:pln, s:": ", d:spawnTic);
+    if (spawnTic < 0 || spawnTic >= Timer()) { terminate; }
+    
+    // Now that we're dead, make future deaths until next respawn script run ineligible.
+    // There is a difference between "next respawn" and "next respawn script run",
+    // and there really shouldn't be.
+    BMaps_SpawnTic[pln] = 0;
     
     for (i = 0; i < PLAYERMAX; i++) { BMaps_WhoKilledMe[i] = false; }
     
