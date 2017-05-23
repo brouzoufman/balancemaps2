@@ -30,6 +30,7 @@ script "BMaps_Open" open
 
 script "BMaps_Enter" enter
 {
+    GiveInventory("NoLongerNoDamage", 1);
     int pln = PlayerNumber();
     ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
     BMaps_RanEnter[pln] = true;
@@ -78,6 +79,7 @@ script "BMaps_Enter" enter
 
 script "BMaps_Respawn" respawn
 {
+    GiveInventory("NoLongerNoDamage", 1);
     int pln = PlayerNumber();
     if (!BMaps_RanEnter[pln]) { ACS_NamedExecuteWithResult("BMaps_Enter"); }
     
