@@ -4,7 +4,9 @@
 #include "commonFuncs.h"
 
 int BMaps_PlayerTIDs[PLAYERMAX];
+int BMaps_TIDUpdater[PLAYERMAX];
 int BMaps_RanEnter[PLAYERMAX];
+int BMaps_SpawnTic[PLAYERMAX];
 
 #include "constants.h"
 #include "deathtracker.h"
@@ -29,6 +31,7 @@ script "BMaps_Open" open
 script "BMaps_Enter" enter
 {
     int pln = PlayerNumber();
+    ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
     BMaps_RanEnter[pln] = true;
     
     BDeath_SetDeaths(pln, 0);
@@ -40,9 +43,10 @@ script "BMaps_Enter" enter
         BReturn_ReturnToPoint(true);
     }
     
+    if (!isDead(0)) { BMaps_SpawnTic[pln] = Timer() + 1; }
+    
     while (true)
     {
-        BMaps_PlayerTIDs[pln] = defaultTID(-1);
         
         if (!isDead(0))
         {
@@ -75,8 +79,10 @@ script "BMaps_Enter" enter
 script "BMaps_Respawn" respawn
 {
     int pln = PlayerNumber();
-    if (!BMaps_RanEnter[pln]) { ACS_ExecuteWithResult("BMaps_Enter"); }
+    if (!BMaps_RanEnter[pln]) { ACS_NamedExecuteWithResult("BMaps_Enter"); }
     
+    if (!isDead(0)) { BMaps_SpawnTic[pln] = Timer() + 1; }
+    ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
     BReturn_ReturnToPoint(true);
 }
 
@@ -86,16 +92,31 @@ script "BMaps_Disconnect" (int pln) disconnect
     BReturn_UnsetDefaultPoint(pln);
     BMark_ClearMarks(pln);
     BMaps_RanEnter[pln] = false;
+    BMaps_SpawnTic[pln] = 0;
 }
 
 int BMaps_WhoKilledMe[PLAYERMAX];
 
 script "BMaps_Death" death
 {
+    // If you get telefragged, death scripts can run before enter/respawn scripts.
+    //  This is retarded, but we *need* player TIDs to be set properly.
+    ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
+    
     int pln   = PlayerNumber();
     int myTID = ActivatorTID();
     int killerPln = -1;
     int i;
+    
+    // This is specifically so instant deaths (aka telefrags) don't count.
+    int spawnTic = BMaps_SpawnTic[pln] - 1;
+    Log(s:"spawnTic for player ", d:pln, s:": ", d:spawnTic);
+    if (spawnTic < 0 || spawnTic >= Timer()) { terminate; }
+    
+    // Now that we're dead, make future deaths until next respawn script run ineligible.
+    // There is a difference between "next respawn" and "next respawn script run",
+    // and there really shouldn't be.
+    BMaps_SpawnTic[pln] = 0;
     
     for (i = 0; i < PLAYERMAX; i++) { BMaps_WhoKilledMe[i] = false; }
     
@@ -109,6 +130,13 @@ script "BMaps_Death" death
         {
             int markedBy = CheckInventory("MarkedByPlayer") - 1;
             if (markedBy > -1) { killerPln = markedBy; }
+        }
+        else
+        {
+            // I'm slapping this stupid fucking thing everywhere
+            //  because for some reason telefragging happens before
+            //  any scripts can run
+            ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
         }
         
         if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
@@ -173,13 +201,19 @@ script "BMaps_HandleKilledBy" (int killedPln, int killerPln)
     // ... and only live players can have their body stolen.
     if (CheckActorInventory(killedTID, "GhostSwitchActivator")) { terminate; }
     
-    SetActivator(killedTID);
-    ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
+    // I really shouldn't need this
+    if (killedTID != 0)
+    {
+        SetActivator(killedTID);
+        ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
+    }
     
-    SetActivator(killerTID);
-    ACS_NamedExecuteWithResult("BMaps_RewardKill", killedPln);
+    if (killerTID != 0)
+    {
+        SetActivator(killerTID);
+        ACS_NamedExecuteWithResult("BMaps_RewardKill", killedPln);
+    }
 }
-
 
 script "BMaps_BecomeGhost" (int killerPln)
 {
@@ -217,6 +251,18 @@ script "BMaps_RewardKill" (int killedPln)
     
 }
 
+
+script "BMaps_UpdatePlayerTID" (void)
+{
+    int pln    = PlayerNumber();
+    int myLock = ++BMaps_TIDUpdater[pln];
+    
+    while (BMaps_TIDUpdater[pln] == myLock)
+    {
+        BMaps_PlayerTIDs[pln] = defaultTID(-1);
+        Delay(1);
+    }
+}
 
 script "BMaps_GetPlayerTID" (int pln)
 {
