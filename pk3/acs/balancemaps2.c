@@ -4,6 +4,7 @@
 #include "commonFuncs.h"
 
 int BMaps_PlayerTIDs[PLAYERMAX];
+int BMaps_TIDUpdater[PLAYERMAX];
 int BMaps_RanEnter[PLAYERMAX];
 
 #include "constants.h"
@@ -29,6 +30,7 @@ script "BMaps_Open" open
 script "BMaps_Enter" enter
 {
     int pln = PlayerNumber();
+    ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
     BMaps_RanEnter[pln] = true;
     
     BDeath_SetDeaths(pln, 0);
@@ -40,9 +42,9 @@ script "BMaps_Enter" enter
         BReturn_ReturnToPoint(true);
     }
     
+    
     while (true)
     {
-        BMaps_PlayerTIDs[pln] = defaultTID(-1);
         
         if (!isDead(0))
         {
@@ -77,6 +79,7 @@ script "BMaps_Respawn" respawn
     int pln = PlayerNumber();
     if (!BMaps_RanEnter[pln]) { ACS_ExecuteWithResult("BMaps_Enter"); }
     
+    ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
     BReturn_ReturnToPoint(true);
 }
 
@@ -92,6 +95,10 @@ int BMaps_WhoKilledMe[PLAYERMAX];
 
 script "BMaps_Death" death
 {
+    // If you get telefragged, death scripts can run before enter/respawn scripts.
+    //  This is retarded, but we *need* player TIDs to be set properly.
+    ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
+    
     int pln   = PlayerNumber();
     int myTID = ActivatorTID();
     int killerPln = -1;
@@ -109,6 +116,13 @@ script "BMaps_Death" death
         {
             int markedBy = CheckInventory("MarkedByPlayer") - 1;
             if (markedBy > -1) { killerPln = markedBy; }
+        }
+        else
+        {
+            // I'm slapping this stupid fucking thing everywhere
+            //  because for some reason telefragging happens before
+            //  any scripts can run
+            ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
         }
         
         if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
@@ -173,13 +187,19 @@ script "BMaps_HandleKilledBy" (int killedPln, int killerPln)
     // ... and only live players can have their body stolen.
     if (CheckActorInventory(killedTID, "GhostSwitchActivator")) { terminate; }
     
-    SetActivator(killedTID);
-    ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
+    // I really shouldn't need this
+    if (killedTID != 0)
+    {
+        SetActivator(killedTID);
+        ACS_NamedExecuteWithResult("BMaps_BecomeGhost", killerPln);
+    }
     
-    SetActivator(killerTID);
-    ACS_NamedExecuteWithResult("BMaps_RewardKill", killedPln);
+    if (killerTID != 0)
+    {
+        SetActivator(killerTID);
+        ACS_NamedExecuteWithResult("BMaps_RewardKill", killedPln);
+    }
 }
-
 
 script "BMaps_BecomeGhost" (int killerPln)
 {
@@ -217,6 +237,18 @@ script "BMaps_RewardKill" (int killedPln)
     
 }
 
+
+script "BMaps_UpdatePlayerTID" (void)
+{
+    int pln    = PlayerNumber();
+    int myLock = ++BMaps_TIDUpdater[pln];
+    
+    while (BMaps_TIDUpdater[pln] == myLock)
+    {
+        BMaps_PlayerTIDs[pln] = defaultTID(-1);
+        Delay(1);
+    }
+}
 
 script "BMaps_GetPlayerTID" (int pln)
 {
