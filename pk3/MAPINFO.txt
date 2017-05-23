@@ -19,4 +19,6 @@ map MAP02 "The Funhouse"
     music = "D_IN_CIT"
     sky1  = "SKY1"
     smoothlighting
+    vertwallshade  = 8
+    horizwallshade = -8
 }
