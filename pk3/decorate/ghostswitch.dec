@@ -39,6 +39,11 @@ actor GhostSwitch 27501
     }
 }
 
+actor GhostSwitch_Red: GhostSwitch 27503
+{
+    Translation "192:207=169:191"
+}
+
 
 actor SectorMarkCheck
 {

@@ -216,3 +216,10 @@ script "BMaps_RewardKill" (int killedPln)
     BReturn_ReturnToPoint(false);
     
 }
+
+
+script "BMaps_GetPlayerTID" (int pln)
+{
+    if (PlayerInGame(pln)) { SetResultValue(BMaps_PlayerTIDs[pln]); }
+    else { SetResultValue(-1); }
+}
