@@ -233,15 +233,10 @@ function int magnitudeTwo(int x, int y)
     return sqrt(x*x + y*y);
 }
 
+// This used to do more, but now VectorLength has obsoleted it
 function int magnitudeTwo_f(int x, int y)
 {
-    int len, ang;
-
-    ang = VectorAngle(x, y);
-    if (((ang + 0.125) % 0.5) > 0.25) { len = FixedDiv(y, sin(ang)); }
-    else { len = FixedDiv(x, cos(ang)); }
-
-    return len;
+    return VectorLength(x, y);
 }
 
 function int magnitudeThree(int x, int y, int z)
@@ -249,25 +244,16 @@ function int magnitudeThree(int x, int y, int z)
     return sqrt(x*x + y*y + z*z);
 }
 
+// This used to do more, but now VectorLength has obsoleted it
 function int magnitudeThree_f(int x, int y, int z)
 {
-    int len, ang;
-
-    ang = VectorAngle(x, y);
-    if (((ang + 0.125) % 0.5) > 0.25) { len = FixedDiv(y, sin(ang)); }
-    else { len = FixedDiv(x, cos(ang)); }
-
-    ang = VectorAngle(len, z);
-    if (((ang + 0.125) % 0.5) > 0.25) { len = FixedDiv(z, sin(ang)); }
-    else { len = FixedDiv(len, cos(ang)); }
-
-    return len;
+    return VectorLength(VectorLength(x, y), z);
 }
 
 // All the arguments are to be fixed-point
 function int quad(int a, int b, int c, int y)
 {
-    return FixedMul(a, FixedMul(y, y)) + FixedMul(b, y) + c + y;
+    return FixedMul(a, FixedMul(y, y)) + FixedMul(b, y) + c;
 }
 
 function void AddAmmoCapacity(int type, int add)

@@ -14,8 +14,11 @@ map TESTMAP "test map"
     sky1  = "SKY1"
 }
 
-map MAP02 "Ben's Stronghold"
+map MAP02 "The Funhouse"
 {
-    music = "D_DDTBLU"
+    music = "D_IN_CIT"
     sky1  = "SKY1"
+    smoothlighting
+    vertwallshade  = 8
+    horizwallshade = -8
 }

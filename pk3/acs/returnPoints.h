@@ -256,7 +256,7 @@ function int BReturn_TeleportToDefault(int tid, int pln, int nofog, int nohook)
         Log(s:"\cqDEBUG: \cddefault point id: ", d:hookedID, s:" (-1 pre-hook)");
     }
     
-    if (hookedID > 0 && hookedID < BReturn_PointCount)
+    if (hookedID > -1 && hookedID < BReturn_PointCount)
     {
         return BReturn_TeleportToPoint(tid, hookedID, nofog, true);
     }

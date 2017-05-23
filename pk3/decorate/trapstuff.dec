@@ -66,3 +66,24 @@ actor GravelordRevenantTracer: RevenantTracer
         goto Super::Death
     }
 }
+
+actor ExplosionTrap
+{
+    Projectile
+    Speed 0
+    
+    RenderStyle Add
+    +NOINTERACTION
+    
+    States
+    {
+      Spawn:
+        BAL1 A 0 bright
+        MISL B 0 bright A_PlaySound("weapons/rocklx")
+        MISL B 0 bright A_Explode(128, 104)
+        MISL B 4 bright ACS_NamedExecuteWithResult("BMark_MarkInRadius", 140, 128, true)
+        MISL C 6 bright
+        MISL D 8 bright
+        stop
+    }
+}

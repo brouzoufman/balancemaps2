@@ -34,8 +34,11 @@ script "BMaps_Enter" enter
     BDeath_SetDeaths(pln, 0);
     BReturn_SetupDefaultPoint(pln);
     
-    // This is mainly in case there's a teleport hook
-    BReturn_ReturnToPoint(true);
+    // In case there's a teleport hook that reacts to point -1
+    if (ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", -1) != -1)
+    {
+        BReturn_ReturnToPoint(true);
+    }
     
     while (true)
     {
@@ -59,6 +62,10 @@ script "BMaps_Enter" enter
                     GiveInventory("SpookyGhostUnmorphPackage", 1);
                 }
             }
+        }
+        else
+        {
+            BMark_ClearMarks(pln);
         }
         
         Delay(1);
@@ -107,6 +114,7 @@ script "BMaps_Death" death
         if (killerPln >= 0) { BMaps_WhoKilledMe[killerPln] = true; }
     }
     
+    SetActivator(myTID);
     
     // Now check who marked us for death
     int markCount = BMark_PlayerMarkCount[pln];
@@ -207,4 +215,11 @@ script "BMaps_RewardKill" (int killedPln)
     BReturn_SetPlayerPoint(pln, theirPoint);
     BReturn_ReturnToPoint(false);
     
+}
+
+
+script "BMaps_GetPlayerTID" (int pln)
+{
+    if (PlayerInGame(pln)) { SetResultValue(BMaps_PlayerTIDs[pln]); }
+    else { SetResultValue(-1); }
 }
