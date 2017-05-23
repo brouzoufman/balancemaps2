@@ -5,4 +5,17 @@ actor BalancePlayer: DoomPlayer
     
     +NOTELEFRAG
     DamageFactor "Telefrag", 0
+    
+    // This gets removed in ENTER/RESPAWN scripts
+    +NODAMAGE
+}
+
+actor NoLongerNoDamage: Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_ChangeFlag("NODAMAGE", false)
+        stop
+    }
 }
