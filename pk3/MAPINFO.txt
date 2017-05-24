@@ -10,8 +10,16 @@ defaultmap
 
 map TESTMAP "test map"
 {
-    music = "D_STALKS"
-    sky1  = "SKY1"
+	music = "D_STALKS"
+	sky1  = "SKY1"
+}
+
+map HEX01 "THE WAGGLENING"
+{
+	music = "BESTSONG"
+	sky1  = "SKY4"
+	AllowRespawn
+	UsePlayerStartZ
 }
 
 map MAP02 "The Funhouse"

@@ -55,7 +55,7 @@ script "BMaps_Enter" enter
             {
                 if (!CheckActorClass(0, "SpookyGhost"))
                 {
-                    MorphActor(0, "SpookyGhost", "", 0x7FFFFFFF, MRF_TRANSFERTRANSLATION | MRF_FULLHEALTH, "NoFog", "NoFog");
+                    MorphActor(0, "SpookyGhost", "", 0x7FFFFFFF, MRF_FULLHEALTH, "NoFog", "NoFog");
                     GiveInventory("SpookyGhostMorphPackage", 1);
                 }
             }
