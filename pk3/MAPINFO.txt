@@ -3,11 +3,15 @@ gameinfo
     playerclasses = "BalancePlayer"
 }
 
+defaultmap
+{
+    AllowRespawn
+}
+
 map TESTMAP "test map"
 {
 	music = "D_STALKS"
-	sky1  = "SKY1"
-	AllowRespawn
+	sky1  = "SKY1
 }
 
 map HEX01 "I sure love timing puzzles"
@@ -16,4 +20,17 @@ map HEX01 "I sure love timing puzzles"
 	sky1  = "SKY3"
 	AllowRespawn
 	UsePlayerStartZ 
+=======
+    music = "D_STALKS"
+    sky1  = "SKY1"
+}
+
+map MAP02 "The Funhouse"
+{
+    music = "D_IN_CIT"
+    sky1  = "SKY1"
+    smoothlighting
+    vertwallshade  = 8
+    horizwallshade = -8
+>>>>>>> origin/master
 }

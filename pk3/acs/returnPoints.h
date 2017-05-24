@@ -1,5 +1,5 @@
 int BReturn_PlayerPoints[PLAYERMAX]    = {-1};
-int BReturn_DefaultPoint[PLAYERMAX][6] = {{0}}; // Used when you *must* teleport but have no return point
+int BReturn_DefaultPoint[PLAYERMAX][7] = {{0}}; // Used when you *must* teleport but have no return point
 int BReturn_PointData[BRETURN_MAXPOINTS][2];
 int BReturn_PointCount = 0;
 
@@ -92,6 +92,7 @@ function int BReturn_SetupDefaultPoint(int pln)
 {
     if(pln < 0 || pln >= PLAYERMAX) return 0;
     
+    Log(s:"\cqDEBUG:\cd setting default point for player ", d:pln);
     BReturn_PlayerPoints[pln] = -1;
     BReturn_DefaultPoint[pln][0] = GetActorX(0);
     BReturn_DefaultPoint[pln][1] = GetActorY(0);
@@ -108,6 +109,7 @@ function int BReturn_UnsetDefaultPoint(int pln)
 {
     if(pln < 0 || pln >= PLAYERMAX) return 0;
     
+    Log(s:"\cqDEBUG:\cd unsetting default point for player ", d:pln);
     BReturn_PlayerPoints[pln] = -1;
     BReturn_DefaultPoint[pln][0] = 0;
     BReturn_DefaultPoint[pln][1] = 0;
@@ -254,7 +256,7 @@ function int BReturn_TeleportToDefault(int tid, int pln, int nofog, int nohook)
         Log(s:"\cqDEBUG: \cddefault point id: ", d:hookedID, s:" (-1 pre-hook)");
     }
     
-    if (hookedID > 0 && hookedID < BReturn_PointCount)
+    if (hookedID > -1 && hookedID < BReturn_PointCount)
     {
         return BReturn_TeleportToPoint(tid, hookedID, nofog, true);
     }
