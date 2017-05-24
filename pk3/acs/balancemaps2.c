@@ -89,10 +89,14 @@ script "BMaps_Respawn" respawn
 }
 
 script "BMaps_Disconnect" (int pln) disconnect
-{    
+{
     BDeath_Disassociate(pln);
-    BReturn_UnsetDefaultPoint(pln);
     BMark_ClearMarks(pln);
+    
+    // somehow disconnect can run AFTER enter if a player leaves and rejoins in the same tic
+    if (PlayerInGame(pln)) { terminate; }
+    
+    BReturn_UnsetDefaultPoint(pln);
     BMaps_RanEnter[pln] = false;
     BMaps_SpawnTic[pln] = 0;
 }
