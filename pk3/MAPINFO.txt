@@ -19,8 +19,7 @@ map HEX01 "THE WAGGLENING"
 	music = "BESTSONG"
 	sky1  = "SKY4"
 	AllowRespawn
-	UsePlayerStartZ 
-=======
+	UsePlayerStartZ
     music = "D_STALKS"
     sky1  = "SKY1"
 }
@@ -32,5 +31,4 @@ map MAP02 "The Funhouse"
     smoothlighting
     vertwallshade  = 8
     horizwallshade = -8
->>>>>>> origin/master
 }
