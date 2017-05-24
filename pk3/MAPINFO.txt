@@ -10,10 +10,10 @@ map TESTMAP "test map"
 	AllowRespawn
 }
 
-map HEX01 "I sure love timing puzzles"
+map HEX01 "THE WAGGLENING"
 {
-	music = ""
-	sky1  = "SKY3"
+	music = "BESTSONG"
+	sky1  = "SKY4"
 	AllowRespawn
 	UsePlayerStartZ 
 }
