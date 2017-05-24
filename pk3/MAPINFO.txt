@@ -3,11 +3,15 @@ gameinfo
     playerclasses = "BalancePlayer"
 }
 
+defaultmap
+{
+    AllowRespawn
+}
+
 map TESTMAP "test map"
 {
 	music = "D_STALKS"
 	sky1  = "SKY1"
-	AllowRespawn
 }
 
 map HEX01 "THE WAGGLENING"
@@ -16,4 +20,13 @@ map HEX01 "THE WAGGLENING"
 	sky1  = "SKY4"
 	AllowRespawn
 	UsePlayerStartZ 
+}
+
+map MAP02 "The Funhouse"
+{
+    music = "D_IN_CIT"
+    sky1  = "SKY1"
+    smoothlighting
+    vertwallshade  = 8
+    horizwallshade = -8
 }

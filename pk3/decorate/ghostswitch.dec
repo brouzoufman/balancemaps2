@@ -8,6 +8,7 @@ actor GhostSwitch 27501
     Alpha 0.5
     
     +NOINTERACTION
+    VisibleToPlayerClass "SpookyGhost"
     
     States
     {
@@ -36,6 +37,11 @@ actor GhostSwitch 27501
         PLSE A 0 A_TakeInventory("GhostSwitchDormant")
         goto SwitchOff
     }
+}
+
+actor GhostSwitch_Red: GhostSwitch 27503
+{
+    Translation "192:207=169:191"
 }
 
 
