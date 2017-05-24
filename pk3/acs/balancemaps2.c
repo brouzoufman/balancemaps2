@@ -53,7 +53,7 @@ script "BMaps_Enter" enter
         {
             if (CheckInventory("ShouldBeGhost"))
             {
-                if (!CheckInventory("GhostSwitchActivator"))
+                if (!CheckActorClass(0, "SpookyGhost"))
                 {
                     MorphActor(0, "SpookyGhost", "", 0x7FFFFFFF, MRF_TRANSFERTRANSLATION | MRF_FULLHEALTH, "NoFog", "NoFog");
                     GiveInventory("SpookyGhostMorphPackage", 1);
@@ -61,7 +61,7 @@ script "BMaps_Enter" enter
             }
             else
             {
-                if (CheckInventory("GhostSwitchActivator"))
+                if (CheckActorClass(0, "SpookyGhost"))
                 {
                     UnmorphActor(0, true);
                     GiveInventory("SpookyGhostUnmorphPackage", 1);
