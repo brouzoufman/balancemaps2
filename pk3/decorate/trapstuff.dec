@@ -3,6 +3,11 @@ actor TinierRocket: Rocket
     Radius 4
 }
 
+actor TinierDoomImpBall: DoomImpBall
+{
+    Radius 4
+}
+
 
 actor CacodemonBall_Trap: CacodemonBall
 {
