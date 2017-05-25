@@ -9,6 +9,11 @@ function int BDeath_GetDeaths(int pln)
     return BDeath_AccumulatedDeaths[pln];
 }
 
+function int BDeath_LivesLeft(int pln)
+{
+    return BDEATH_MAXDEATHS - BDeath_AccumulatedDeaths[pln];
+}
+
 function void BDeath_SetDeaths(int pln, int i)
 {
     BDeath_AccumulatedDeaths[pln] = i;
@@ -18,6 +23,7 @@ function void BDeath_ModDeaths(int pln, int i)
 {
     BDeath_AccumulatedDeaths[pln] += i;
 }
+
 
 
 function void BDeath_MarkSector(int id, int tag, int pln)

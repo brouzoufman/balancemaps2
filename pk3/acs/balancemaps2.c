@@ -8,20 +8,69 @@ int BMaps_TIDUpdater[PLAYERMAX];
 int BMaps_RanEnter[PLAYERMAX];
 int BMaps_SpawnTic[PLAYERMAX];
 
+int BMaps_GameLost;
+
 #include "constants.h"
 #include "deathtracker.h"
 #include "deathmarks.h"
 #include "ghostswitch.h"
 #include "returnPoints.h"
 
+function int IsZand(void)
+{
+    SetDBEntry("balancemaps", "iszand", 18271);
+    return GetDBEntry("balancemaps", "iszand") == 18271;
+}
+
 script "BMaps_Open" open
 {
+    if (IsZand())
+    {
+        if (!GetCVar("survival"))
+        {
+            if (ConsolePlayerNumber() == -1)
+            {
+                Log(s:"For future reference, the game type must be survival for balancemaps to work");
+            }
+            
+            HudMessage(s:"Game type isn't survival. Restarting map...";
+                HUDMSG_PLAIN, 1000, CR_WHITE, 1.5, 0.75, 5.0);
+            
+            Delay(105);
+            ConsoleCommand("survival 1");
+            ConsoleCommand("sv_maxlives 4");
+            ConsoleCommand(StrParam(s:"map ", n:PRINTNAME_LEVEL));
+        }
+    }
+    
     while (true)
     {
+        int playersAlive = 0;
+        
         for (int i = 0; i < PLAYERMAX; i++)
         {
-            if (PlayerInGame(i)) { BMark_PruneMarks(i); }
+            if (!PlayerInGame(i)) { continue; }
+            BMark_PruneMarks(i);
+            
+            // bots are retarded and can't do maps, so just assume they're dead
+            //  even if they aren't they might as well be
+            //
+            // this is mainly to protect against idiot hosts who add bots,
+            //  clogging up the game for as long as it takes for the bots to
+            //  commit suicide by running off a cliff or something
+            if (PlayerIsBot(i)) { continue; }
+            
+            int playerTID = BMaps_PlayerTIDs[i];
+            if (playerTID == -1)
+            {
+                playersAlive += 1; // he probably spawned this tic and
+                continue;          //  his enter script hasn't run yet
+            }
+            
+            if (!CheckActorInventory(playerTID, "ShouldBeGhost")) { playersAlive += 1; }
         }
+        
+        //BMaps_GameLost = (PlayerCount() > 0) && (playersAlive == 0);
         
         Delay(1);
     }
@@ -48,12 +97,30 @@ script "BMaps_Enter" enter
     
     while (true)
     {
+        int dead      = isDead(0);
+        int livesLeft_survival = GetPlayerLivesLeft(pln);
+        int livesLeft_core     = BDeath_LivesLeft(pln);
         
-        if (!isDead(0))
+        if (dead) { BMark_ClearMarks(pln); }
+        
+        if (BMaps_GameLost)
         {
+            if (!dead) { Thing_Damage(0, 0, "None"); }
+            SetPlayerLivesLeft(pln, 0);
+            Delay(1);
+            continue;
+        }
+        
+        if (!dead)
+        {
+            if (livesLeft_survival != livesLeft_core)
+            {
+                SetPlayerLivesLeft(pln, livesLeft_core);
+            }
+            
             if (CheckInventory("ShouldBeGhost"))
             {
-                if (!CheckActorClass(0, "SpookyGhost"))
+                if (!dead && !CheckActorClass(0, "SpookyGhost"))
                 {
                     MorphActor(0, "SpookyGhost", "", 0x7FFFFFFF, MRF_FULLHEALTH, "NoFog", "NoFog");
                     GiveInventory("SpookyGhostMorphPackage", 1);
@@ -61,16 +128,12 @@ script "BMaps_Enter" enter
             }
             else
             {
-                if (CheckActorClass(0, "SpookyGhost"))
+                if (!dead && CheckActorClass(0, "SpookyGhost"))
                 {
                     UnmorphActor(0, true);
                     GiveInventory("SpookyGhostUnmorphPackage", 1);
                 }
             }
-        }
-        else
-        {
-            BMark_ClearMarks(pln);
         }
         
         Delay(1);
@@ -97,8 +160,9 @@ script "BMaps_Disconnect" (int pln) disconnect
     if (PlayerInGame(pln)) { terminate; }
     
     BReturn_UnsetDefaultPoint(pln);
-    BMaps_RanEnter[pln] = false;
-    BMaps_SpawnTic[pln] = 0;
+    BMaps_RanEnter[pln]   = false;
+    BMaps_SpawnTic[pln]   = 0;
+    BMaps_PlayerTIDs[pln] = -1;
 }
 
 int BMaps_WhoKilledMe[PLAYERMAX];
@@ -185,7 +249,7 @@ script "BMaps_Death" death
     SetActivator(myTID);
     BDeath_ModDeaths(pln, 1);
     
-    if (BDeath_GetDeaths(pln) >= BDEATH_MAXDEATHS)
+    if (BDeath_LivesLeft(pln) <= 0)
     {
         ACS_NamedExecuteWithResult("BMaps_BecomeGhost", -1);
     }
@@ -263,7 +327,7 @@ script "BMaps_UpdatePlayerTID" (void)
     int pln    = PlayerNumber();
     int myLock = ++BMaps_TIDUpdater[pln];
     
-    while (BMaps_TIDUpdater[pln] == myLock)
+    while (PlayerInGame(pln) && BMaps_TIDUpdater[pln] == myLock)
     {
         BMaps_PlayerTIDs[pln] = defaultTID(-1);
         Delay(1);
