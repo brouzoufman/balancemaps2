@@ -87,11 +87,7 @@ script "BMaps_Enter" enter
     BDeath_SetDeaths(pln, 0);
     BReturn_SetupDefaultPoint(pln);
     
-    // In case there's a teleport hook that reacts to point -1
-    if (ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", -1) != -1)
-    {
-        BReturn_ReturnToPoint(true);
-    }
+    BReturn_ReturnToPoint(true, false);
     
     if (!isDead(0)) { BMaps_SpawnTic[pln] = Timer() + 1; }
     
@@ -148,7 +144,7 @@ script "BMaps_Respawn" respawn
     
     if (!isDead(0)) { BMaps_SpawnTic[pln] = Timer() + 1; }
     ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
-    BReturn_ReturnToPoint(true);
+    BReturn_ReturnToPoint(true, false);
 }
 
 script "BMaps_Disconnect" (int pln) disconnect
@@ -317,7 +313,7 @@ script "BMaps_RewardKill" (int killedPln)
     
     int theirPoint = BReturn_GetPlayerPoint(killedPln);
     BReturn_SetPlayerPoint(pln, theirPoint);
-    BReturn_ReturnToPoint(false);
+    BReturn_ReturnToPoint(false, true);
     
 }
 

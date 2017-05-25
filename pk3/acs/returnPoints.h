@@ -284,15 +284,21 @@ function int BReturn_TeleportToDefault(int tid, int pln, int nofog, int nohook)
 }
 
 
-function int BReturn_ReturnToPoint(int nofog)
+function int BReturn_ReturnToPoint(int nofog, int usedefault)
 {
     int pln = PlayerNumber();
     if (pln < 0) { return -1; }
     
     int playerPoint = BReturn_GetPlayerPoint(pln);
-    if (playerPoint == -1) { return BReturn_TeleportToDefault(0, pln, nofog, false); }
+    int hookedPoint = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", playerPoint);
     
-    return BReturn_TeleportToPoint(0, playerPoint, nofog, false);
+    if (hookedPoint == -1)
+    {
+        if (usedefault) { return BReturn_TeleportToDefault(0, pln, nofog, true); }
+        else { return false; }
+    }
+    
+    return BReturn_TeleportToPoint(0, hookedPoint, nofog, true);
 }
 
 
@@ -320,4 +326,4 @@ script "BReturn_MaxOrder" (void) { SetResultValue(BReturn_MaxOrder()); }
 
 script "BReturn_TeleportToPoint"   (int tid, int pointID, int nofog) { SetResultValue(BReturn_TeleportToPoint(tid, pointID, nofog, false)); }
 script "BReturn_TeleportToDefault" (int tid, int pln,     int nofog) { SetResultValue(BReturn_TeleportToDefault(tid, pln, nofog, false)); }
-script "BReturn_ReturnToPoint"     (int nofog)                       { SetResultValue(BReturn_ReturnToPoint(nofog)); }
+script "BReturn_ReturnToPoint"     (int nofog, int usedefault)       { SetResultValue(BReturn_ReturnToPoint(nofog, usedefault)); }
