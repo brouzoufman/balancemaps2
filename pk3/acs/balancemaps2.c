@@ -43,6 +43,7 @@ script "BMaps_Open" open
             Delay(105);
             ConsoleCommand("survival 1");
             ConsoleCommand("sv_maxlives 4");
+            ConsoleCommand("sv_unblockplayers 1");
             ConsoleCommand(StrParam(s:"map ", n:PRINTNAME_LEVEL));
         }
     }
@@ -100,7 +101,7 @@ script "BMaps_Enter" enter
     
     while (true)
     {
-        int dead      = isDead(0);
+        int dead               = isDead(0);
         int livesLeft_survival = GetPlayerLivesLeft(pln);
         int livesLeft_core     = BDeath_LivesLeft(pln);
         
@@ -108,7 +109,7 @@ script "BMaps_Enter" enter
         
         if (BMaps_GameLost)
         {
-            if (!dead) { Thing_Damage(0, 0, "None"); }
+            if (!dead) { GiveInventory("PleaseJustFuckingDie", 1); }
             SetPlayerLivesLeft(pln, 0);
             Delay(1);
             continue;
@@ -125,7 +126,7 @@ script "BMaps_Enter" enter
             {
                 if (!dead && !CheckActorClass(0, "SpookyGhost"))
                 {
-                    MorphActor(0, "SpookyGhost", "", 0x7FFFFFFF, MRF_FULLHEALTH, "NoFog", "NoFog");
+                    MorphActor(0, "SpookyGhost", "", 0x7FFFFFFF, MRF_FULLHEALTH | MRF_WHENINVULNERABLE, "NoFog", "NoFog");
                     GiveInventory("SpookyGhostMorphPackage", 1);
                 }
             }
@@ -143,6 +144,7 @@ script "BMaps_Enter" enter
     }
 }
 
+
 script "BMaps_Respawn" respawn
 {
     GiveInventory("NoLongerNoDamage", 1);
@@ -153,6 +155,7 @@ script "BMaps_Respawn" respawn
     ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
     BReturn_ReturnToPoint(true, false);
 }
+
 
 script "BMaps_Disconnect" (int pln) disconnect
 {
@@ -167,6 +170,8 @@ script "BMaps_Disconnect" (int pln) disconnect
     BMaps_SpawnTic[pln]   = 0;
     BMaps_PlayerTIDs[pln] = -1;
 }
+
+
 
 int BMaps_WhoKilledMe[PLAYERMAX];
 
