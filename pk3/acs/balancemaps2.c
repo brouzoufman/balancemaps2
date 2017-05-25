@@ -8,12 +8,10 @@ int BMaps_TIDUpdater[PLAYERMAX];
 int BMaps_RanEnter[PLAYERMAX];
 int BMaps_SpawnTic[PLAYERMAX];
 
-int BMaps_OpenRun;
-int BMaps_GameLost;
-
 #include "constants.h"
 #include "deathtracker.h"
 #include "deathmarks.h"
+#include "gamestate.h"
 #include "ghostswitch.h"
 #include "returnPoints.h"
 
@@ -25,9 +23,6 @@ function int IsZand(void)
 
 script "BMaps_Open" open
 {
-    if (BMaps_OpenRun) { terminate; }
-    BMaps_OpenRun = true;
-    
     if (IsZand())
     {
         if (!GetCVar("survival"))
@@ -47,46 +42,11 @@ script "BMaps_Open" open
             ConsoleCommand(StrParam(s:"map ", n:PRINTNAME_LEVEL));
         }
     }
-    
-    while (true)
-    {
-        int playersAlive = 0;
-        
-        for (int i = 0; i < PLAYERMAX; i++)
-        {
-            if (!PlayerInGame(i)) { continue; }
-            BMark_PruneMarks(i);
-            
-            // bots are retarded and can't do maps, so just assume they're dead
-            //  even if they aren't they might as well be
-            //
-            // this is mainly to protect against idiot hosts who add bots,
-            //  clogging up the game for as long as it takes for the bots to
-            //  commit suicide by running off a cliff or something
-            if (PlayerIsBot(i)) { continue; }
-            
-            int playerTID = BMaps_PlayerTIDs[i];
-            if (playerTID == -1)
-            {
-                playersAlive += 1; // he probably spawned this tic and
-                continue;          //  his enter script hasn't run yet
-            }
-            
-            if (!CheckActorInventory(playerTID, "ShouldBeGhost")) { playersAlive += 1; }
-        }
-        
-        BMaps_GameLost = (PlayerCount() > 0) && (playersAlive == 0);
-        
-        Delay(1);
-    }
 }
 
 
 script "BMaps_Enter" enter
 {
-    // This really shouldn't be necessary, but it is on survival
-    if (!BMaps_OpenRun) { ACS_NamedExecuteWithResult("BMaps_Open"); }
-    
     GiveInventory("NoLongerNoDamage", 1);
     int pln = PlayerNumber();
     ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
@@ -106,6 +66,8 @@ script "BMaps_Enter" enter
         int livesLeft_core     = BDeath_LivesLeft(pln);
         
         if (dead) { BMark_ClearMarks(pln); }
+        
+        BMaps_CheckGameState();
         
         if (BMaps_GameLost)
         {
