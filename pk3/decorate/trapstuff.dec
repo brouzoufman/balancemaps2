@@ -102,3 +102,27 @@ actor ExplosionTrap
         stop
     }
 }
+
+actor FunhouseExplosion
+{
+    Projectile
+    Speed 0
+    DamageType "FunhouseExplosion"
+    
+    Scale 2.5
+    RenderStyle Add
+    +NOINTERACTION
+    
+    States
+    {
+      Spawn:
+        BAL1 A 0 bright
+        MISL B 0 bright A_PlaySound("weapons/rocklx")
+        MISL B 0 bright A_Explode(75, 80, 1, 0, 60)
+        MISL B 0 bright A_RadiusThrust(9000, 96)
+        MISL B 4 bright ACS_NamedExecuteWithResult("BMark_MarkInRadius", 140, 128, true)
+        MISL C 6 bright
+        MISL D 8 bright
+        stop
+    }
+}

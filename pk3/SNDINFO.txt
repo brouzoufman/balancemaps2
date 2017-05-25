@@ -1,3 +1,5 @@
+balancemaps/nosound         dsempty
+
 mapsound/illusorywall       sounds/illusorywall.mp3
 mapsound/slamdry            sounds/slam_dry.ogg
 mapsound/slamwet            sounds/slam_wet.ogg
