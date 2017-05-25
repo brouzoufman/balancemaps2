@@ -1,1 +1,1 @@
-server bool bmaps_debug_botscount = false;
+server noarchive bool bmaps_debug_nolosecondition = false;
