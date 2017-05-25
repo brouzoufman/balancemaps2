@@ -70,7 +70,7 @@ script "BMaps_Open" open
             if (!CheckActorInventory(playerTID, "ShouldBeGhost")) { playersAlive += 1; }
         }
         
-        //BMaps_GameLost = (PlayerCount() > 0) && (playersAlive == 0);
+        BMaps_GameLost = (PlayerCount() > 0) && (playersAlive == 0);
         
         Delay(1);
     }
