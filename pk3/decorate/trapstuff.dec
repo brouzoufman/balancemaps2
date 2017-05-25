@@ -6,12 +6,22 @@ actor TinierRocket: Rocket
 actor TinierDoomImpBall: DoomImpBall
 {
     Radius 4
+    SeeSound "imp/attack_quiet"
+    DeathSound "imp/shotx_quiet"
 }
 
+actor QuietDoomImpBall: DoomImpBall
+{
+    SeeSound "imp/attack_quiet"
+    DeathSound "imp/shotx_quiet"
+}
 
 actor CacodemonBall_Trap: CacodemonBall
 {
     +HITTRACER
+    
+    SeeSound "imp/attack_quiet"
+    DeathSound "imp/shotx_quiet"
     
     States
     {
