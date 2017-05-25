@@ -67,9 +67,9 @@ script "BMaps_Enter" enter
         
         if (dead) { BMark_ClearMarks(pln); }
         
-        BMaps_CheckGameState();
+        BState_CheckGameState();
         
-        if (BMaps_GameLost)
+        if (BState_GameLost)
         {
             if (!dead) { GiveInventory("PleaseJustFuckingDie", 1); }
             SetPlayerLivesLeft(pln, 0);

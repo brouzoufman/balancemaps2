@@ -1,10 +1,10 @@
-int BMaps_LastGameStateCheck = -1;
-int BMaps_GameLost;
+int BState_LastGameStateCheck = -1;
+int BState_GameLost;
 
-function void BMaps_CheckGameState(void)
+function void BState_CheckGameState(void)
 {
-    if (BMaps_LastGameStateCheck >= Timer()) { return; }
-    BMaps_LastGameStateCheck = Timer();
+    if (BState_LastGameStateCheck >= Timer()) { return; }
+    BState_LastGameStateCheck = Timer();
     
     int playersAlive = 0;
         
@@ -31,5 +31,5 @@ function void BMaps_CheckGameState(void)
         if (!CheckActorInventory(playerTID, "ShouldBeGhost")) { playersAlive += 1; }
     }
     
-    BMaps_GameLost = (PlayerCount() > 0) && (playersAlive == 0);
+    BState_GameLost = (PlayerCount() > 0) && (playersAlive == 0);
 }
