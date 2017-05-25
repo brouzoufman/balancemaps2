@@ -8,6 +8,7 @@ int BMaps_TIDUpdater[PLAYERMAX];
 int BMaps_RanEnter[PLAYERMAX];
 int BMaps_SpawnTic[PLAYERMAX];
 
+int BMaps_OpenRun;
 int BMaps_GameLost;
 
 #include "constants.h"
@@ -24,6 +25,9 @@ function int IsZand(void)
 
 script "BMaps_Open" open
 {
+    if (BMaps_OpenRun) { terminate; }
+    BMaps_OpenRun = true;
+    
     if (IsZand())
     {
         if (!GetCVar("survival"))
@@ -79,6 +83,9 @@ script "BMaps_Open" open
 
 script "BMaps_Enter" enter
 {
+    // This really shouldn't be necessary, but it is on survival
+    if (!BMaps_OpenRun) { ACS_NamedExecuteWithResult("BMaps_Open"); }
+    
     GiveInventory("NoLongerNoDamage", 1);
     int pln = PlayerNumber();
     ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
