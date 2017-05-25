@@ -42,6 +42,7 @@ script "BMaps_Open" open
             
             Delay(105);
             ConsoleCommand("survival 1");
+			ConsoleCommand("sv_unblockplayers 1");
             ConsoleCommand("sv_maxlives 4");
             ConsoleCommand(StrParam(s:"map ", n:PRINTNAME_LEVEL));
         }
@@ -108,7 +109,10 @@ script "BMaps_Enter" enter
         
         if (BMaps_GameLost)
         {
-            if (!dead) { Thing_Damage(0, 0, "None"); }
+			//make sure they actually die- they will repeatedly die on spawn until map restarts, though
+			UnmorphActor(0, true);
+			GiveInventory("SpookyGhostUnmorphPackage", 1);
+			DamageThing(0);
             SetPlayerLivesLeft(pln, 0);
             Delay(1);
             continue;
