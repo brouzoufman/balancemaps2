@@ -19,7 +19,7 @@ function void BState_CheckGameState(void)
         // this is mainly to protect against idiot hosts who add bots,
         //  clogging up the game for as long as it takes for the bots to
         //  commit suicide by running off a cliff or something
-        if (PlayerIsBot(i)) { continue; }
+        if (PlayerIsBot(i) && !GetCVar("bmaps_debug_botscount")) { continue; }
         
         int playerTID = BMaps_PlayerTIDs[i];
         if (playerTID == -1)
