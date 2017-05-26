@@ -292,6 +292,8 @@ function int BReturn_ReturnToPoint(int nofog, int usedefault)
     int playerPoint = BReturn_GetPlayerPoint(pln);
     int hookedPoint = ACS_NamedExecuteWithResult("BReturn_TeleportPointHook", playerPoint);
     
+    Log(s:"\cqDEBUG: \cdplayer ", d:pln, s:" returning to point: ", d:hookedPoint, s:" (", d:playerPoint, s:" pre-hook)");
+    
     if (hookedPoint == -1)
     {
         if (usedefault) { return BReturn_TeleportToDefault(0, pln, nofog, true); }
