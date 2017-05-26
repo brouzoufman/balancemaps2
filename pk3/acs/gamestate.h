@@ -6,7 +6,7 @@ function void BState_CheckGameState(void)
     if (BState_LastGameStateCheck >= Timer()) { return; }
     BState_LastGameStateCheck = Timer();
     
-    if  (GetCVar("bmaps_debug_nolosecondition")) { BState_GameLost = false; return; }
+    if  (GetCVar("bmaps_debug_neverlose")) { BState_GameLost = false; return; }
     
     int playersAlive = 0;
         
@@ -21,7 +21,7 @@ function void BState_CheckGameState(void)
         // this is mainly to protect against idiot hosts who add bots,
         //  clogging up the game for as long as it takes for the bots to
         //  commit suicide by running off a cliff or something
-        if (PlayerIsBot(i)) { continue; }
+        if (PlayerIsBot(i) && !GetCVar("bmaps_debug_botscount")) { continue; }
         
         int playerTID = BMaps_PlayerTIDs[i];
         if (playerTID == -1)
@@ -30,7 +30,8 @@ function void BState_CheckGameState(void)
             continue;          //  his enter script hasn't run yet
         }
         
-        if (!CheckActorInventory(playerTID, "ShouldBeGhost")) { playersAlive += 1; }
+        if (!CheckActorInventory(playerTID, "ShouldBeGhost")
+          || CheckActorInventory(playerTID, "WillBeHuman"))   { playersAlive += 1; }
     }
     
     BState_GameLost = (PlayerCount() > 0) && (playersAlive == 0);

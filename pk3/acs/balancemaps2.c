@@ -279,16 +279,16 @@ script "BMaps_BecomeGhost" (int killerPln)
 
 script "BMaps_RewardKill" (int killedPln)
 {
-    if (CheckInventory("WillBeGhost") || !CheckInventory("ShouldBeGhost")) { terminate; }
+    if (CheckInventory("WillBeHuman") || !CheckInventory("ShouldBeGhost")) { terminate; }
     
-    GiveInventory("WillBeGhost", 1);
+    GiveInventory("WillBeHuman", 1);
     Print(s:"You killed ", n:killedPln+1, s:"\c- and claimed their physical form.\n\nNow take their place, and steal their glory.");
     Delay(70);
     
     int pln = PlayerNumber();
     BDeath_SetDeaths(pln, 0);
     TakeInventory("ShouldBeGhost", 0x7FFFFFFF);
-    TakeInventory("WillBeGhost",   0x7FFFFFFF);
+    TakeInventory("WillBeHuman",   0x7FFFFFFF);
     
     int theirPoint = BReturn_GetPlayerPoint(killedPln);
     BReturn_SetPlayerPoint(pln, theirPoint);

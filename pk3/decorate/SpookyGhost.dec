@@ -1,7 +1,7 @@
 //the morph for dead players, and the item to trigger traps
 
 actor ShouldBeGhost: Boolean {}
-actor WillBeGhost:   Boolean {}
+actor WillBeHuman:   Boolean {}
 
 //to-do: 
 //  actually make sprites, maybe have particles coming out the bottom because it'd look neat
