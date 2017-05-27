@@ -26,6 +26,7 @@ script "BMaps_Open" open
     if (IsZand())
     {
 		if (!GetCVar("sv_unblockplayers")) { ConsoleCommand("sv_unblockplayers 1"); }
+		if (!GetCVar("sv_norespawninvul")) { ConsoleCommand("sv_norespawninvul 1"); }
 		if (!GetCVar("sv_forcerespawn"))
         {
 			ConsoleCommand("sv_forcerespawn 1");
