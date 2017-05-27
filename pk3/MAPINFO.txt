@@ -24,7 +24,7 @@ map HEX01 "THE WAGGLENING"
 
 map MAP02 "The Funhouse"
 {
-    music = "D_IN_CIT"
+    music = "M_MAP02"
     sky1  = "SKY1"
     smoothlighting
     vertwallshade  = 8
