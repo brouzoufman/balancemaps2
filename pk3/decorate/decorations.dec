@@ -13,3 +13,8 @@ actor BaronStatue 29501
         stop
     }
 }
+
+actor FloatColumn : Column 29502
+{
+	+NOGRAVITY
+}
