@@ -25,11 +25,13 @@ script "BMaps_Open" open
 {
     if (IsZand())
     {
-		if (!GetCVar("unblockplayers")) ConsoleCommand("sv_unblockplayers 1");
-		if (!GetCVar("forcerespawn")) {
+		if (!GetCVar("sv_unblockplayers")) { ConsoleCommand("sv_unblockplayers 1"); }
+		if (!GetCVar("sv_forcerespawn"))
+        {
 			ConsoleCommand("sv_forcerespawn 1");
 			ConsoleCommand("alwaysapplydmflags 1");
 		}
+        
         if (!GetCVar("survival"))
         {
             if (ConsolePlayerNumber() == -1)
