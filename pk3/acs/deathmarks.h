@@ -48,17 +48,26 @@ function void BMark_ClearMarks(int pln)
 }
 
 
+script "BMark_GetPlayerMark" (void)
+{
+    int ret = CheckInventory("MarkedByPlayer") - 1;
+    if (ret > -1) { SetResultValue(ret); terminate; }
+    
+    if (!SetActivator(0, AAPTR_TARGET)) { SetResultValue(-1); terminate; }
+    
+    ret = PlayerNumber();
+    if (ret < 0) { ret = CheckInventory("MarkedByPlayer") - 1; }
+    
+    SetResultValue(ret);
+}
+
+
 script "BMark_MarkFromProjectile" (int time, int ptr)
 {
-    int myTID = defaultTID(-1);
-    
-    if (!SetActivator(0, AAPTR_TARGET)) { terminate; }
-    
-    int playerMark = PlayerNumber();
-    if (playerMark < 0) { playerMark = CheckInventory("MarkedByPlayer") - 1; }
+    int playerMark = ACS_NamedExecuteWithResult("BMark_GetPlayerMark");
     if (playerMark < 0) { terminate; }
     
-    if (!SetActivator(myTID, ptr)) { terminate; }
+    if (!SetActivator(0, ptr)) { terminate; }
     
     int myPln = PlayerNumber();
     if (myPln < 0) { terminate; }
@@ -75,10 +84,7 @@ script "BMark_MarkInRadius" (int time, int radius, int sphere)
     int myY = GetActorY(0);
     int myZ = GetActorZ(0);
     
-    if (!SetActivator(0, AAPTR_TARGET)) { terminate; }
-    
-    int playerMark = PlayerNumber();
-    if (playerMark < 0) { playerMark = CheckInventory("MarkedByPlayer") - 1; }
+    int playerMark = ACS_NamedExecuteWithResult("BMark_GetPlayerMark");
     if (playerMark < 0) { terminate; }
     
     int xmin = safeAdd(myX, -radius), xmax = safeAdd(myX, radius);
@@ -139,7 +145,7 @@ script "BMark_MarkInRadius" (int time, int radius, int sphere)
 
 script "BMark_DealDamage" (int damage, int ptr)
 {
-    int playerMark = CheckInventory("MarkedByPlayer") - 1;
+    int playerMark = ACS_NamedExecuteWithResult("BMark_GetPlayerMark");
     str damageType = GetActorProperty(0, APROP_DamageType);
     int myTID      = defaultTID(-1);
     
