@@ -1,6 +1,20 @@
 actor TinierRocket: Rocket
 {
     Radius 4
+    Damage 0
+    
+    +HITTRACER
+    Obituary "%o took a rocket to the face."
+    
+    States
+    {
+      Death:
+        MISL B 0        ACS_NamedExecuteWithResult("BMark_DealDamage", random(1,8)*20, AAPTR_TRACER)
+        MISL B 8 bright A_Explode(128, 128, XF_HURTSOURCE | XF_NOTMISSILE)
+        MISL C 6 bright
+        MISL D 4 bright
+        stop
+    }
 }
 
 actor TinierDoomImpBall: DoomImpBall
