@@ -14,7 +14,7 @@ actor GhostSwitch 27501
     {
       Spawn:
         PLSE A 0 bright
-        PLSE A 0 bright ACS_NamedExecuteWithResult("BSwitch_Register", args[0], args[1])
+        PLSE A 0 bright ACS_NamedExecuteWithResult("BSwitch_Register", args[0], args[1], args[2])
         goto Idle
       
       Idle:

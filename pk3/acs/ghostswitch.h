@@ -1,9 +1,9 @@
 
-int BSwitch_RegisteredSwitches[BSWITCH_MAXSWITCHES][3];
+int BSwitch_RegisteredSwitches[BSWITCH_MAXSWITCHES][4];
 int BSwitch_SwitchCount = 0;
 
 
-script "BSwitch_Register" (int scriptNum, int cooldownTics)
+script "BSwitch_Register" (int scriptNum, int cooldownTics, int arg)
 {
     int myTID   = defaultTID(-1);
     int myIndex = BSwitch_SwitchCount;
@@ -17,9 +17,10 @@ script "BSwitch_Register" (int scriptNum, int cooldownTics)
     BSwitch_RegisteredSwitches[myIndex][0] = myTID;
     BSwitch_RegisteredSwitches[myIndex][1] = scriptNum;
     BSwitch_RegisteredSwitches[myIndex][2] = cooldownTics;
+    BSwitch_RegisteredSwitches[myIndex][3] = arg;
     BSwitch_SwitchCount++;
     
-    Log(s:"\cqDEBUG:\cd Registered ghost switch ", d:myIndex, s:" (TID: ", d: myTID, s:", script: ", d:scriptNum, s:", cooldown: ", d:cooldownTics, s:")");
+    Log(s:"\cqDEBUG:\cd Registered ghost switch ", d:myIndex, s:" (TID: ", d: myTID, s:", script: ", d:scriptNum, s:", cooldown: ", d:cooldownTics, s:", arg: ", d:arg, s:")");
 }
 
 
@@ -101,9 +102,10 @@ script "BSwitch_ActivateSwitch" (int switchID, int pln)
     int switchTID      = BSwitch_RegisteredSwitches[switchID][0];
     int switchScript   = BSwitch_RegisteredSwitches[switchID][1];
     int switchCooldown = BSwitch_RegisteredSwitches[switchID][2];
+    int switchArg      = BSwitch_RegisteredSwitches[switchID][3];
     
     // Turn on trap
-    ACS_ExecuteWithResult(switchScript, true, switchID, pln);
+    ACS_ExecuteWithResult(switchScript, true, switchID, pln, switchArg);
     GiveActorInventory(switchTID, "GhostSwitchOnCooldown", 1);
     SetActorState(switchTID, "SwitchOn");
     
@@ -115,7 +117,7 @@ script "BSwitch_ActivateSwitch" (int switchID, int pln)
     }
     
     // Turn off trap
-    ACS_ExecuteWithResult(switchScript, false, switchID, pln);
+    ACS_ExecuteWithResult(switchScript, false, switchID, pln, switchArg);
     TakeActorInventory(switchTID, "GhostSwitchOnCooldown", 0x7FFFFFFF);
     SetActorState(switchTID, "SwitchOff");
 }
