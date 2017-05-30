@@ -247,6 +247,9 @@ script "BMaps_HandleKilledBy" (int killedPln, int killerPln)
     int killedTID = BMaps_PlayerTIDs[killedPln];
     int killerTID = BMaps_PlayerTIDs[killerPln];
     
+    // This'll handle if the killer left
+    if (killedTID == -1 || killerTID == -1) { terminate; }
+    
     // Only people without a body of their own can steal one...
     if (!CheckActorInventory(killerTID, "ShouldBeGhost")) { terminate; }
     
