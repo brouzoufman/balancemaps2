@@ -1,6 +1,20 @@
 actor TinierRocket: Rocket
 {
     Radius 4
+    Damage 0
+    
+    +HITTRACER
+    Obituary "%o took a rocket to the face."
+    
+    States
+    {
+      Death:
+        MISL B 0        ACS_NamedExecuteWithResult("BMark_DealDamage", random(1,8)*20, AAPTR_TRACER)
+        MISL B 8 bright A_Explode(128, 128, XF_HURTSOURCE | XF_NOTMISSILE)
+        MISL C 6 bright
+        MISL D 4 bright
+        stop
+    }
 }
 
 actor TinierDoomImpBall: DoomImpBall
@@ -23,9 +37,12 @@ actor CacodemonBall_Trap: CacodemonBall
     SeeSound "imp/attack_quiet"
     DeathSound "imp/shotx_quiet"
     
+    Damage 0
+    
     States
     {
       Death:
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", random(1,8)*5, AAPTR_TRACER)
         "----" A 0 ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_TRACER)
         goto Super::Death
     }
@@ -95,7 +112,7 @@ actor ExplosionTrap
       Spawn:
         BAL1 A 0 bright
         MISL B 0 bright A_PlaySound("weapons/rocklx")
-        MISL B 0 bright A_Explode(128, 104)
+        MISL B 0 bright A_Explode(128, 104, XF_HURTSOURCE | XF_NOTMISSILE)
         MISL B 4 bright ACS_NamedExecuteWithResult("BMark_MarkInRadius", 140, 128, true)
         MISL C 6 bright
         MISL D 8 bright
@@ -118,7 +135,7 @@ actor FunhouseExplosion
       Spawn:
         BAL1 A 0 bright
         MISL B 0 bright A_PlaySound("weapons/rocklx")
-        MISL B 0 bright A_Explode(75, 96, 1, 0, 72)
+        MISL B 0 bright A_Explode(75, 96, XF_HURTSOURCE | XF_NOTMISSILE, 0, 72)
         MISL B 0 bright A_RadiusThrust(9000, 96)
         MISL B 4 bright ACS_NamedExecuteWithResult("BMark_MarkInRadius", 140, 128, true)
         MISL C 6 bright

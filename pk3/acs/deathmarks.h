@@ -16,6 +16,15 @@ function int BMark_MarkPlayer(int markedPln, int markingPln, int time)
     return myIndex;
 }
 
+
+function void BMark_RemoveMark(int pln, int index)
+{
+    int top = --BMark_PlayerMarkCount[pln];
+    BMark_PlayerMarks[pln][index][0] = BMark_PlayerMarks[pln][top][0];
+    BMark_PlayerMarks[pln][index][1] = BMark_PlayerMarks[pln][top][1];
+}
+
+
 function void BMark_PruneMarks(int pln)
 {
     int curTime = Timer();
@@ -27,13 +36,11 @@ function void BMark_PruneMarks(int pln)
         
         if (!PlayerInGame(markingPln) || curTime > indexTime)
         {
-            int top = --BMark_PlayerMarkCount[pln];
-            BMark_PlayerMarks[pln][i][0] = BMark_PlayerMarks[pln][top][0];
-            BMark_PlayerMarks[pln][i][1] = BMark_PlayerMarks[pln][top][1];
-            i--;
+            BMark_RemoveMark(pln, i--);
         }
     }
 }
+
 
 function void BMark_ClearMarks(int pln)
 {
@@ -41,17 +48,26 @@ function void BMark_ClearMarks(int pln)
 }
 
 
+script "BMark_GetPlayerMark" (void)
+{
+    int ret = CheckInventory("MarkedByPlayer") - 1;
+    if (ret > -1) { SetResultValue(ret); terminate; }
+    
+    if (!SetActivator(0, AAPTR_TARGET)) { SetResultValue(-1); terminate; }
+    
+    ret = PlayerNumber();
+    if (ret < 0) { ret = CheckInventory("MarkedByPlayer") - 1; }
+    
+    SetResultValue(ret);
+}
+
+
 script "BMark_MarkFromProjectile" (int time, int ptr)
 {
-    int myTID = defaultTID(-1);
-    
-    if (!SetActivator(0, AAPTR_TARGET)) { terminate; }
-    
-    int playerMark = PlayerNumber();
-    if (playerMark < 0) { playerMark = CheckInventory("MarkedByPlayer") - 1; }
+    int playerMark = ACS_NamedExecuteWithResult("BMark_GetPlayerMark");
     if (playerMark < 0) { terminate; }
     
-    if (!SetActivator(myTID, ptr)) { terminate; }
+    if (!SetActivator(0, ptr)) { terminate; }
     
     int myPln = PlayerNumber();
     if (myPln < 0) { terminate; }
@@ -68,10 +84,7 @@ script "BMark_MarkInRadius" (int time, int radius, int sphere)
     int myY = GetActorY(0);
     int myZ = GetActorZ(0);
     
-    if (!SetActivator(0, AAPTR_TARGET)) { terminate; }
-    
-    int playerMark = PlayerNumber();
-    if (playerMark < 0) { playerMark = CheckInventory("MarkedByPlayer") - 1; }
+    int playerMark = ACS_NamedExecuteWithResult("BMark_GetPlayerMark");
     if (playerMark < 0) { terminate; }
     
     int xmin = safeAdd(myX, -radius), xmax = safeAdd(myX, radius);
@@ -127,5 +140,28 @@ script "BMark_MarkInRadius" (int time, int radius, int sphere)
         {
             BMark_MarkPlayer(pln, playerMark, time);
         }
+    }
+}
+
+script "BMark_DealDamage" (int damage, int ptr)
+{
+    int playerMark = ACS_NamedExecuteWithResult("BMark_GetPlayerMark");
+    str damageType = GetActorProperty(0, APROP_DamageType);
+    int myTID      = defaultTID(-1);
+    
+    SetActivator(0, ptr);
+    int hisTID = defaultTID(-1);
+    int hisPln = PlayerNumber();
+    SetActivator(myTID);
+    
+    if (playerMark > -1 && hisPln > -1)
+    {
+        int markID = BMark_MarkPlayer(hisPln, playerMark, 0);
+        Thing_Damage2(hisTID, damage, damageType);
+        BMark_RemoveMark(hisPln, markID);
+    }
+    else
+    {
+        Thing_Damage2(hisTID, damage, damageType);
     }
 }
