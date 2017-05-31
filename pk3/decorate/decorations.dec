@@ -17,4 +17,11 @@ actor BaronStatue 29501
 actor FloatColumn : Column 29502
 {
 	+NOGRAVITY
+	Radius 32
+}
+
+actor BigFloatColumn : Column 29503
+{
+	+NOGRAVITY
+	Radius 64
 }
