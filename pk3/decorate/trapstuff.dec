@@ -9,7 +9,8 @@ actor TinierRocket: Rocket
     States
     {
       Death:
-        MISL B 0        ACS_NamedExecuteWithResult("BMark_DealDamage", random(1,8)*20, AAPTR_TRACER)
+        MISL B 0 bright ACS_NamedExecuteWithResult("BMark_DealDamage", 90, AAPTR_TRACER)
+        MISL B 0 bright ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_TRACER)
         MISL B 8 bright A_Explode(128, 128, XF_HURTSOURCE | XF_NOTMISSILE)
         MISL C 6 bright
         MISL D 4 bright
@@ -22,12 +23,16 @@ actor TinierDoomImpBall: DoomImpBall
     Radius 4
     SeeSound "imp/attack_quiet"
     DeathSound "imp/shotx_quiet"
+    
+    Damage (20)
 }
 
 actor QuietDoomImpBall: DoomImpBall
 {
     SeeSound "imp/attack_quiet"
     DeathSound "imp/shotx_quiet"
+    
+    Damage (20)
 }
 
 actor CacodemonBall_Trap: CacodemonBall
@@ -42,7 +47,7 @@ actor CacodemonBall_Trap: CacodemonBall
     States
     {
       Death:
-        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", random(1,8)*5, AAPTR_TRACER)
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", 30, AAPTR_TRACER)
         "----" A 0 ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_TRACER)
         goto Super::Death
     }
@@ -90,6 +95,7 @@ actor GravelordRevenant: Revenant
 actor GravelordRevenantTracer: RevenantTracer
 {
     +HITMASTER
+    Damage (45)
     
     States
     {
@@ -140,6 +146,29 @@ actor FunhouseExplosion
         MISL B 4 bright ACS_NamedExecuteWithResult("BMark_MarkInRadius", 140, 128, true)
         MISL C 6 bright
         MISL D 8 bright
+        stop
+    }
+}
+
+actor FunhouseWallBreak 28501
+{
+    DamageFactor "None", 0
+    DamageFactor "Normal", 0
+    DamageFactor "FunhouseExplosion", 1
+    
+    +NOGRAVITY
+    +DONTFALL
+    +VULNERABLE
+    Health 10
+    
+    States
+    {
+      Spawn:
+        TNT1 A -1
+        loop
+      
+      Death:
+        TNT1 A 0 A_CallSpecial(special, args[0], args[1], args[2], args[3], args[4])
         stop
     }
 }

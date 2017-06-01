@@ -143,15 +143,16 @@ script "BMark_MarkInRadius" (int time, int radius, int sphere)
     }
 }
 
-script "BMark_DealDamage" (int damage, int ptr)
+script "BMark_DealDamage" (int damage, int ptr, int nothrust)
 {
     int playerMark = ACS_NamedExecuteWithResult("BMark_GetPlayerMark");
     str damageType = GetActorProperty(0, APROP_DamageType);
     int myTID      = defaultTID(-1);
     
-    SetActivator(0, ptr);
-    int hisTID = defaultTID(-1);
-    int hisPln = PlayerNumber();
+    if (!SetActivator(0, ptr)) { terminate; }
+    int hisTID  = defaultTID(-1);
+    int hisMass = GetActorProperty(0, APROP_Mass);
+    int hisPln  = PlayerNumber();
     SetActivator(myTID);
     
     if (playerMark > -1 && hisPln > -1)
@@ -163,5 +164,19 @@ script "BMark_DealDamage" (int damage, int ptr)
     else
     {
         Thing_Damage2(hisTID, damage, damageType);
+    }
+    
+    if (!(nothrust || GetActorProperty(hisTID, APROP_Invulnerable)))
+    {
+        int thrustAngle = VectorAngle(GetActorX(hisTID) - GetActorX(myTID),
+                                      GetActorY(hisTID) - GetActorY(myTID));
+        
+        int thrustPower = (itof(damage) * 5) / hisMass;
+        
+        Log(s:"power: ", f:thrustPower, s:" (mass: ", d:hisMass, s:")");
+        
+        SetActorVelocity(hisTID, FixedMul(thrustPower, cos(thrustAngle)),
+                                 FixedMul(thrustPower, sin(thrustAngle)),
+                                 0, true, true);
     }
 }
