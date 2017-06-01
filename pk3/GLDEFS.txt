@@ -1,0 +1,10 @@
+Glow
+{
+	Flats
+	{
+		LAVA1
+		LAVA2
+		LAVA3
+		LAVA4
+	}
+}
