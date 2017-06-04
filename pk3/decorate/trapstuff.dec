@@ -152,6 +152,11 @@ actor FunhouseExplosion
 
 actor FunhouseWallBreak 28501
 {
+    //$Category "Balancemaps (MAP02)"
+    //$Title "Wall breaker"
+    //$NotAngled
+    //$Color 7
+    
     DamageFactor "None", 0
     DamageFactor "Normal", 0
     DamageFactor "FunhouseExplosion", 1

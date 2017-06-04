@@ -1,5 +1,9 @@
 actor BaronStatue 29501
 {
+    //$Category "Balancemaps (MAP02)"
+    //$Title "Baron statue"
+    //$Color 3
+    
     +SOLID
     Radius 24
     Height 64
