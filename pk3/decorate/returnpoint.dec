@@ -1,5 +1,10 @@
 actor ReturnPoint 27502
 {
+    //$Category "Balancemaps (control)"
+    //$Title "Return point"
+    //$Arg0 "Point order"
+    //$Arg0Tooltip "This is not the point's internal ID.\nUse this number with BReturn_SetMyPoint."
+    //$Color 11
     RenderStyle Add
     Alpha 0.5
     

@@ -3,6 +3,13 @@ actor GhostSwitchDormant: Inventory {}
 
 actor GhostSwitch 27501
 {
+    //$Category "Balancemaps (control)"
+    //$Title "Ghost switch"
+    //$NotAngled
+    //$Arg0 Script number
+    //$Arg1 Cooldown (tics)
+    //$Color 10
+    
     RenderStyle Add
     Scale 2
     Alpha 0.5
@@ -41,6 +48,7 @@ actor GhostSwitch 27501
 
 actor GhostSwitch_Red: GhostSwitch 27503
 {
+    //$Title "Ghost switch (red)"
     Translation "192:207=169:191"
 }
 
