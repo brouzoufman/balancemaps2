@@ -25,6 +25,11 @@ script "BMaps_Open" open
 {
     if (IsZand())
     {
+		if (!GetCVar("unblockplayers")) ConsoleCommand("sv_unblockplayers 1");
+		if (!GetCVar("forcerespawn")) {
+			ConsoleCommand("sv_forcerespawn 1");
+			ConsoleCommand("alwaysapplydmflags 1");
+		}
         if (!GetCVar("survival"))
         {
             if (ConsolePlayerNumber() == -1)
@@ -38,7 +43,6 @@ script "BMaps_Open" open
             Delay(105);
             ConsoleCommand("survival 1");
             ConsoleCommand("sv_maxlives 4");
-            ConsoleCommand("sv_unblockplayers 1");
             ConsoleCommand(StrParam(s:"map ", n:PRINTNAME_LEVEL));
         }
     }
