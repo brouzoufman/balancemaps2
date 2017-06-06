@@ -171,9 +171,7 @@ script "BMark_DealDamage" (int damage, int ptr, int nothrust)
         int thrustAngle = VectorAngle(GetActorX(hisTID) - GetActorX(myTID),
                                       GetActorY(hisTID) - GetActorY(myTID));
         
-        int thrustPower = (itof(damage) * 5) / hisMass;
-        
-        Log(s:"power: ", f:thrustPower, s:" (mass: ", d:hisMass, s:")");
+        int thrustPower = (itof(damage) * 10) / hisMass;
         
         SetActorVelocity(hisTID, FixedMul(thrustPower, cos(thrustAngle)),
                                  FixedMul(thrustPower, sin(thrustAngle)),
