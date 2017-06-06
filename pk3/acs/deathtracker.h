@@ -191,19 +191,20 @@ script "BDeath_UnmarkByID" (int id)
 // Mark the thing, and disassociate if the player leaves
 script "BDeath_MarkThing" (int tid, int pln)
 {
-    TakeActorInventory(tid, "MarkedByPlayer", 0x7FFFFFFF);
-    GiveActorInventory(tid, "MarkedByPlayer", pln+1);
     
-    if (CheckActorInventory(tid, "AlreadyMarked")) { terminate; }
-    GiveActorInventory(tid, "AlreadyMarked", 1);
+    TakeInventoryTID(tid, "MarkedByPlayer", 0x7FFFFFFF);
+    GiveInventoryTID(tid, "MarkedByPlayer", pln+1);
+    
+    if (CheckInventoryTID(tid, "AlreadyMarked")) { terminate; }
+    GiveInventoryTID(tid, "AlreadyMarked", 1);
     
     SetActivator(0);
-    while (IsTIDUsed(tid) && CheckActorInventory(tid, "AlreadyMarked"))
+    while (IsTIDUsed(tid) && CheckInventoryTID(tid, "AlreadyMarked"))
     {
         if (!PlayerInGame(pln))
         {
-            TakeActorInventory(tid, "MarkedByPlayer", 0x7FFFFFFF);
-            TakeActorInventory(tid, "AlreadyMarked",  0x7FFFFFFF);
+            TakeInventoryTID(tid, "MarkedByPlayer", 0x7FFFFFFF);
+            TakeInventoryTID(tid, "AlreadyMarked",  0x7FFFFFFF);
             break;
         }
         
@@ -213,6 +214,6 @@ script "BDeath_MarkThing" (int tid, int pln)
 
 script "BDeath_UnmarkThing" (int tid)
 {
-    TakeActorInventory(tid, "MarkedByPlayer", 0x7FFFFFFF);
-    TakeActorInventory(tid, "AlreadyMarked",  0x7FFFFFFF);
+    TakeInventoryTID(tid, "MarkedByPlayer", 0x7FFFFFFF);
+    TakeInventoryTID(tid, "AlreadyMarked",  0x7FFFFFFF);
 }
