@@ -1112,3 +1112,21 @@ function int TeleportFunctional(int tid, int target, int fog, int nostop)
     Thing_Remove(tpTID);
 	return moved;
 }
+
+function void GiveInventoryTID(int tid, str item, int count)
+{
+    if (tid == 0) { GiveInventory(item, count); }
+    else { GiveActorInventory(tid, item, count); }
+}
+
+function void TakeInventoryTID(int tid, str item, int count)
+{
+    if (tid == 0) { TakeInventory(item, count); }
+    else { TakeActorInventory(tid, item, count); }
+}
+
+function int CheckInventoryTID(int tid, str item)
+{
+    if (tid == 0) { return CheckInventory(item); }
+    return CheckActorInventory(tid, item);
+}
