@@ -161,6 +161,7 @@ actor GhostWeapon: Weapon
 {
     Tag "Ghost"
     +NOALERT
+    +CHEATNOTWEAPON
     
     States
     {
