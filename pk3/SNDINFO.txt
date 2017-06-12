@@ -4,9 +4,12 @@ mapsound/illusorywall       sounds/illusorywall.mp3
 mapsound/slamdry            sounds/slam_dry.ogg
 mapsound/slamwet            sounds/slam_wet.ogg
 mapsound/funhousebounce     sounds/funhouse_jumppad.ogg
+mapsound/spikedown          sounds/spikedown.ogg
+mapsound/spikeslam          sounds/spikeslam.ogg
+mapsound/spikeup            sounds/spikeup.ogg
 
-$attenuation mapsound/slamdry 0.25
-$attenuation mapsound/slamwet 0.05
+$rolloff mapsound/slamdry 1024 3072
+$rolloff mapsound/slamwet 1024 6144
 $limit mapsound/slamdry 0
 $limit mapsound/slamwet 0
 
