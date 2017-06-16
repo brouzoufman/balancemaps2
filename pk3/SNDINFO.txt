@@ -7,6 +7,9 @@ mapsound/funhousebounce     sounds/funhouse_jumppad.ogg
 mapsound/spikedown          sounds/spikedown.ogg
 mapsound/spikeslam          sounds/spikeslam.ogg
 mapsound/spikeup            sounds/spikeup.ogg
+mapsound/waterfall          sounds/current.ogg
+
+$ambient 1 mapsound/waterfall point continuous 1.0
 
 $rolloff mapsound/slamdry 1024 3072
 $rolloff mapsound/slamwet 1024 6144

@@ -35,6 +35,15 @@ actor QuietDoomImpBall: DoomImpBall
     Damage (20)
 }
 
+actor HeavyDoomImpBall: DoomImpBall
+{
+    Scale 1.5
+    Radius 8
+    Height 12
+    
+    Damage (35)
+}
+
 actor CacodemonBall_Trap: CacodemonBall
 {
     +HITTRACER
