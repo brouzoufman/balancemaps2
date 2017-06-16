@@ -143,7 +143,7 @@ script "BMark_MarkInRadius" (int time, int radius, int sphere)
     }
 }
 
-script "BMark_DealDamage" (int damage, int ptr, int nothrust)
+script "BMark_DealDamage" (int damage, int ptr, int nothrust, int thrustmult)
 {
     int playerMark = ACS_NamedExecuteWithResult("BMark_GetPlayerMark");
     str damageType = GetActorProperty(0, APROP_DamageType);
@@ -168,10 +168,12 @@ script "BMark_DealDamage" (int damage, int ptr, int nothrust)
     
     if (!(nothrust || GetActorProperty(hisTID, APROP_Invulnerable)))
     {
+        thrustmult = cond(thrustmult == 0, 10.0, itof(thrustmult) / 10);
+        
         int thrustAngle = VectorAngle(GetActorX(hisTID) - GetActorX(myTID),
                                       GetActorY(hisTID) - GetActorY(myTID));
         
-        int thrustPower = (itof(damage) * 10) / hisMass;
+        int thrustPower = FixedMul(itof(damage), thrustmult) / hisMass;
         
         SetActorVelocity(hisTID, FixedMul(thrustPower, cos(thrustAngle)),
                                  FixedMul(thrustPower, sin(thrustAngle)),
