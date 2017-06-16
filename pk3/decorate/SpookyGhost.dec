@@ -19,6 +19,9 @@ ACTOR SpookyGhost : PlayerPawn
 	Mass 0x7FFFFFFF
     Species "Player"
     
+    Height 8
+    Radius 2
+    
 	+NOSKIN
 	-SOLID
 	-SHOOTABLE
