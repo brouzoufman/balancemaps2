@@ -1,0 +1,55 @@
+script "BMaps_IntroCard" (int title, int author, int difficulty, int dumbquote) clientside
+{
+    SetHudSize(640, 480, true);
+    
+    Delay(18);
+    if (GetCVar("bmaps_cl_notitlecard")
+     || !GetCVar("survival")
+     || GetGameModeState() == GAMESTATE_COUNTDOWN)
+    {
+        terminate;
+    }
+    
+    SetFont("BIGFONT");
+    HudMessage(s:title;
+                HUDMSG_FADEOUT, -500, CR_ORANGE, 320.4, 300.0, 3.0, 1.0);
+                
+    SetFont("SMALLFONT");
+    HudMessage(s:"by ", s:author;
+                HUDMSG_FADEOUT, -501, CR_YELLOW, 320.4, 315.0, 3.0, 1.0);
+    
+    Delay(35);
+    
+    
+    // I don't want to bother with figuring out the timing here, so I'm just gonna print it again
+    SetFont("BIGFONT");
+    HudMessage(s:title;
+                HUDMSG_FADEOUT, -500, CR_ORANGE, 320.4, 300.0, 3.0, 1.0);
+                
+    SetFont("SMALLFONT");
+    HudMessage(s:"by ", s:author;
+                HUDMSG_FADEOUT, -501, CR_YELLOW, 320.4, 315.0, 3.0, 1.0);
+    
+    HudMessage(s:"Difficulty: ", s:difficulty;
+                HUDMSG_FADEOUT, -502, CR_GOLD, 320.4, 330.0, 3.0, 1.0);
+    Delay(35);
+    
+    if (!stringBlank(dumbquote))
+    {
+        SetFont("BIGFONT");
+        HudMessage(s:title;
+                    HUDMSG_FADEOUT, -500, CR_ORANGE, 320.4, 300.0, 2.0, 1.0);
+                    
+        SetFont("SMALLFONT");
+        HudMessage(s:"by ", s:author;
+                    HUDMSG_FADEOUT, -501, CR_YELLOW, 320.4, 315.0, 2.0, 1.0);
+        
+        HudMessage(s:"Difficulty: ", s:difficulty;
+                    HUDMSG_FADEOUT, -502, CR_GOLD, 320.4, 330.0, 2.0, 1.0);
+        
+        int quoteTime = 2.5 + (0.02 * StrLen(dumbquote));
+        
+        HudMessage(s:"\"", s:dumbquote, s:"\"";
+                    HUDMSG_FADEOUT, -503, CR_WHITE, 320.4, 342.0, quoteTime, 1.0);
+    }
+}

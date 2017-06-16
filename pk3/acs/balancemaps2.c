@@ -8,18 +8,19 @@ int BMaps_TIDUpdater[PLAYERMAX];
 int BMaps_RanEnter[PLAYERMAX];
 int BMaps_SpawnTic[PLAYERMAX];
 
+function int IsZand(void)
+{
+    SetDBEntry("balancemaps", "iszand", 18271);
+    return GetDBEntry("balancemaps", "iszand") == 18271;
+}
+
 #include "constants.h"
 #include "deathtracker.h"
 #include "deathmarks.h"
 #include "gamestate.h"
 #include "ghostswitch.h"
 #include "returnPoints.h"
-
-function int IsZand(void)
-{
-    SetDBEntry("balancemaps", "iszand", 18271);
-    return GetDBEntry("balancemaps", "iszand") == 18271;
-}
+#include "mapscripts.h"
 
 script "BMaps_Open" open
 {
