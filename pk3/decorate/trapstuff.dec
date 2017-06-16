@@ -204,13 +204,14 @@ actor GravelordSoul: LostSoul
 actor FunhouseTimedFireball: DoomImpBall
 {
     Health 35
-    Damage (20)
+    Damage (0)
     
     SeeSound   "imp/attack_quiet"
     DeathSound "imp/shotx_quiet"
     Species    "Funhouse"
     
     +THRUSPECIES
+    +HITTRACER
     
     var int user_timer;
     
@@ -254,5 +255,27 @@ actor FunhouseTimedFireball: DoomImpBall
         BAL1 A 0 A_Scream
         BAL1 A 0 A_ChangeFlag("MISSILE", 0)
         goto Death
+    
+      Death:
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", 20, AAPTR_TRACER)
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_TRACER)
+        goto DoomImpBall::Death
+    }
+}
+
+actor FunhouseTimedFireball_Trap: FunhouseTimedFireball
+{
+    States
+    {
+      TimerDone:
+        BAL1 A 0 A_Stop
+        BAL1 A 0 A_Scream
+        BAL1 A 0 A_ChangeFlag("MISSILE", 0)
+        goto Death
+    
+      Death:
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", 20, AAPTR_TRACER, false, 200)
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_TRACER)
+        goto DoomImpBall::Death
     }
 }
