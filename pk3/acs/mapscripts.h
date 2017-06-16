@@ -1,14 +1,13 @@
 script "BMaps_IntroCard" (int title, int author, int difficulty, int dumbquote) clientside
 {
-    SetHudSize(640, 480, true);
-    
-    Delay(18);
-    if (GetCVar("bmaps_cl_notitlecard")
-     || !GetCVar("survival")
-     || GetGameModeState() == GAMESTATE_COUNTDOWN)
+    if (GetCVar("bmaps_cl_notitlecard") || !GetCVar("survival") || GetGameModeState() == GAMESTATE_COUNTDOWN)
     {
         terminate;
     }
+    
+    Delay(18);
+    SetHudSize(640, 480, true);
+    SetHudClipRect(160, 0, 320, 480, 320, false);
     
     SetFont("BIGFONT");
     HudMessage(s:title;
@@ -47,9 +46,9 @@ script "BMaps_IntroCard" (int title, int author, int difficulty, int dumbquote) 
         HudMessage(s:"Difficulty: ", s:difficulty;
                     HUDMSG_FADEOUT, -502, CR_GOLD, 320.4, 330.0, 2.0, 1.0);
         
-        int quoteTime = 2.5 + (0.02 * StrLen(dumbquote));
+        int quoteTime = min(6.5, 2.5 + (0.02 * StrLen(dumbquote)));
         
         HudMessage(s:"\"", s:dumbquote, s:"\"";
-                    HUDMSG_FADEOUT, -503, CR_WHITE, 320.4, 342.0, quoteTime, 1.0);
+                    HUDMSG_FADEOUT, -503, CR_WHITE, 320.4, 338.1, quoteTime, 1.0);
     }
 }
