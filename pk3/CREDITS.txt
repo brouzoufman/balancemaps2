@@ -1,0 +1,6 @@
+MAP02 (The Funhouse):
+- Textures: cc4-tex.wad
+- Music: Fire Hive, by Jimmy
+- Waterfall sound: from Quake 2
+- Spike sounds: from Dark Souls
+- Piston impact sound: stock sound
