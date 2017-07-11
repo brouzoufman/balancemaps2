@@ -35,3 +35,13 @@ map MAP02 "The Funhouse"
     vertwallshade  = 8
     horizwallshade = -8
 }
+
+map MAP03 "rouletti spaghetti"
+{
+	music = "D_RUNNIN"
+}
+
+map MAP04 "K A E R N K"
+{
+	music = "D_STALKS"
+}
