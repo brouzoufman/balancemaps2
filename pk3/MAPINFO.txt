@@ -24,7 +24,7 @@ map HEX01 "THE WAGGLENING"
 
 map MAP01 "Lava Forge"
 {
-    music = "D_RUNNIN"
+	music = "D_RUNNIN"
 }
 
 map MAP02 "The Funhouse"
@@ -44,4 +44,9 @@ map MAP03 "rouletti spaghetti"
 map MAP04 "K A E R N K"
 {
 	music = "D_STALKS"
+}
+
+map MAP05 "Nuke Londo"
+{
+	music = "D_RUNNIN"
 }
