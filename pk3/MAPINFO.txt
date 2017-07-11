@@ -25,6 +25,7 @@ map HEX01 "THE WAGGLENING"
 map MAP01 "Lava Forge"
 {
 	music = "D_RUNNIN"
+	sky1  = "SKY1"
 }
 
 map MAP02 "The Funhouse"
@@ -39,14 +40,17 @@ map MAP02 "The Funhouse"
 map MAP03 "rouletti spaghetti"
 {
 	music = "D_RUNNIN"
+	sky1  = "SKY1"
 }
 
 map MAP04 "K A E R N K"
 {
 	music = "D_STALKS"
+	sky1  = "SKY2"
 }
 
 map MAP05 "Nuke Londo"
 {
 	music = "D_RUNNIN"
+	sky1  = "SKY3"
 }
