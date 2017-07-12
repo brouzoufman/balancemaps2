@@ -8,15 +8,15 @@ mapsound/jumppad_bounce     sounds/jumppad_bounce.ogg
 mapsound/spikedown          sounds/spikedown.ogg
 mapsound/spikeslam          sounds/spikeslam.ogg
 mapsound/spikeup            sounds/spikeup.ogg
-mapsound/waterfall          sounds/current.ogg
+mapsound/waterfall          sounds/waterfall.ogg
 
 $rolloff mapsound/jumppad_ambient   0 768
 
 $ambient 1 mapsound/waterfall       point continuous 1.0
 $ambient 2 mapsound/jumppad_ambient point continuous 0.8
 
-$rolloff mapsound/slamdry 1024 3072
-$rolloff mapsound/slamwet 1024 6144
+$rolloff mapsound/slamdry 1024 3600
+$rolloff mapsound/slamwet 1024 7200
 $limit mapsound/slamdry 0
 $limit mapsound/slamwet 0
 
