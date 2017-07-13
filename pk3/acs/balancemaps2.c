@@ -21,6 +21,7 @@ function int IsZand(void)
 #include "ghostswitch.h"
 #include "returnPoints.h"
 #include "mapscripts.h"
+#include "timer.h"
 
 script "BMaps_Open" open
 {
