@@ -78,6 +78,7 @@ script "BTimer_Finish" (void)
 {
 	int pID = PlayerNumber();
 	
+	if(CheckInventory("ShouldBeGhost")) Terminate;
 	if(pID == -1) Terminate;
 	if(finished[pID][0]) Terminate;
 	
@@ -209,7 +210,7 @@ function int PlayersLeft (void)
 	
 	for(int i = 0; i < 64; i++)
 	{
-		if(PlayerInGame(i) && CheckActorInventory(
+		if(PlayerInGame(i) && !CheckActorInventory(
 			ACS_NamedExecuteWithResult("BMaps_GetPlayerTID", i, 0, 0, 0), "ShouldBeGhost")) players++;
 		
 		if(finished[i][0]) finish++;
