@@ -19,8 +19,8 @@ function int IsZand(void)
 #include "deathmarks.h"
 #include "gamestate.h"
 #include "ghostswitch.h"
-#include "returnPoints.h"
 #include "mapscripts.h"
+#include "returnPoints.h"
 #include "timer.h"
 
 script "BMaps_Open" open

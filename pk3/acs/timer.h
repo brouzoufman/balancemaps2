@@ -13,6 +13,23 @@ int finished[64][2];
 script "BTimer_Open" OPEN
 {
 	BTimer_LoadRecords();
+	while(1)
+	{
+		int seconds = Timer() / 35;
+		int minutes = seconds / 60;
+		seconds = seconds % 60;
+		
+		int singleDigit = "";
+		if(seconds < 10) singleDigit = "0";
+		
+		SetHudSize(800, 600, 0);
+		SetFont("BIGFONT");
+		
+		HudMessageBold(d:minutes, s:":", s:singleDigit, d:seconds;
+		HUDMSG_PLAIN, 198, CR_DARKGREEN, 20.5, 565.0, 0);
+		
+		Delay(35);
+	}
 }
 
 script "BTimer_Display" ENTER
@@ -37,7 +54,7 @@ script "BTimer_Display" ENTER
 		//display records
 		SetFont("SMALLFONT");
 		HudMessage(s:"Server records";
-				HUDMSG_PLAIN, 199, CR_GREEN, 20.5, 480.0, 0);
+				HUDMSG_PLAIN, 199, CR_DARKGREEN, 20.5, 480.0, 0);
 		for(int i = 0; i < 5; i++)
 		{
 			if(recordTimes[i] > 0)
@@ -153,4 +170,50 @@ function void BTimer_LoadRecords(void)
 		recordNames[i] = GetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names"), i+1);
 		recordDates[i] = GetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates"), i+1);
 	}
+}
+
+//----------------
+//map exit scripts
+//----------------
+
+script "BMaps_Exit" (int countdown)
+{
+	if(CheckInventory("ShouldBeGhost")) Terminate;
+	if(PlayerNumber() == -1) Terminate;
+	
+	if(!PlayersLeft()) Exit_Normal(0);
+	else ACS_NamedExecute("BMaps_Exit_Countdown", 0, countdown, 0, 0);
+}
+
+script "BMaps_Exit_Countdown" (int countdown)
+{
+	SetHudSize(800, 600, 0);
+	SetFont("BIGFONT");
+	while(countdown)
+	{
+		HudMessageBold(s:"Map ends in ", d:countdown, s:"...";
+		HUDMSG_PLAIN, 197, CR_RED, 400.0, 100.0, 0);
+		countdown--;
+		
+		if(!PlayersLeft()) countdown = 0;
+		
+		Delay(35);
+	}
+	Exit_Normal(0);
+}
+
+function int PlayersLeft (void)
+{
+	int players = 0;
+	int finish = 0;
+	
+	for(int i = 0; i < 64; i++)
+	{
+		if(PlayerInGame(i) && CheckActorInventory(
+			ACS_NamedExecuteWithResult("BMaps_GetPlayerTID", i, 0, 0, 0), "ShouldBeGhost")) players++;
+		
+		if(finished[i][0]) finish++;
+	}
+	
+	return (players - finish);
 }
