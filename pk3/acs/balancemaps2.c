@@ -59,7 +59,14 @@ script "BMaps_Enter" enter
     if (BMaps_RanEnter[pln]) { terminate; }
     
     GiveInventory("NoLongerNoDamage", 1);
-    TakeInventory("ShouldBeGhost", 0x7FFFFFFF);
+    
+    if (CheckInventory("ShouldBeGhost"))
+    {
+        UnmorphActor(0, true);
+        GiveInventory("SpookyGhostUnmorphPackage", 1);
+        TakeInventory("ShouldBeGhost", 0x7FFFFFFF);
+    }
+    
     ACS_NamedExecuteWithResult("BMaps_UpdatePlayerTID");
     BMaps_RanEnter[pln] = true;
     
