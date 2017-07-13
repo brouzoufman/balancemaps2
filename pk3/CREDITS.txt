@@ -1,3 +1,18 @@
+ B A L A N C E M A P S  2
+a sequel nobody asked for
+
+A C S
+
+ijon, hexagon and synert (mostly ijon)
+
+M A P P E R S
+
+01, 03, 04, 05: synert
+02: ijon
+HEX01, HEX02: hexagon
+
+I N D I V I D U A L  M A P  R E S O U R C E  C R E D I T S
+
 MAP02 (The Funhouse):
 - Textures: cc4-tex.wad
 - Music: Fire Hive, by Jimmy
