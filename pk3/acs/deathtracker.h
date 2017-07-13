@@ -2,6 +2,7 @@ int BDeath_AccumulatedDeaths[PLAYERMAX];
 
 int BDeath_MarkedSectors[BDEATH_MAXMARKEDSECTORS][3];
 int BDeath_MarkCount = 0;
+int BDeath_ExplicitDeathCount;
 
 
 function int BDeath_GetDeaths(int pln)
@@ -9,9 +10,26 @@ function int BDeath_GetDeaths(int pln)
     return BDeath_AccumulatedDeaths[pln];
 }
 
+function int BDeath_MaxDeaths(void)
+{
+    if (BDeath_ExplicitDeathCount > 0) { return BDeath_ExplicitDeathCount; }
+    return 2;
+}
+
+function int BDeath_SetMaxDeaths(int count)
+{
+    if (count > 0)
+    {
+        BDeath_ExplicitDeathCount = count;
+        return 0;
+    }
+    
+    return -1;
+}
+
 function int BDeath_LivesLeft(int pln)
 {
-    return BDEATH_MAXDEATHS - BDeath_AccumulatedDeaths[pln];
+    return BDeath_MaxDeaths() - BDeath_AccumulatedDeaths[pln];
 }
 
 function void BDeath_SetDeaths(int pln, int i)

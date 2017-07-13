@@ -1,4 +1,3 @@
-#libdefine BDEATH_MAXDEATHS             2
 #libdefine BDEATH_MAXMARKEDSECTORS      256
 
 #libdefine BMARK_MAXDEATHMARKS      128
