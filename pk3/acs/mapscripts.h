@@ -9,46 +9,104 @@ script "BMaps_IntroCard" (int title, int author, int difficulty, int dumbquote) 
     SetHudSize(640, 480, true);
     SetHudClipRect(160, 0, 320, 480, 320, false);
     
-    SetFont("BIGFONT");
-    HudMessage(s:title;
-                HUDMSG_FADEOUT, -500, CR_ORANGE, 320.4, 340.0, 3.0, 1.0);
-                
-    SetFont("SMALLFONT");
-    HudMessage(s:"by ", s:author;
-                HUDMSG_FADEOUT, -501, CR_YELLOW, 320.4, 355.0, 3.0, 1.0);
+    int hasQuote        = !stringBlank(dumbquote);
+    int fullBrightIters = cond(hasQuote, 16, 12);
+    int fadeIters       = 8;
+    int useFireblu      = GetCVar("bmaps_cl_shitpost");
     
-    Delay(35);
+    str firebluColor, titleColor, authorColor, difficultyColor, quoteColor;
     
-    
-    // I don't want to bother with figuring out the timing here, so I'm just gonna print it again
-    SetFont("BIGFONT");
-    HudMessage(s:title;
-                HUDMSG_FADEOUT, -500, CR_ORANGE, 320.4, 340.0, 3.0, 1.0);
-                
-    SetFont("SMALLFONT");
-    HudMessage(s:"by ", s:author;
-                HUDMSG_FADEOUT, -501, CR_YELLOW, 320.4, 355.0, 3.0, 1.0);
-    
-    HudMessage(s:"Difficulty: ", s:difficulty;
-                HUDMSG_FADEOUT, -502, CR_GOLD, 320.4, 370.0, 3.0, 1.0);
-    Delay(35);
-    
-    if (!stringBlank(dumbquote))
+    if (useFireblu)
     {
+        title      = cleanString(title);
+        author     = cleanString(author);
+        difficulty = cleanString(difficulty);
+        dumbquote  = cleanString(dumbquote);
+    }
+    else
+    {
+        titleColor      = "Orange";
+        authorColor     = "Yellow";
+        difficultyColor = "Gold";
+        quoteColor      = "White";
+    }
+    
+    int i;
+    
+    for (i = 0; i < fullBrightIters; i++)
+    {
+        if (useFireblu)
+        {
+            firebluColor    = cond(i % 2, "FIREBLU", "FIREBLU2");
+            titleColor      = firebluColor;
+            authorColor     = firebluColor;
+            difficultyColor = firebluColor;
+            quoteColor      = firebluColor;
+        }
+        
         SetFont("BIGFONT");
         HudMessage(s:title;
-                    HUDMSG_FADEOUT, -500, CR_ORANGE, 320.4, 340.0, 2.0, 1.0);
-                    
+                    HUDMSG_PLAIN | HUDMSG_COLORSTRING, -500, titleColor, 320.4, 340.0, 1.0);
+        
+        if (i >= 3)
+        {
+            SetFont("SMALLFONT");
+            HudMessage(s:"by ", s:author;
+                    HUDMSG_PLAIN | HUDMSG_COLORSTRING, -501, authorColor, 320.4, 355.0, 1.0);
+        }
+        
+        if (i >= 7)
+        {
+            SetFont("SMALLFONT");
+            HudMessage(s:"Difficulty: ", s:difficulty;
+                    HUDMSG_PLAIN | HUDMSG_COLORSTRING, -502, difficultyColor, 320.4, 367.0, 1.0);
+        }
+        
+        if (i >= 11 && hasQuote)
+        {
+            SetFont("SMALLFONT");
+            HudMessage(s:"\"", s:dumbquote, s:"\"";
+                    HUDMSG_PLAIN | HUDMSG_COLORSTRING, -503, quoteColor, 320.4, 378.1, 1.0);
+        }
+        
+        Delay(8);
+    }
+    
+    int alpha, fadeTime;
+    
+    for (i = 0; i < fadeIters; i++)
+    {
+        if (useFireblu)
+        {
+            firebluColor    = cond((i + fullBrightIters) % 2, "FIREBLU", "FIREBLU2");
+            titleColor      = firebluColor;
+            authorColor     = firebluColor;
+            difficultyColor = firebluColor;
+            quoteColor      = firebluColor;
+        }
+        
+        alpha    = 1.0 - ((1.0 / fadeIters) * i);
+        fadeTime = 0.25 * (fadeIters - i);
+        
+        SetFont("BIGFONT");
+        HudMessage(s:title;
+                    HUDMSG_FADEOUT | HUDMSG_ALPHA | HUDMSG_COLORSTRING, -500, titleColor, 320.4, 340.0, 0, fadeTime, alpha);
+        
         SetFont("SMALLFONT");
         HudMessage(s:"by ", s:author;
-                    HUDMSG_FADEOUT, -501, CR_YELLOW, 320.4, 355.0, 2.0, 1.0);
-        
+                    HUDMSG_FADEOUT | HUDMSG_ALPHA | HUDMSG_COLORSTRING, -501, authorColor, 320.4, 355.0, 0, fadeTime, alpha);
+                    
+        SetFont("SMALLFONT");
         HudMessage(s:"Difficulty: ", s:difficulty;
-                    HUDMSG_FADEOUT, -502, CR_GOLD, 320.4, 370.0, 2.0, 1.0);
+                    HUDMSG_FADEOUT | HUDMSG_ALPHA | HUDMSG_COLORSTRING, -502, difficultyColor, 320.4, 367.0, 0, fadeTime, alpha);
         
-        int quoteTime = min(6.5, 2.5 + (0.02 * StrLen(dumbquote)));
+        if (hasQuote)
+        {
+            SetFont("SMALLFONT");
+            HudMessage(s:"\"", s:dumbquote, s:"\"";
+                    HUDMSG_FADEOUT | HUDMSG_ALPHA | HUDMSG_COLORSTRING, -503, quoteColor, 320.4, 378.1, 0, fadeTime, alpha);
+        }
         
-        HudMessage(s:"\"", s:dumbquote, s:"\"";
-                    HUDMSG_FADEOUT, -503, CR_WHITE, 320.4, 378.1, quoteTime, 1.0);
+        Delay(8);
     }
 }

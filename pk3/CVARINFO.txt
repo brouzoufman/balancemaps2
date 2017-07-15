@@ -2,3 +2,4 @@ server noarchive bool bmaps_debug_botscount = false;
 server noarchive bool bmaps_debug_neverlose = false;
 
 user bool bmaps_cl_notitlecard = false;
+user bool bmaps_cl_shitpost    = false;
