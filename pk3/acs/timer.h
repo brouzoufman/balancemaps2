@@ -70,7 +70,7 @@ script "BTimer_Display" ENTER
 			}
 		}
 		
-		Delay(35);
+		Delay(5);
 	}
 }
 
@@ -181,6 +181,9 @@ script "BMaps_Exit" (int countdown)
 {
 	if(CheckInventory("ShouldBeGhost")) Terminate;
 	if(PlayerNumber() == -1) Terminate;
+	
+	//if the mapper hasn't put a trigger in, make sure a timer is registered
+	ACS_NamedExecute("BTimer_Finish", 0, 0, 0, 0);
 	
 	if(!PlayersLeft()) Exit_Normal(0);
 	else ACS_NamedExecute("BMaps_Exit_Countdown", 0, countdown, 0, 0);
