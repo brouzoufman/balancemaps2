@@ -10,6 +10,7 @@ Flat:
 	#862256
 }
 
+
 FIREBLU FB
 {
     #000040 #000060 0 32
@@ -42,6 +43,7 @@ Flat:
     #0000D0
 }
 
+
 FIREBLU2 FB2
 {
     #000040 #000060 0   32
@@ -73,10 +75,11 @@ Flat:
     #0000D0
 }
 
-NEWGOLD NG
+
+NewGold NG
 {
-	#3B2D00  #D4AF37 0 192
-	#D4AF37  #FFE58F 193 256
+	#382700  #f2c53d 0   175
+	#f2c53d  #FFEC8F 176 256
 Console:
 	#000000  #3B2D00 0 127
 	#D4AF37  #ffffff 128 256
@@ -84,18 +87,23 @@ Flat:
 	#D4AF37
 }
 
-SILVER SV
+
+Silver SV
 {
-	#202020  #C3C3C3 0 192
-	#D3D3D3  #FFFFFF 193 256
+	#151520  #34343d 0   47
+    #34343d  #5e5e66 48  95
+	#5e5e66  #c8c8cc 96  192
+	#c8c8cc  #FFFFFF 193 223
+    #FFFFFF  #FFFFFF 224 256
 Console:
-	#000000  #202020 0 127
-	#D3D3D3  #ffffff 128 256
+	#000000  #202023 0 127
+	#bfbfc7  #ffffff 128 256
 Flat:
-	#D3D3D3
+	#bfbfc7
 }
 
-BRONZE BR
+
+Bronze BR
 {
 	#341A00  #CD7F32 0 192
 	#CD7F32  #FFC48B 193 256
@@ -104,4 +112,37 @@ Console:
 	#CD7F32  #ffffff 128 256
 Flat:
 	#CD7F32
+}
+
+
+Iron IR
+{
+    #33281c #403325 0   63
+    #403325 #664038 64  127
+    #665747 #8f8172 128 191
+    #8f8172 #f2ece6 192 256
+}
+
+
+Rust RU
+{
+    #36241b #593431 0   63
+    #593431 #5c4932 64  127
+    #5c4932 #a66c42 128 191
+    #a66c42 #994a32 192 223
+    #994a32 #e68a63 224 256
+}
+
+
+Lime LI
+{
+    #132600 #50b81c 0 191
+    #50b81c #8ef26c 192 256
+
+Console:
+    #132600 #6fff27 0 191
+    #6fff27 #a9ff8c 192 256
+
+Flat:
+    #50b81c
 }

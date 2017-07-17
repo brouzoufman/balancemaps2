@@ -2,8 +2,7 @@
 
 #define RECORDCOUNT 5
 
-//will replace these with custom colours later
-int BT_RecordColors[RECORDCOUNT] = {CR_GOLD, CR_WHITE, CR_TAN, CR_DARKGRAY, CR_BLACK};
+int BT_RecordColors[RECORDCOUNT] = {"NewGold", "Silver", "Bronze", "Iron", "Rust"};
 
 int BT_RecordTimes[RECORDCOUNT]; //seconds
 int BT_RecordNames[RECORDCOUNT];
@@ -155,9 +154,10 @@ script "BTimer_Open" OPEN
         
         if (lastUpdate < BT_LastRecordUpdate)
         {
-            SetFont("SMALLFONT");
-            HudMessage(s:"Server records";
-                HUDMSG_PLAIN, 199, CR_DARKGREEN, 20.1, 360.0, 0);
+            SetHudSize(640, 480, true);
+            HudMessage(s:"Records";
+                HUDMSG_PLAIN | HUDMSG_COLORSTRING, 199, "Lime", 20.1, 286.0, 0);
+            SetHudSize(800, 600, true);
             
             for (int i = 0; i < RECORDCOUNT; i++)
             {
@@ -167,10 +167,10 @@ script "BTimer_Open" OPEN
                 if (recordTime > 0)
                 {
                     HudMessage(s:"#", d:i+1, s:": ", s:recordName;
-                        HUDMSG_PLAIN, 201 + (i*2), BT_RecordColors[i], 20.1, 373.0 + (i * 23.0), 0);
+                        HUDMSG_PLAIN | HUDMSG_COLORSTRING, 201 + (i*2), BT_RecordColors[i], 20.1, 373.0 + (i * 23.0), 0);
                     
                     HudMessage(s:"Time: \c[gray]", s:BTimer_TimeString(recordTime, true);
-                        HUDMSG_PLAIN, 202 + (i*2), BT_RecordColors[i], 20.1, 382.0 + (i * 23.0), 0);
+                        HUDMSG_PLAIN | HUDMSG_COLORSTRING, 202 + (i*2), BT_RecordColors[i], 20.1, 382.0 + (i * 23.0), 0);
                 }
                 else
                 {
