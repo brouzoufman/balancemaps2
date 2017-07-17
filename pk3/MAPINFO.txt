@@ -54,3 +54,9 @@ map MAP05 "Nuke Londo"
 	music = "D_RUNNIN"
 	sky1  = "SKY3"
 }
+
+map MAP06 "Balancemaps Redux"
+{
+	music = "D_RUNNIN"
+	sky1  = "SKY3"
+}
