@@ -1,74 +1,188 @@
 //ingame timer, and storing of server records
 
-int recordTimes[5]; //seconds
-int recordNames[5];
-int recordDates[5];
+#define RECORDCOUNT 5
 
 //will replace these with custom colours later
-int recordColors[5] = {CR_GOLD, CR_WHITE, CR_TAN, CR_GRAY, CR_DARKGRAY};
+int BT_RecordColors[RECORDCOUNT] = {CR_GOLD, CR_WHITE, CR_TAN, CR_DARKGRAY, CR_BLACK};
 
-int finished[64][2];
+int BT_RecordTimes[RECORDCOUNT]; //seconds
+int BT_RecordNames[RECORDCOUNT];
+int BT_RecordDates[RECORDCOUNT];
+int BT_LastRecordUpdate = -1;
+
+int BT_FinishTimes[PLAYERMAX];
+
+
+function str BTimer_TimeString(int tics, int withMS)
+{
+    int negativeTime;
+    if (tics < 0) { negativeTime = true; tics = -tics; }
+    
+    int seconds = (tics / 35)   % 60;
+    int minutes = (tics / 2100) % 60;
+    int hours   = (tics / 126000);
+    
+    str hourStr = "", minuteStr = "", secondStr = "";
+    
+    if (hours > 0)
+    {
+        hourStr   = StrParam(d:hours, s:":");
+        minuteStr = StrParam(s:cond(minutes < 10, "0", ""), d:minutes, s:":");
+    }
+    else
+    {
+        minuteStr = StrParam(d:minutes, s:":");
+    }
+    
+    if (withMS)
+    {
+        int fracSeconds = itof(tics % 2100) / 35;
+        secondStr = StrParam(s:cond(seconds < 10, "0", ""), f:fracSeconds);
+    }
+    else
+    {
+        secondStr = StrParam(s:cond(seconds < 10, "0", ""), d:seconds);
+    }
+    
+    return StrParam(s:hourStr, s:minuteStr, s:secondStr);
+}
+
+
+function void BTimer_LoadRecords(void)
+{
+    str table_times = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times");
+    str table_dates = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates");
+    str table_names = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names");
+    
+    int sortedTimes     = SortDBEntries(table_times, RECORDCOUNT, 0, 0);
+    int sortedTimeCount = CountDBResults(sortedTimes);
+    
+    for (int i = 0; i < min(RECORDCOUNT, sortedTimeCount); i++)
+    {
+        str nameKey = GetDBResultKeyString(sortedTimes, i);
+        
+        int recordTime = GetDBEntry(table_times, nameKey);
+        str recordDate = GetDBEntryString(table_dates, nameKey);
+        str recordName = GetDBEntryString(table_names, nameKey);
+        
+        BT_RecordTimes[i] = recordTime;
+        BT_RecordNames[i] = recordName;
+        BT_RecordDates[i] = recordDate;
+    }
+    
+    FreeDBResults(sortedTimes);
+    
+    // clear out empty records just in case
+    for (int j = i; j < RECORDCOUNT; j++)
+    {
+        BT_RecordTimes[j] = -1;
+        BT_RecordNames[j] = "";
+        BT_RecordDates[j] = "";
+    }
+    
+    BT_LastRecordUpdate = Timer();
+}
+
+
+function int BTimer_GetRecord(str name)
+{
+    str table_times = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times");
+    
+    str cleanName = strLower(cleanString(name));
+    int curRecord = GetDBEntry(table_times, cleanName);
+    
+    if (curRecord > 0) { return curRecord; }
+    return -1;
+}
+
+
+function int BTimer_UpdateRecord(str name, int time)
+{
+    // either you're cheating or a bug occured, either way *no*
+    if (time <= 0) { return false; }
+    
+    str table_times = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times");
+    str table_dates = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates");
+    str table_names = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names");
+    
+    str cleanName = strLower(cleanString(name));
+    int curRecord = GetDBEntry(table_times, cleanName);
+
+    if ((curRecord <= 0) || (curRecord > time))
+    {
+        BeginDBTransaction();
+        SetDBEntry(table_times, cleanName, time);
+        SetDBEntryString(table_dates, cleanName, Strftime(SystemTime(), "%Y-%m-%d %H:%M:%S %z"));
+        SetDBEntryString(table_names, cleanName, name);
+        EndDBTransaction();
+        
+        return true;
+    }
+    
+    return false;
+}
+
 
 
 script "BTimer_Open" OPEN
 {
 	BTimer_LoadRecords();
+    
+    SetHudSize(800, 600, true);
+    SetFont("BIGFONT");
+    
 	while(1)
 	{
-		int seconds = Timer() / 35;
-		int minutes = seconds / 60;
-		seconds = seconds % 60;
-		
-		int singleDigit = "";
-		if(seconds < 10) singleDigit = "0";
-		
-		SetHudSize(800, 600, 0);
-		SetFont("BIGFONT");
-		
-		HudMessageBold(d:minutes, s:":", s:singleDigit, d:seconds;
-		HUDMSG_PLAIN, 198, CR_DARKGREEN, 20.5, 565.0, 0);
-		
+		HudMessageBold(s:BTimer_TimeString(Timer(), false);
+            HUDMSG_PLAIN, 198, CR_DARKGREEN, 20.1, 313.0, 0);
 		Delay(35);
 	}
 }
 
 script "BTimer_Display" ENTER
 {
+    int lastUpdate = -1;
+    int pln = PlayerNumber();
+    SetHudSize(800, 600, true);
+    
 	//display timer stuff
 	while(1)
 	{
-		int seconds = Timer() / 35;
-		if(finished[PlayerNumber()][0]) seconds = finished[PlayerNumber()][1];
-		int minutes = seconds / 60;
-		seconds = seconds % 60;
+        int finishTime = BT_FinishTimes[pln];
 		
-		int singleDigit = "";
-		if(seconds < 10) singleDigit = "0";
-		
-		SetHudSize(800, 600, 0);
 		SetFont("BIGFONT");
-		//display current time
-		HudMessage(d:minutes, s:":", s:singleDigit, d:seconds;
-		HUDMSG_PLAIN, 200, CR_GREEN, 20.5, 550.0, 0);
+		HudMessage(s:BTimer_TimeString(cond(finishTime > 0, finishTime, Timer()), false);
+            HUDMSG_PLAIN, 200, CR_GREEN, 20.1, 330.0, 0);
 		
-		//display records
-		SetFont("SMALLFONT");
-		HudMessage(s:"Server records";
-				HUDMSG_PLAIN, 199, CR_DARKGREEN, 20.5, 480.0, 0);
-		for(int i = 0; i < 5; i++)
-		{
-			if(recordTimes[i] > 0)
-			{
-				int newSeconds = recordTimes[i];
-				int newMinutes = newSeconds / 60;
-				newSeconds = newSeconds % 60;
-				
-				int newSingleDigit = "";
-				if(newSeconds < 10) newSingleDigit = "0";
-				HudMessage(s:"#", d:(i+1), s:"- ", d:newMinutes, s:":", s:newSingleDigit, d:newSeconds, s:" by ", s:recordNames[i];
-				HUDMSG_PLAIN, 201 + i, recordColors[i], 20.5, 490.0 + i * 10.0, 0);
-			}
-		}
+        
+        if (lastUpdate < BT_LastRecordUpdate)
+        {
+            SetFont("SMALLFONT");
+            HudMessage(s:"Server records";
+                HUDMSG_PLAIN, 199, CR_DARKGREEN, 20.1, 355.0, 0);
+            
+            for (int i = 0; i < RECORDCOUNT; i++)
+            {
+                int recordTime = BT_RecordTimes[i];
+                str recordName = BT_RecordNames[i];
+                
+                if (recordTime > 0)
+                {
+                    HudMessage(s:"#", d:i+1, s:": ", s:recordName;
+                        HUDMSG_PLAIN, 201 + (i*2), BT_RecordColors[i], 20.1, 368.0 + (i * 23.0), 0);
+                    
+                    HudMessage(s:"Time: \c[gray]", s:BTimer_TimeString(recordTime, true);
+                        HUDMSG_PLAIN, 202 + (i*2), BT_RecordColors[i], 20.1, 378.0 + (i * 23.0), 0);
+                }
+                else
+                {
+                    HudMessage(s:""; HUDMSG_PLAIN, 201 + (i*2), 0,0,0,0);
+                    HudMessage(s:""; HUDMSG_PLAIN, 202 + (i*2), 0,0,0,0);
+                }
+            }
+            
+            lastUpdate = BT_LastRecordUpdate;
+        }
 		
 		Delay(5);
 	}
@@ -76,148 +190,84 @@ script "BTimer_Display" ENTER
 
 script "BTimer_Finish" (void)
 {
-	int pID = PlayerNumber();
-	
-	if(CheckInventory("ShouldBeGhost")) Terminate;
-	if(pID == -1) Terminate;
-	if(finished[pID][0]) Terminate;
-	
-	finished[pID][0] = 1;
-	
-	int myTime = Timer() / 35;
-	finished[pID][1] = myTime;
-	
-	int newPos = 0;
-	
-	for(int i = 0; i < 5; i++)
-	{
-		if(myTime < recordTimes[i] || recordTimes[i] == 0)
-		{
-			newPos = i + 1;
-			break;
-		}
-	}
-	
-	if(newPos)
-	{
-		int myName = strLower(cleanString(StrParam(n:pID)));
-		BeginDBTransaction();
-		//do you have a currently existing record?
-		int existRecord = 0;
-		for(i = 0; i < 5; i++)
-		{
-			if(recordNames[i] == myName)
-			{
-				existRecord = i + 1;
-				break;
-			}
-		}
-		
-		if(existRecord)
-		{
-			//time was worse or equal, scrap
-			if(existRecord < newPos) {}
-			
-			//time was better than old, but still same position- replace old
-			else if(newPos == existRecord)
-			{
-				SetDBEntry(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times"), existRecord, myTime);
-				SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names"), existRecord, myName);
-				SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates"), existRecord, Strftime(SystemTime(), "%D", true));
-			}
-			else
-			{
-				//time was better and moved up- swap old with worse times
-				//move all other entries down
-				for(i = newPos - 1; i < existRecord; i++)
-				{
-					SetDBEntry(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times"), i+2, recordTimes[i]);
-					SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names"), i+2, recordNames[i]);
-					SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates"), i+2, recordDates[i]);
-				}
-				
-				SetDBEntry(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times"), newPos, myTime);
-				SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names"), newPos, myName);
-				SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates"), newPos, Strftime(SystemTime(), "%D", true));
-			}
-		}
-		
-		else
-		{
-			//move all other entries down
-			for(i = newPos - 1; i < 4; i++)
-			{
-				SetDBEntry(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times"), i+2, recordTimes[i]);
-				SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names"), i+2, recordNames[i]);
-				SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates"), i+2, recordDates[i]);
-			}
-			
-			SetDBEntry(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times"), newPos, myTime);
-			SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names"), newPos, myName);
-			SetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates"), newPos, Strftime(SystemTime(), "%D", true));
-		}
-		
-		BTimer_LoadRecords();
-		EndDBTransaction();
-	}
+    if (CheckInventory("ShouldBeGhost")) { terminate; }
+    
+	int pln = PlayerNumber();
+    if (pln < 0 || BT_FinishTimes[pln] > 0) { terminate; }
+    
+    str playerName = StrParam(n:0);
+    int playerTime = Timer();
+    
+    BT_FinishTimes[pln] = playerTime;
+    
+    if (BTimer_UpdateRecord(playerName, playerTime))
+    {
+        BTimer_LoadRecords();
+    }
 }
 
-function void BTimer_LoadRecords(void)
-{
-	//grab existing records
-	for(int i = 0; i < 5; i++)
-	{
-		recordTimes[i] = GetDBEntry(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times"), i+1);
-		recordNames[i] = GetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names"), i+1);
-		recordDates[i] = GetDBEntryString(StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates"), i+1);
-	}
-}
+
 
 //----------------
 //map exit scripts
 //----------------
 
+function int BTimer_PlayersLeft(void)
+{
+    int ret = 0;
+    
+    for (int i = 0; i < PLAYERMAX; i++)
+    {
+        if (!PlayerInGame(i)|| PlayerIsBot(i)
+         || BT_FinishTimes[i] > 0
+         || CheckActorInventory(BMaps_PlayerTIDs[i], "ShouldBeGhost"))
+        {
+            continue;
+        }
+        
+        ret++;
+    }
+    
+    return ret;
+}
+
 script "BMaps_Exit" (int countdown)
 {
-	if(CheckInventory("ShouldBeGhost")) Terminate;
-	if(PlayerNumber() == -1) Terminate;
-	
+    int pln = PlayerNumber();
+    
+    if (CheckInventory("ShouldBeGhost") || pln < 0)
+    {
+        SetResultValue(0);
+        terminate;
+    }
+    
 	//if the mapper hasn't put a trigger in, make sure a timer is registered
-	ACS_NamedExecute("BTimer_Finish", 0, 0, 0, 0);
+    ACS_NamedExecuteWithResult("BTimer_Finish");
 	
-	if(!PlayersLeft()) Exit_Normal(0);
-	else ACS_NamedExecute("BMaps_Exit_Countdown", 0, countdown, 0, 0);
+    if (BTimer_PlayersLeft() > 0)
+    {
+        ACS_NamedExecute("BMaps_Exit_Countdown", 0, countdown);
+    }
+    else
+    {
+        Exit_Normal(0);
+    }
 }
 
 script "BMaps_Exit_Countdown" (int countdown)
 {
-	SetHudSize(800, 600, 0);
+	SetHudSize(800, 600, true);
 	SetFont("BIGFONT");
-	while(countdown)
-	{
+    
+    for (int i = 0; i < countdown; i++)
+    {
+        if (BTimer_PlayersLeft() <= 0) { break; }
+        
 		HudMessageBold(s:"Map ends in ", d:countdown, s:"...";
-		HUDMSG_PLAIN, 197, CR_RED, 400.0, 100.0, 0);
-		countdown--;
-		
-		if(!PlayersLeft()) countdown = 0;
+            HUDMSG_PLAIN, 197, CR_RED, 400.0, 100.0, 0);
 		
 		Delay(35);
 	}
+    
 	Exit_Normal(0);
-}
-
-function int PlayersLeft (void)
-{
-	int players = 0;
-	int finish = 0;
-	
-	for(int i = 0; i < 64; i++)
-	{
-		if(PlayerInGame(i) && !CheckActorInventory(
-			ACS_NamedExecuteWithResult("BMaps_GetPlayerTID", i, 0, 0, 0), "ShouldBeGhost")) players++;
-		
-		if(finished[i][0]) finish++;
-	}
-	
-	return (players - finish);
 }
