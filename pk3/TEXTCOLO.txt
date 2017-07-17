@@ -1,11 +1,11 @@
-syn
+SYNERT SYN SY
 {
-	#33052f  #99225a 0 16
-	#862256  #ab184e 17 172
-	#ab184e  #ff2b53 173 256
+	#33052f #99225a 0 16
+	#862256 #ab184e 17 172
+	#ab184e #ff2b53 173 256
 Console:
-	#000000  #33052f    0 127
-	#ab184e  #fc768f  128 256
+	#000000 #33052f 0 127
+	#ab184e #fc768f 128 256
 Flat:
 	#862256
 }
@@ -71,4 +71,37 @@ Console:
 
 Flat:
     #0000D0
+}
+
+NEWGOLD NG
+{
+	#3B2D00  #D4AF37 0 192
+	#D4AF37  #FFE58F 193 256
+Console:
+	#000000  #3B2D00 0 127
+	#D4AF37  #ffffff 128 256
+Flat:
+	#D4AF37
+}
+
+SILVER SV
+{
+	#202020  #C3C3C3 0 192
+	#D3D3D3  #FFFFFF 193 256
+Console:
+	#000000  #202020 0 127
+	#D3D3D3  #ffffff 128 256
+Flat:
+	#D3D3D3
+}
+
+BRONZE BR
+{
+	#341A00  #CD7F32 0 192
+	#CD7F32  #FFC48B 193 256
+Console:
+	#000000  #341A00 0 127
+	#CD7F32  #ffffff 128 256
+Flat:
+	#CD7F32
 }
