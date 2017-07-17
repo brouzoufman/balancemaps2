@@ -136,6 +136,7 @@ function int BTimer_UpdateRecord(str name, int time)
 script "BTimer_Open" OPEN
 {
     int lastUpdate = -1;
+    int showedTime = false;
     
     BTimer_LoadRecords();
     
@@ -145,8 +146,10 @@ script "BTimer_Open" OPEN
     {
         int t = Timer();
         
-        if (t == 1 || (t / 35) > ((t - 1) / 35))
+        if (!showedTime || (t / 35) > ((t - 1) / 35))
         {
+            showedTime = true;
+            
             SetFont("BIGFONT");
             HudMessageBold(s:BTimer_TimeString(t, false);
                 HUDMSG_PLAIN, 198, CR_DARKGREEN, 20.1, 318.0, 0);
@@ -154,6 +157,7 @@ script "BTimer_Open" OPEN
         
         if (lastUpdate < BT_LastRecordUpdate)
         {
+            SetFont("SMALLFONT");
             SetHudSize(640, 480, true);
             HudMessage(s:"Records";
                 HUDMSG_PLAIN | HUDMSG_COLORSTRING, 199, "Lime", 20.1, 286.0, 0);
@@ -190,7 +194,9 @@ script "BTimer_Open" OPEN
 
 script "BTimer_Display" ENTER
 {
+    int showedTime = false;
     int pln = PlayerNumber();
+    
     SetHudSize(800, 600, true);
     SetFont("BIGFONT");
     
@@ -199,8 +205,10 @@ script "BTimer_Display" ENTER
     {
         int t = Timer();
         
-        if (t == 1 || (t / 35) > ((t - 1) / 35))
+        if (!showedTime || (t / 35) > ((t - 1) / 35))
         {
+            showedTime = true;
+            
             int finishTime = BT_FinishTimes[pln];
             int showTime   = cond(finishTime > 0, finishTime, t);
             
