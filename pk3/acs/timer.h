@@ -38,6 +38,16 @@ function str BTimer_TimeString(int tics, int withMS)
     {
         int fracSeconds = itof(tics % 2100) / 35;
         secondStr = StrParam(s:cond(seconds < 10, "0", ""), f:fracSeconds);
+        
+        // no fractional part, add period
+        if ((fracSeconds & 0xFFFF) == 0)
+        {
+            secondStr = StrParam(s:secondStr, s:".");
+        }
+        
+        // pad past decimal point for consistency
+        int decimalPos = strstr(secondStr, ".");
+        secondStr = padStringR(secondStr, "0", decimalPos+6);
     }
     else
     {
@@ -126,40 +136,28 @@ function int BTimer_UpdateRecord(str name, int time)
 
 script "BTimer_Open" OPEN
 {
-	BTimer_LoadRecords();
-    
-    SetHudSize(800, 600, true);
-    SetFont("BIGFONT");
-    
-	while(1)
-	{
-		HudMessageBold(s:BTimer_TimeString(Timer(), false);
-            HUDMSG_PLAIN, 198, CR_DARKGREEN, 20.1, 313.0, 0);
-		Delay(35);
-	}
-}
-
-script "BTimer_Display" ENTER
-{
     int lastUpdate = -1;
-    int pln = PlayerNumber();
+    
+    BTimer_LoadRecords();
+    
     SetHudSize(800, 600, true);
     
-	//display timer stuff
-	while(1)
-	{
-        int finishTime = BT_FinishTimes[pln];
-		
-		SetFont("BIGFONT");
-		HudMessage(s:BTimer_TimeString(cond(finishTime > 0, finishTime, Timer()), false);
-            HUDMSG_PLAIN, 200, CR_GREEN, 20.1, 330.0, 0);
-		
+    while (true)
+    {
+        int t = Timer();
+        
+        if (t == 1 || (t / 35) > ((t - 1) / 35))
+        {
+            SetFont("BIGFONT");
+            HudMessageBold(s:BTimer_TimeString(t, false);
+                HUDMSG_PLAIN, 198, CR_DARKGREEN, 20.1, 318.0, 0);
+        }
         
         if (lastUpdate < BT_LastRecordUpdate)
         {
             SetFont("SMALLFONT");
             HudMessage(s:"Server records";
-                HUDMSG_PLAIN, 199, CR_DARKGREEN, 20.1, 355.0, 0);
+                HUDMSG_PLAIN, 199, CR_DARKGREEN, 20.1, 360.0, 0);
             
             for (int i = 0; i < RECORDCOUNT; i++)
             {
@@ -169,10 +167,10 @@ script "BTimer_Display" ENTER
                 if (recordTime > 0)
                 {
                     HudMessage(s:"#", d:i+1, s:": ", s:recordName;
-                        HUDMSG_PLAIN, 201 + (i*2), BT_RecordColors[i], 20.1, 368.0 + (i * 23.0), 0);
+                        HUDMSG_PLAIN, 201 + (i*2), BT_RecordColors[i], 20.1, 373.0 + (i * 23.0), 0);
                     
                     HudMessage(s:"Time: \c[gray]", s:BTimer_TimeString(recordTime, true);
-                        HUDMSG_PLAIN, 202 + (i*2), BT_RecordColors[i], 20.1, 378.0 + (i * 23.0), 0);
+                        HUDMSG_PLAIN, 202 + (i*2), BT_RecordColors[i], 20.1, 382.0 + (i * 23.0), 0);
                 }
                 else
                 {
@@ -183,16 +181,44 @@ script "BTimer_Display" ENTER
             
             lastUpdate = BT_LastRecordUpdate;
         }
-		
-		Delay(5);
-	}
+        
+        Delay(1);
+    }
 }
+
+
+
+script "BTimer_Display" ENTER
+{
+    int pln = PlayerNumber();
+    SetHudSize(800, 600, true);
+    SetFont("BIGFONT");
+    
+    //display timer stuff
+    while (true)
+    {
+        int t = Timer();
+        
+        if (t == 1 || (t / 35) > ((t - 1) / 35))
+        {
+            int finishTime = BT_FinishTimes[pln];
+            int showTime   = cond(finishTime > 0, finishTime, t);
+            
+            HudMessage(s:BTimer_TimeString(showTime, false);
+                HUDMSG_FADEOUT, 200, CR_GREEN, 20.1, 335.0, 1.25, 0.5);
+        }
+        
+        Delay(1);
+    }
+}
+
+
 
 script "BTimer_Finish" (void)
 {
     if (CheckInventory("ShouldBeGhost")) { terminate; }
     
-	int pln = PlayerNumber();
+    int pln = PlayerNumber();
     if (pln < 0 || BT_FinishTimes[pln] > 0) { terminate; }
     
     str playerName = StrParam(n:0);
@@ -231,6 +257,8 @@ function int BTimer_PlayersLeft(void)
     return ret;
 }
 
+
+
 script "BMaps_Exit" (int countdown)
 {
     int pln = PlayerNumber();
@@ -241,9 +269,9 @@ script "BMaps_Exit" (int countdown)
         terminate;
     }
     
-	//if the mapper hasn't put a trigger in, make sure a timer is registered
+    //if the mapper hasn't put a trigger in, make sure a timer is registered
     ACS_NamedExecuteWithResult("BTimer_Finish");
-	
+    
     if (BTimer_PlayersLeft() > 0)
     {
         ACS_NamedExecute("BMaps_Exit_Countdown", 0, countdown);
@@ -254,20 +282,22 @@ script "BMaps_Exit" (int countdown)
     }
 }
 
+
+
 script "BMaps_Exit_Countdown" (int countdown)
 {
-	SetHudSize(800, 600, true);
-	SetFont("BIGFONT");
+    SetHudSize(800, 600, true);
+    SetFont("BIGFONT");
     
     for (int i = 0; i < countdown; i++)
     {
         if (BTimer_PlayersLeft() <= 0) { break; }
         
-		HudMessageBold(s:"Map ends in ", d:countdown, s:"...";
+        HudMessageBold(s:"Map ends in ", d:countdown, s:"...";
             HUDMSG_PLAIN, 197, CR_RED, 400.0, 100.0, 0);
-		
-		Delay(35);
-	}
+        
+        Delay(35);
+    }
     
-	Exit_Normal(0);
+    Exit_Normal(0);
 }
