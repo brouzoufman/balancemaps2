@@ -7,7 +7,7 @@ function void BState_CheckGameState(void)
     BState_LastGameStateCheck = Timer();
     
     if (GetGameModeState() == GAMESTATE_COUNTDOWN) { BState_GameLost = false; return; }
-    if (GetCVar("bmaps_debug_neverlose"))          { BState_GameLost = false; return; }
+    if (GetCVar("bmaps_debug_nofail"))             { BState_GameLost = false; return; }
     
     int playersAlive = 0;
         

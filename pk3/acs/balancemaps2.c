@@ -84,11 +84,6 @@ script "BMaps_Enter" enter
         int livesLeft_survival = GetPlayerLivesLeft(pln);
         int livesLeft_core     = BDeath_LivesLeft(pln);
         
-        if (GetCVar("bmaps_debug_nolosecondition"))
-        {
-            livesLeft_core = max(1, livesLeft_core);
-        }
-        
         if (dead) { BMark_ClearMarks(pln); }
         
         BState_CheckGameState();
