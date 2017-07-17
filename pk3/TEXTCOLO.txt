@@ -1,13 +1,13 @@
 SYNERT SYN SY
 {
-	#33052f #99225a 0 16
-	#862256 #ab184e 17 172
-	#ab184e #ff2b53 173 256
+    #33052f #99225a 0 16
+    #862256 #ab184e 17 172
+    #ab184e #ff2b53 173 256
 Console:
-	#000000 #33052f 0 127
-	#ab184e #fc768f 128 256
+    #000000 #33052f 0 127
+    #ab184e #fc768f 128 256
 Flat:
-	#862256
+    #862256
 }
 
 
@@ -78,40 +78,40 @@ Flat:
 
 NewGold NG
 {
-	#382700  #f2c53d 0   175
-	#f2c53d  #FFEC8F 176 256
+    #382700  #f2c53d 0   175
+    #f2c53d  #FFEC8F 176 256
 Console:
-	#000000  #3B2D00 0 127
-	#D4AF37  #ffffff 128 256
+    #000000  #3B2D00 0 127
+    #D4AF37  #ffffff 128 256
 Flat:
-	#D4AF37
+    #D4AF37
 }
 
 
 Silver SV
 {
-	#151520  #34343d 0   47
+    #151520  #34343d 0   47
     #34343d  #5e5e66 48  95
-	#5e5e66  #c8c8cc 96  192
-	#c8c8cc  #FFFFFF 193 223
+    #5e5e66  #c8c8cc 96  192
+    #c8c8cc  #FFFFFF 193 223
     #FFFFFF  #FFFFFF 224 256
 Console:
-	#000000  #202023 0 127
-	#bfbfc7  #ffffff 128 256
+    #000000  #202023 0 127
+    #bfbfc7  #ffffff 128 256
 Flat:
-	#bfbfc7
+    #bfbfc7
 }
 
 
 Bronze BR
 {
-	#341A00  #CD7F32 0 192
-	#CD7F32  #FFC48B 193 256
+    #341A00  #CD7F32 0 192
+    #CD7F32  #FFC48B 193 256
 Console:
-	#000000  #341A00 0 127
-	#CD7F32  #ffffff 128 256
+    #000000  #341A00 0 127
+    #CD7F32  #ffffff 128 256
 Flat:
-	#CD7F32
+    #CD7F32
 }
 
 
