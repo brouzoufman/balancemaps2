@@ -48,4 +48,5 @@ OTHER
 
 Boxy SMALLFONT: by Jimmy
 Miniplicity font: by Jimmy and Agent Spork
+Status Report font: still Jimmy
 Duke Nukem 3D font: from Duke Nukem 3D (surprise)
