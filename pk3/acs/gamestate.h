@@ -1,6 +1,26 @@
 int BState_LastGameStateCheck = -1;
 int BState_GameLost;
 
+function int BState_PlayersLeft(void)
+{
+    int ret = 0;
+    
+    for (int i = 0; i < PLAYERMAX; i++)
+    {
+        if (!PlayerInGame(i)|| PlayerIsBot(i)
+         || BMaps_FinishTimes[i] > 0
+         || CheckActorInventory(BMaps_PlayerTIDs[i], "ShouldBeGhost"))
+        {
+            continue;
+        }
+        
+        ret++;
+    }
+    
+    return ret;
+}
+
+
 function void BState_CheckGameState(void)
 {
     if (BState_LastGameStateCheck >= Timer()) { return; }

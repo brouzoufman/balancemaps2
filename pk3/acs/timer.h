@@ -12,7 +12,6 @@ int BT_RecordColors[RECORDCOUNT]  = {"NewGold", "Silver", "Bronze", "Iron", "Rus
 int BT_DBSuffixes[DB_COLUMNCOUNT] = {"names", "times", "dates", "accounts"};
 
 int BT_RecordData[RECORDCOUNT][DB_COLUMNCOUNT];
-int BT_FinishTimes[PLAYERMAX];
 
 
 
@@ -140,9 +139,9 @@ script "BTimer_Open" OPEN
         {
             showedTime = true;
             
-            SetFont("BIGFONT");
+            SetFont("DBIGFON2");
             HudMessageBold(s:timeString(t, false);
-                HUDMSG_PLAIN, 198, CR_DARKGREEN, 20.1, 318.0, 0);
+                HUDMSG_PLAIN | HUDMSG_COLORSTRING, 198, "Timer_Global", 20.1, 318.0, 0);
         }
         
         if (t < 4 || t % 35 == 1)
@@ -246,26 +245,39 @@ script "BTimer_Open" OPEN
 
 script "BTimer_Display" ENTER
 {
-    int showedTime = false;
+    int showedTime   = false;
     int pln = PlayerNumber();
     
     SetHudSize(800, 600, true);
-    SetFont("BIGFONT");
+    SetFont("DBIGFON2");
     
     //display timer stuff
     while (true)
     {
-        int t = Timer();
-        
-        if (!showedTime || (t / 35) > ((t - 1) / 35))
+        int t               = Timer();
+        int finishTime      = BMaps_FinishTimes[pln];
+        int timeSinceFinish = cond(finishTime > 0, t - finishTime, -1);
+
+        if (!showedTime || (t % 35) == 0 || (timeSinceFinish > 0 && timeSinceFinish <= 35))
         {
             showedTime = true;
             
-            int finishTime = BT_FinishTimes[pln];
-            int showTime   = cond(finishTime > 0, finishTime, t);
-            
-            HudMessage(s:timeString(showTime, false);
-                HUDMSG_FADEOUT, 200, CR_GREEN, 20.1, 335.0, 1.25, 0.5);
+            if (finishTime > 0)
+            {
+                str timestr = timeString(finishTime, true);
+                HudMessage(s:timestr; HUDMSG_FADEOUT | HUDMSG_COLORSTRING, 300, "Timer_Personal", 20.1, 335.0, 1.25, 0.5);
+                
+                if (timeSinceFinish <= 35)
+                {
+                    int a = 1.0 - (itof(timeSinceFinish) / 35);
+                    HudMessage(s:timestr; HUDMSG_FADEOUT | HUDMSG_COLORSTRING| HUDMSG_ALPHA, 299, "NewGold", 20.1, 335.0, 0, a, a);
+                }
+            }
+            else
+            {
+                HudMessage(s:timeString(t, false);
+                    HUDMSG_FADEOUT | HUDMSG_COLORSTRING, 300, "Timer_Personal", 20.1, 335.0, 1.25, 0.5);
+            }
         }
         
         Delay(1);
@@ -279,10 +291,10 @@ script "BTimer_Finish" (void)
     if (CheckInventory("ShouldBeGhost")) { terminate; }
     
     int pln = PlayerNumber();
-    if (pln < 0 || BT_FinishTimes[pln] > 0) { terminate; }
+    if (pln < 0 || BMaps_FinishTimes[pln] > 0) { terminate; }
     
-    int playerTime    = Timer();
-    BT_FinishTimes[pln] = playerTime;
+    int playerTime         = Timer();
+    BMaps_FinishTimes[pln] = playerTime;
     
     if (BTimer_UpdateRecord(pln, playerTime))
     {
@@ -295,25 +307,6 @@ script "BTimer_Finish" (void)
 //----------------
 //map exit scripts
 //----------------
-
-function int BTimer_PlayersLeft(void)
-{
-    int ret = 0;
-    
-    for (int i = 0; i < PLAYERMAX; i++)
-    {
-        if (!PlayerInGame(i)|| PlayerIsBot(i)
-         || BT_FinishTimes[i] > 0
-         || CheckActorInventory(BMaps_PlayerTIDs[i], "ShouldBeGhost"))
-        {
-            continue;
-        }
-        
-        ret++;
-    }
-    
-    return ret;
-}
 
 
 
@@ -330,7 +323,7 @@ script "BMaps_Exit" (int countdown)
     //if the mapper hasn't put a trigger in, make sure a timer is registered
     ACS_NamedExecuteWithResult("BTimer_Finish");
     
-    if (BTimer_PlayersLeft() > 0)
+    if (BState_PlayersLeft() > 0)
     {
         ACS_NamedExecute("BMaps_Exit_Countdown", 0, countdown);
     }
@@ -349,7 +342,7 @@ script "BMaps_Exit_Countdown" (int countdown)
     
     for (int i = 0; i < countdown; i++)
     {
-        if (BTimer_PlayersLeft() <= 0) { break; }
+        if (BState_PlayersLeft() <= 0) { break; }
         
         HudMessageBold(s:"Map ends in ", d:countdown, s:"...";
             HUDMSG_PLAIN, 197, CR_RED, 400.0, 100.0, 0);
