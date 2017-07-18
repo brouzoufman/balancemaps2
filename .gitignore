@@ -1,7 +1,7 @@
 nocommit/*
 
-# shortcut to my pk3 build script - see http://git.jinotra.in/ijon/makepk3
-make.py.lnk
+# links are stupid
+*.lnk
 
 # don't include files from pk3 build script if in folder
 bin_win
@@ -27,4 +27,3 @@ setup.py
 # don't include built pk3s
 *.pk3
 *.pk7
-/SLADE.exe.lnk
