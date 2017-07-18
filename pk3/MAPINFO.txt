@@ -18,7 +18,6 @@ map HEX01 "THE WAGGLENING"
 {
 	music = "BESTSONG"
 	sky1  = "SKY4"
-	AllowRespawn
 	UsePlayerStartZ
 }
 

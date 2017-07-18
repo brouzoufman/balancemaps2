@@ -1,0 +1,9 @@
+BOXFONT
+{
+    template BOXFN%03d
+}
+
+DUKEFONT
+{
+    template DNSMR%03d
+}

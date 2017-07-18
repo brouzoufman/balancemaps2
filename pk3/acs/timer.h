@@ -196,9 +196,9 @@ script "BTimer_Open" OPEN
                         HudMessage(s:recordName;
                             HUDMSG_FADEOUT | HUDMSG_COLORSTRING, 203 + idOffset, BT_RecordColors[i], 43.1, 373.0 + (i * 23.0), 0, 1.0);
                             
-                        SetFont("CONFONT");
+                        SetFont("MINIPLIC");
                         HudMessage(s:recordAccount;
-                            HUDMSG_FADEINOUT | HUDMSG_COLORSTRING, 204 + idOffset, BT_RecordColors[i], 41.1, 372.0 + (i * 23.0), 1.0, 1.0, 1.0);
+                            HUDMSG_FADEINOUT | HUDMSG_COLORSTRING, 204 + idOffset, BT_RecordColors[i], 43.1, 372.0 + (i * 23.0), 1.0, 1.0, 1.0);
                         SetFont("SMALLFONT");
                         break;
                       
@@ -207,9 +207,9 @@ script "BTimer_Open" OPEN
                       case 13:
                         HudMessage(s:""; HUDMSG_PLAIN, 203 + idOffset, 0,0,0,0);
                         
-                        SetFont("CONFONT");
+                        SetFont("MINIPLIC");
                         HudMessage(s:recordAccount;
-                            HUDMSG_PLAIN | HUDMSG_COLORSTRING, 204 + idOffset, BT_RecordColors[i], 41.1, 372.0 + (i * 23.0), 0);
+                            HUDMSG_PLAIN | HUDMSG_COLORSTRING, 204 + idOffset, BT_RecordColors[i], 43.1, 372.0 + (i * 23.0), 0);
                         SetFont("SMALLFONT");
                         break;
                       
@@ -217,9 +217,9 @@ script "BTimer_Open" OPEN
                         HudMessage(s:recordName;
                             HUDMSG_FADEINOUT | HUDMSG_COLORSTRING, 204 + idOffset, BT_RecordColors[i], 43.1, 373.0 + (i * 23.0), 1.0, 1.0, 1.0);
                             
-                        SetFont("CONFONT");
+                        SetFont("MINIPLIC");
                         HudMessage(s:recordAccount;
-                            HUDMSG_FADEOUT | HUDMSG_COLORSTRING, 203 + idOffset, BT_RecordColors[i], 41.1, 372.0 + (i * 23.0), 0, 1.0);
+                            HUDMSG_FADEOUT | HUDMSG_COLORSTRING, 203 + idOffset, BT_RecordColors[i], 43.1, 372.0 + (i * 23.0), 0, 1.0);
                         SetFont("SMALLFONT");
                         break;
                     }

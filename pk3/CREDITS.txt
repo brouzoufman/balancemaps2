@@ -1,21 +1,51 @@
  B A L A N C E M A P S  2
-a sequel nobody asked for
+the sequel nobody asked for
 
-A C S
 
-ijon, hexagon and synert (mostly ijon)
+CODE
+=====
 
-M A P P E R S
+ijon: most of the ACS, some DECORATE
+Synert: some ACS, most of the DECORATE
+HeXaGoN: some ACS
 
-01, 03, 04, 05: synert
-02: ijon
-HEX01, HEX02: hexagon
 
-I N D I V I D U A L  M A P  R E S O U R C E  C R E D I T S
 
-MAP02 (The Funhouse):
+MAPS
+=====
+
+MAP01 (Lava Forge): by synert
+-
+
+
+MAP02 (The Funhouse): by ijon
 - Textures: cc4-tex.wad
 - Music: Fire Hive, by Jimmy
-- Waterfall sound: from Quake 2
-- Spike sounds: from Dark Souls
+- Waterfall and jump pad sounds: Unreal
+- Spike sounds: Dark Souls
 - Piston impact sound: stock sound
+
+
+MAP03 (rouletti spaghetti): by ?????
+-
+
+
+MAP04 (butt): by Synert
+-
+
+
+MAP05 (Nuke Londo): by Synert
+-
+
+
+HEX01 (THE WAGGLENING): by HeXaGoN
+- Music: Secret Course, from Super Mario Sunshine
+
+
+
+OTHER
+======
+
+Boxy SMALLFONT: by Jimmy
+Miniplicity font: by Jimmy and Agent Spork
+Duke Nukem 3D font: from Duke Nukem 3D (surprise)
