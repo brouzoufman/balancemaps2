@@ -1,67 +1,36 @@
 //ingame timer, and storing of server records
 
-#define RECORDCOUNT 5
+#define RECORDCOUNT     5
+#define DB_COLUMNCOUNT  4
 
-int BT_RecordColors[RECORDCOUNT] = {"NewGold", "Silver", "Bronze", "Iron", "Rust"};
+#define RDATA_NAME      0
+#define RDATA_TIME      1
+#define RDATA_DATE      2
+#define RDATA_ACCOUNT   3    // I don't actually use this in the DB
 
-int BT_RecordTimes[RECORDCOUNT]; //seconds
-int BT_RecordNames[RECORDCOUNT];
-int BT_RecordDates[RECORDCOUNT];
-int BT_LastRecordUpdate = -1;
+int BT_RecordColors[RECORDCOUNT]  = {"NewGold", "Silver", "Bronze", "Iron", "Rust"};
+int BT_DBSuffixes[DB_COLUMNCOUNT] = {"names", "times", "dates", "accounts"};
 
+int BT_RecordData[RECORDCOUNT][DB_COLUMNCOUNT];
 int BT_FinishTimes[PLAYERMAX];
 
 
-function str BTimer_TimeString(int tics, int withMS)
+
+function str BTimer_DBColumnName(int col)
 {
-    int negativeTime;
-    if (tics < 0) { negativeTime = true; tics = -tics; }
+    if (col < 0 || col >= DB_COLUMNCOUNT) { return ""; }
+    str ret = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_", s:BT_DBSuffixes[col]);
     
-    int seconds = (tics / 35)   % 60;
-    int minutes = (tics / 2100) % 60;
-    int hours   = (tics / 126000);
-    
-    str hourStr = "", minuteStr = "", secondStr = "";
-    
-    if (hours > 0)
-    {
-        hourStr   = StrParam(d:hours, s:":");
-        minuteStr = StrParam(s:cond(minutes < 10, "0", ""), d:minutes, s:":");
-    }
-    else
-    {
-        minuteStr = StrParam(d:minutes, s:":");
-    }
-    
-    if (withMS)
-    {
-        int fracSeconds = itof(tics % 2100) / 35;
-        secondStr = StrParam(s:cond(seconds < 10, "0", ""), f:fracSeconds);
-        
-        // no fractional part, add period
-        if ((fracSeconds & 0xFFFF) == 0)
-        {
-            secondStr = StrParam(s:secondStr, s:".");
-        }
-        
-        // pad past decimal point for consistency
-        int decimalPos = strstr(secondStr, ".");
-        secondStr = padStringR(secondStr, "0", decimalPos+6);
-    }
-    else
-    {
-        secondStr = StrParam(s:cond(seconds < 10, "0", ""), d:seconds);
-    }
-    
-    return StrParam(s:hourStr, s:minuteStr, s:secondStr);
+    // for some reason this is necessary
+    return strLower(ret);
 }
 
 
 function void BTimer_LoadRecords(void)
 {
-    str table_times = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times");
-    str table_dates = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates");
-    str table_names = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names");
+    str table_times = BTimer_DBColumnName(RDATA_TIME);
+    str table_dates = BTimer_DBColumnName(RDATA_DATE);
+    str table_names = BTimer_DBColumnName(RDATA_NAME);
     
     int sortedTimes     = SortDBEntries(table_times, RECORDCOUNT, 0, 0);
     int sortedTimeCount = CountDBResults(sortedTimes);
@@ -70,13 +39,20 @@ function void BTimer_LoadRecords(void)
     {
         str nameKey = GetDBResultKeyString(sortedTimes, i);
         
-        int recordTime = GetDBEntry(table_times, nameKey);
-        str recordDate = GetDBEntryString(table_dates, nameKey);
-        str recordName = GetDBEntryString(table_names, nameKey);
+        int recordTime    = GetDBEntry(table_times, nameKey);
+        str recordDate    = GetDBEntryString(table_dates, nameKey);
+        str recordName    = GetDBEntryString(table_names, nameKey);
+        str recordAccount = "";
         
-        BT_RecordTimes[i] = recordTime;
-        BT_RecordNames[i] = recordName;
-        BT_RecordDates[i] = recordDate;
+        if (GetChar(nameKey, 0) == 30)
+        {
+            recordAccount = StrMid(nameKey, 1, StrLen(nameKey) - 1);
+        }
+        
+        BT_RecordData[i][RDATA_TIME]    = recordTime;
+        BT_RecordData[i][RDATA_NAME]    = recordName;
+        BT_RecordData[i][RDATA_DATE]    = recordDate;
+        BT_RecordData[i][RDATA_ACCOUNT] = recordAccount;
     }
     
     FreeDBResults(sortedTimes);
@@ -84,18 +60,17 @@ function void BTimer_LoadRecords(void)
     // clear out empty records just in case
     for (int j = i; j < RECORDCOUNT; j++)
     {
-        BT_RecordTimes[j] = -1;
-        BT_RecordNames[j] = "";
-        BT_RecordDates[j] = "";
+        BT_RecordData[j][RDATA_TIME]    = -1;
+        BT_RecordData[j][RDATA_NAME]    = "";
+        BT_RecordData[j][RDATA_DATE]    = "";
+        BT_RecordData[j][RDATA_ACCOUNT] = "";
     }
-    
-    BT_LastRecordUpdate = Timer();
 }
 
 
 function int BTimer_GetRecord(str name)
 {
-    str table_times = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times");
+    str table_times = BTimer_DBColumnName(RDATA_TIME);
     
     str cleanName = strLower(cleanString(name));
     int curRecord = GetDBEntry(table_times, cleanName);
@@ -105,24 +80,39 @@ function int BTimer_GetRecord(str name)
 }
 
 
-function int BTimer_UpdateRecord(str name, int time)
+function int BTimer_UpdateRecord(int pln, int time)
 {
     // either you're cheating or a bug occured, either way *no*
     if (time <= 0) { return false; }
     
-    str table_times = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_times");
-    str table_dates = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_dates");
-    str table_names = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_names");
+    // sanity check
+    if (pln < 0 || pln >= PLAYERMAX) { return false; }
     
-    str cleanName = strLower(cleanString(name));
-    int curRecord = GetDBEntry(table_times, cleanName);
+    str name      = StrParam(n:pln+1);
+    str account   = GetPlayerAccountName(pln);
+    str nameKey   = strLower(cleanString(name));
+    
+    // character 30: ASCII record separator, cannot appear in player names
+    // non-logged in players have an account name "<pln>@localhost"
+    // account names can't have @ in them
+    
+    if (!stringBlank(account) && (strstr(account, "@") < 0))
+    {
+        nameKey = StrParam(c:30, s:account);
+    }
+    
+    str table_times = BTimer_DBColumnName(RDATA_TIME);
+    str table_dates = BTimer_DBColumnName(RDATA_DATE);
+    str table_names = BTimer_DBColumnName(RDATA_NAME);
+    
+    int curRecord = GetDBEntry(table_times, nameKey);
 
     if ((curRecord <= 0) || (curRecord > time))
     {
         BeginDBTransaction();
-        SetDBEntry(table_times, cleanName, time);
-        SetDBEntryString(table_dates, cleanName, Strftime(SystemTime(), "%Y-%m-%d %H:%M:%S %z"));
-        SetDBEntryString(table_names, cleanName, name);
+        SetDBEntry(table_times, nameKey, time);
+        SetDBEntryString(table_dates, nameKey, Strftime(SystemTime(), "%Y-%m-%d %H:%M:%S %z"));
+        SetDBEntryString(table_names, nameKey, name);
         EndDBTransaction();
         
         return true;
@@ -151,11 +141,11 @@ script "BTimer_Open" OPEN
             showedTime = true;
             
             SetFont("BIGFONT");
-            HudMessageBold(s:BTimer_TimeString(t, false);
+            HudMessageBold(s:timeString(t, false);
                 HUDMSG_PLAIN, 198, CR_DARKGREEN, 20.1, 318.0, 0);
         }
         
-        if (lastUpdate < BT_LastRecordUpdate)
+        if (t < 4 || t % 35 == 1)
         {
             SetFont("SMALLFONT");
             SetHudSize(640, 480, true);
@@ -165,25 +155,87 @@ script "BTimer_Open" OPEN
             
             for (int i = 0; i < RECORDCOUNT; i++)
             {
-                int recordTime = BT_RecordTimes[i];
-                str recordName = BT_RecordNames[i];
+                int recordTime    = BT_RecordData[i][RDATA_TIME];
+                int idOffset      = i*5;
                 
-                if (recordTime > 0)
+                if (recordTime <= 0)
                 {
-                    HudMessage(s:"#", d:i+1, s:": ", s:recordName;
-                        HUDMSG_PLAIN | HUDMSG_COLORSTRING, 201 + (i*2), BT_RecordColors[i], 20.1, 373.0 + (i * 23.0), 0);
+                    HudMessage(s:""; HUDMSG_PLAIN, 201 + idOffset, 0,0,0,0);
+                    HudMessage(s:""; HUDMSG_PLAIN, 202 + idOffset, 0,0,0,0);
+                    HudMessage(s:""; HUDMSG_PLAIN, 203 + idOffset, 0,0,0,0);
+                    HudMessage(s:""; HUDMSG_PLAIN, 204 + idOffset, 0,0,0,0);
+                    HudMessage(s:""; HUDMSG_PLAIN, 205 + idOffset, 0,0,0,0);
+                    continue;
+                }
+                
+                str recordName    = BT_RecordData[i][RDATA_NAME];
+                str recordAccount = BT_RecordData[i][RDATA_ACCOUNT];
+                
+                HudMessage(s:"#", d:i+1, s:":";
+                    HUDMSG_PLAIN | HUDMSG_COLORSTRING, 201 + idOffset, BT_RecordColors[i], 20.1, 373.0 + (i * 23.0), 0);
+                
+                HudMessage(s:StrParam(s:"Time: \c[gray]", s:timeString(recordTime, true));
+                    HUDMSG_PLAIN | HUDMSG_COLORSTRING, 202 + idOffset, BT_RecordColors[i], 20.1, 382.0 + (i * 23.0), 0);
                     
-                    HudMessage(s:"Time: \c[gray]", s:BTimer_TimeString(recordTime, true);
-                        HUDMSG_PLAIN | HUDMSG_COLORSTRING, 202 + (i*2), BT_RecordColors[i], 20.1, 382.0 + (i * 23.0), 0);
+                if (!stringBlank(recordAccount))
+                {  
+                    HudMessage(s:"*";
+                        HUDMSG_PLAIN | HUDMSG_COLORSTRING, 205 + idOffset, "Lime", 18.2, 378.0 + (i * 23.0), 0);
+                    
+                    int second = t / 35;
+                    
+                    switch (second % 15)
+                    {
+                      default:
+                        HudMessage(s:recordName;
+                            HUDMSG_PLAIN | HUDMSG_COLORSTRING,  203 + idOffset, BT_RecordColors[i], 43.1, 373.0 + (i * 23.0), 0);
+                            
+                        HudMessage(s:""; HUDMSG_PLAIN, 204 + idOffset, 0,0,0,0);
+                        break;
+                      
+                      case 10:
+                        HudMessage(s:recordName;
+                            HUDMSG_FADEOUT | HUDMSG_COLORSTRING, 203 + idOffset, BT_RecordColors[i], 43.1, 373.0 + (i * 23.0), 0, 1.0);
+                            
+                        SetFont("CONFONT");
+                        HudMessage(s:recordAccount;
+                            HUDMSG_FADEINOUT | HUDMSG_COLORSTRING, 204 + idOffset, BT_RecordColors[i], 41.1, 372.0 + (i * 23.0), 1.0, 1.0, 1.0);
+                        SetFont("SMALLFONT");
+                        break;
+                      
+                      case 11:
+                      case 12:
+                      case 13:
+                        HudMessage(s:""; HUDMSG_PLAIN, 203 + idOffset, 0,0,0,0);
+                        
+                        SetFont("CONFONT");
+                        HudMessage(s:recordAccount;
+                            HUDMSG_PLAIN | HUDMSG_COLORSTRING, 204 + idOffset, BT_RecordColors[i], 41.1, 372.0 + (i * 23.0), 0);
+                        SetFont("SMALLFONT");
+                        break;
+                      
+                      case 14:
+                        HudMessage(s:recordName;
+                            HUDMSG_FADEINOUT | HUDMSG_COLORSTRING, 204 + idOffset, BT_RecordColors[i], 43.1, 373.0 + (i * 23.0), 1.0, 1.0, 1.0);
+                            
+                        SetFont("CONFONT");
+                        HudMessage(s:recordAccount;
+                            HUDMSG_FADEOUT | HUDMSG_COLORSTRING, 203 + idOffset, BT_RecordColors[i], 41.1, 372.0 + (i * 23.0), 0, 1.0);
+                        SetFont("SMALLFONT");
+                        break;
+                    }
+                      
                 }
                 else
                 {
-                    HudMessage(s:""; HUDMSG_PLAIN, 201 + (i*2), 0,0,0,0);
-                    HudMessage(s:""; HUDMSG_PLAIN, 202 + (i*2), 0,0,0,0);
+                    HudMessage(s:recordName;
+                        HUDMSG_PLAIN | HUDMSG_COLORSTRING, 203 + idOffset, BT_RecordColors[i], 43.1, 373.0 + (i * 23.0), 0);
+                        
+                    HudMessage(s:""; HUDMSG_PLAIN, 204 + idOffset, 0,0,0,0);
+                    HudMessage(s:""; HUDMSG_PLAIN, 205 + idOffset, 0,0,0,0);
                 }
+                    
             }
-            
-            lastUpdate = BT_LastRecordUpdate;
         }
         
         Delay(1);
@@ -212,7 +264,7 @@ script "BTimer_Display" ENTER
             int finishTime = BT_FinishTimes[pln];
             int showTime   = cond(finishTime > 0, finishTime, t);
             
-            HudMessage(s:BTimer_TimeString(showTime, false);
+            HudMessage(s:timeString(showTime, false);
                 HUDMSG_FADEOUT, 200, CR_GREEN, 20.1, 335.0, 1.25, 0.5);
         }
         
@@ -229,12 +281,10 @@ script "BTimer_Finish" (void)
     int pln = PlayerNumber();
     if (pln < 0 || BT_FinishTimes[pln] > 0) { terminate; }
     
-    str playerName = StrParam(n:0);
-    int playerTime = Timer();
-    
+    int playerTime    = Timer();
     BT_FinishTimes[pln] = playerTime;
     
-    if (BTimer_UpdateRecord(playerName, playerTime))
+    if (BTimer_UpdateRecord(pln, playerTime))
     {
         BTimer_LoadRecords();
     }

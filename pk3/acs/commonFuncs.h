@@ -406,7 +406,7 @@ function int sliceString(int string, int start, int end)
     if (start <  0) { start = len + start; }
     if (end   <= 0) { end   = len + end; }
     
-    return StrMid(string, start, (end-start)+1);
+    return StrMid(string, start, end-start);
 }
 
 // Find substring in string, starting from position 0
@@ -1129,4 +1129,50 @@ function int CheckInventoryTID(int tid, str item)
 {
     if (tid == 0) { return CheckInventory(item); }
     return CheckActorInventory(tid, item);
+}
+
+
+
+function str timeString(int tics, int withMS)
+{
+    int negativeTime;
+    if (tics < 0) { negativeTime = true; tics = -tics; }
+    
+    int seconds = (tics / 35)   % 60;
+    int minutes = (tics / 2100) % 60;
+    int hours   = (tics / 126000);
+    
+    str hourStr = "", minuteStr = "", secondStr = "";
+    
+    if (hours > 0)
+    {
+        hourStr   = StrParam(d:hours, s:":");
+        minuteStr = StrParam(s:cond(minutes < 10, "0", ""), d:minutes, s:":");
+    }
+    else
+    {
+        minuteStr = StrParam(d:minutes, s:":");
+    }
+    
+    if (withMS)
+    {
+        int fracSeconds = itof(tics % 2100) / 35;
+        secondStr = StrParam(s:cond(seconds < 10, "0", ""), f:fracSeconds);
+        
+        // no fractional part, add period
+        if ((fracSeconds & 0xFFFF) == 0)
+        {
+            secondStr = StrParam(s:secondStr, s:".");
+        }
+        
+        // pad past decimal point for consistency
+        int decimalPos = strstr(secondStr, ".");
+        secondStr = padStringR(secondStr, "0", decimalPos+6);
+    }
+    else
+    {
+        secondStr = StrParam(s:cond(seconds < 10, "0", ""), d:seconds);
+    }
+    
+    return StrParam(s:hourStr, s:minuteStr, s:secondStr);
 }
