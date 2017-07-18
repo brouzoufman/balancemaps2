@@ -7,6 +7,7 @@ int BMaps_PlayerTIDs[PLAYERMAX];
 int BMaps_TIDUpdater[PLAYERMAX];
 int BMaps_RanEnter[PLAYERMAX];
 int BMaps_SpawnTic[PLAYERMAX];
+int BMaps_FinishTimes[PLAYERMAX];
 
 function int IsZand(void)
 {
