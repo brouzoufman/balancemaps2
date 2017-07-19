@@ -14,7 +14,7 @@ HeXaGoN: some ACS
 MAPS
 =====
 
-MAP01 (Lava Forge): by synert
+MAP01 (Lava Forge): by Synert
 -
 
 
@@ -30,7 +30,7 @@ MAP03 (rouletti spaghetti): by ?????
 -
 
 
-MAP04 (butt): by Synert
+MAP04 (K A E R N K): by Synert
 -
 
 
@@ -38,8 +38,16 @@ MAP05 (Nuke Londo): by Synert
 -
 
 
+MAP06 (Balancemaps Redux): by Synert
+-
+
+
 HEX01 (THE WAGGLENING): by HeXaGoN
 - Music: Secret Course, from Super Mario Sunshine
+
+
+WAP01 (Balancemaps OG): by Synert, CrazyApple, and whoever else worked on the original
+- seriously it's been 10 years, this is why you keep a credits list
 
 
 

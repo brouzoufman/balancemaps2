@@ -279,3 +279,35 @@ actor FunhouseTimedFireball_Trap: FunhouseTimedFireball
         goto DoomImpBall::Death
     }
 }
+
+actor ForgeBall: DoomImpBall
+{
+	Damage (20)
+}
+
+actor ForgeNoKnockBack: DoomImpBall
+{
+	Scale 0.75
+	+NODAMAGETHRUST
+	Damage (10)
+}
+
+actor BaronBallNew: BaronBall
+{
+	Damage (30)
+}
+
+actor BaronBallTrap: BaronBall
+{
+    +HITTRACER
+    
+    Damage 0
+    
+    States
+    {
+      Death:
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", 35, AAPTR_TRACER)
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_TRACER)
+        goto Super::Death
+    }
+}
