@@ -1165,9 +1165,10 @@ function str timeString(int tics, int withMS)
             secondStr = StrParam(s:secondStr, s:".");
         }
         
-        // pad past decimal point for consistency
+        // 2 after the decimal point, for consistency
         int decimalPos = strstr(secondStr, ".");
-        secondStr = padStringR(secondStr, "0", decimalPos+6);
+        secondStr = padStringR(secondStr, "0", decimalPos+3);
+        secondStr = sliceString(secondStr, 0, decimalPos+3);
     }
     else
     {
