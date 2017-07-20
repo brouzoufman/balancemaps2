@@ -339,6 +339,8 @@ script "BMaps_Exit" (int countdown)
 
 script "BMaps_Exit_Countdown" (int countdown)
 {
+    countdown = cond(countdown > 0, countdown, 30);
+    
     SetHudSize(800, 600, true);
     SetFont("BIGFONT");
     
