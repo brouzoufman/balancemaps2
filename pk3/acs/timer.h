@@ -316,9 +316,11 @@ script "BMaps_Exit" (int countdown)
     
     if (CheckInventory("ShouldBeGhost") || pln < 0)
     {
-        SetResultValue(0);
+        SetResultValue(false);
         terminate;
     }
+    
+    SetResultValue(true);
     
     //if the mapper hasn't put a trigger in, make sure a timer is registered
     ACS_NamedExecuteWithResult("BTimer_Finish");
@@ -339,6 +341,8 @@ script "BMaps_Exit_Countdown" (int countdown)
 {
     SetHudSize(800, 600, true);
     SetFont("BIGFONT");
+    
+    SetActivator(0);
     
     for (int i = 0; i < countdown; i++)
     {
