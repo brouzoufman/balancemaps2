@@ -2,6 +2,7 @@
 #include "zcommon.acs"
 
 #include "commonFuncs.h"
+#include "version.h"
 
 int BMaps_PlayerTIDs[PLAYERMAX];
 int BMaps_TIDUpdater[PLAYERMAX];

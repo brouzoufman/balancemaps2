@@ -27,4 +27,7 @@ setup.py
 # don't include built pk3s
 *.pk3
 *.pk7
-/SLADE.exe.lnk
+
+# or python objects
+*.pyo
+*.pyc
