@@ -18,7 +18,8 @@ int BT_RecordData[RECORDCOUNT][DB_COLUMNCOUNT];
 function str BTimer_DBColumnName(int col)
 {
     if (col < 0 || col >= DB_COLUMNCOUNT) { return ""; }
-    str ret = StrParam(s:"bmaps_", n:PRINTNAME_LEVEL, s:"_", s:BT_DBSuffixes[col]);
+    str ret = StrParam(s:"bmaps", d:VERSION_MAJOR, s:".", d:VERSION_MINOR,
+                        s:"_", n:PRINTNAME_LEVEL, s:"_", s:BT_DBSuffixes[col]);
     
     // for some reason this is necessary
     return strLower(ret);
