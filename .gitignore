@@ -31,3 +31,8 @@ setup.py
 # or python objects
 *.pyo
 *.pyc
+
+
+# automatically updated, don't bother me with it
+pk3/KEYCONF.version
+pk3/acs/version.h
