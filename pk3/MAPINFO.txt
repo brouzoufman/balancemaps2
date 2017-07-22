@@ -59,3 +59,9 @@ map MAP06 "Balancemaps Redux"
 	music = "D_RUNNIN"
 	sky1  = "SKY3"
 }
+
+map WAP01 "Balancemaps OG"
+{
+	music = "D_RUNNIN"
+	sky1  = "SKY3"
+}
