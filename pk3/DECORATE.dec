@@ -66,3 +66,4 @@ actor DeathMarkTracker: Counter {}
 
 #include "decorate/decorations.dec"
 #include "decorate/trapstuff.dec"
+#include "decorate/shitpost.dec"
