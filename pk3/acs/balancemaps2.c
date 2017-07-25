@@ -49,7 +49,7 @@ script "BMaps_Open" open
             
             Delay(105);
             ConsoleCommand("survival 1");
-            ConsoleCommand("sv_maxlives 4");
+            ConsoleCommand("sv_maxlives 999");
             ConsoleCommand(StrParam(s:"map ", n:PRINTNAME_LEVEL));
         }
     }
