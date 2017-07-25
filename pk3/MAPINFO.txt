@@ -21,6 +21,12 @@ map HEX01 "THE WAGGLENING"
 	UsePlayerStartZ
 }
 
+map HEX03 "That's Pretty Crate"
+{
+	music = "D_MESSAG"
+	sky1  = "SKY2"
+}
+
 map MAP01 "Lava Forge"
 {
 	music = "D_RUNNIN"
