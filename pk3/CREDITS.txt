@@ -51,10 +51,17 @@ WAP01 (Balancemaps OG): by Synert, CrazyApple, and whoever else worked on the or
 
 
 
-OTHER
-======
+GRAPHICS
+=========
 
 Boxy SMALLFONT: by Jimmy
 Miniplicity font: by Jimmy and Agent Spork
 Status Report font: still Jimmy
 Duke Nukem 3D font: from Duke Nukem 3D (surprise)
+Bonfire flame sprites: from Hexen
+
+
+SOUNDS
+=======
+
+Bonfire sounds: from Dark Souls

@@ -25,6 +25,8 @@ function int IsZand(void)
 #include "returnPoints.h"
 #include "timer.h"
 
+#include "decorate.h"
+
 script "BMaps_Open" open
 {
     if (IsZand())

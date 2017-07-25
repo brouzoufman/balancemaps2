@@ -37,6 +37,23 @@ actor Trigger: CustomInventory
     }
 }
 
+actor DummyThing
+{
+    +NOINTERACTION
+    +SERVERSIDEONLY
+    
+    RenderStyle None
+    Radius 0
+    Height 0
+    
+    States
+    {
+      Spawn:
+        TNT1 A 35
+        stop
+    }
+}
+
 actor PleaseJustFuckingDie: Trigger
 {
     States
@@ -66,4 +83,5 @@ actor DeathMarkTracker: Counter {}
 
 #include "decorate/decorations.dec"
 #include "decorate/trapstuff.dec"
+#include "decorate/bonfire.dec"
 #include "decorate/shitpost.dec"

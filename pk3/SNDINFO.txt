@@ -1,4 +1,7 @@
-balancemaps/nosound         dsempty
+balancemaps/nosound             dsempty
+balancemaps/bonfire             sounds/bonfire.mp3
+balancemaps/bonfire_heal_local  sounds/bonfire_heal.mp3
+balancemaps/bonfire_heal_world  sounds/bonfire_heal_world.ogg
 
 mapsound/illusorywall       sounds/illusorywall.mp3
 mapsound/slamdry            sounds/slam_dry.ogg
@@ -9,11 +12,13 @@ mapsound/spikedown          sounds/spikedown.ogg
 mapsound/spikeslam          sounds/spikeslam.ogg
 mapsound/spikeup            sounds/spikeup.ogg
 mapsound/waterfall          sounds/waterfall.ogg
+mapsound/current            sounds/current.ogg
 
 $rolloff mapsound/jumppad_ambient   0 768
 
 $ambient 1 mapsound/waterfall       point continuous 1.0
 $ambient 2 mapsound/jumppad_ambient point continuous 0.8
+$ambient 3 mapsound/current         point continuous 0.7
 
 $rolloff mapsound/slamdry 1024 3600
 $rolloff mapsound/slamwet 1024 7200

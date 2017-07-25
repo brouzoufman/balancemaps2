@@ -8,3 +8,18 @@ Glow
 		LAVA4
 	}
 }
+
+flickerlight2 BonfireLight
+{
+    color 0.702 0.498 0.298
+    offset 0 0 16
+    
+    size 144
+    secondarySize 192
+    interval 0.02
+}
+
+object Bonfire
+{
+    frame BNFRA { light BonfireLight }
+}

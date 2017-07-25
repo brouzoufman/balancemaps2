@@ -1,0 +1,158 @@
+actor BonfireInvulnTicker:   Counter {}
+actor BonfireCooldownTicker: Counter {}
+
+actor Bonfire 29504
+{
+    //$Category "Balancemaps (MAP02)"
+    //$Title "Bonfire"
+    //$Color 3
+    
+    //$Arg0 "Healing radius"
+    //$Arg0Tooltip "In map units."
+    
+    //$Arg1 "Point order"
+    //$Arg1Tooltip "Uses BReturn_SetMyPoint internally."
+    
+    //$Arg2 "When to set point order"
+    //$Arg2Type 11
+    //$Arg2Enum { 0 = "Never"; 1 = "If the new point order is higher"; 2 = "If the new point order is lower"; 3 = "Always"; }
+    
+    +SOLID
+    +CANPASS
+    
+    Radius 20
+    Height 64
+    
+    States
+    {
+      Spawn:
+        BNFR A 0
+        BNFR A 0 ACS_NamedExecuteWithResult("Bonfire_Fire")
+        BNFR A 0 A_PlaySound("balancemaps/bonfire", CHAN_BODY, 0.5, true)
+        goto SpawnLoop
+      
+      SpawnLoop:
+        BNFR A 1 bright ACS_NamedExecuteWithResult("Bonfire_RadiusHeal", args[0], args[1], args[2])
+        loop
+    }
+}
+
+
+actor BonfireFlame
+{
+    +NOINTERACTION
+    
+    RenderStyle Add
+    Alpha 0.6
+    
+    States
+    {
+      Spawn:
+        CFCF A 0
+        CFCF A 0 ACS_NamedExecuteWithResult("Bonfire_FlameSize")
+        CFCF ABCDEFGHIJKLM 3 A_Jump(48, "Spawn2")
+        goto Spawn2
+      
+      Spawn2:
+        CFCF ABCDEFGHIJKLM 3 bright A_Warp(AAPTR_TARGET, 7 - health, 0, 4 + health, 4, WARPF_NOCHECKPOSITION | WARPF_USECALLERANGLE | WARPF_INTERPOLATE)
+        loop
+    }
+}
+
+
+actor BonfireHealFlame_Inner
+{
+    +NOINTERACTION
+    +CLIENTSIDEONLY
+    
+    RenderStyle Add
+    Alpha 0.15
+    Scale 0.9
+    
+    States
+    {
+      Spawn:
+        CFFX A 0
+        CFFX AAAAA 1 bright A_FadeIn(0.075)
+        CFFX B 0 bright A_SetScale(scaleX * 1.03)
+        CFFX B 5 bright A_ScaleVelocity(0.7)
+        CFFX C 0 bright A_SetScale(scaleX * 1.03)
+        CFFX C 5 bright A_ScaleVelocity(0.7)
+        CFFX D 0 bright A_SetScale(scaleX * 1.03)
+        CFFX D 5 bright A_ScaleVelocity(0.7)
+        CFFX E 0 bright A_SetScale(scaleX * 1.03)
+        CFFX E 5 bright A_ScaleVelocity(0.7)
+        CFFX F 0 bright A_SetScale(scaleX * 1.03)
+        CFFX F 5 bright A_ScaleVelocity(0.7)
+        CFFX G 0 bright A_SetScale(scaleX * 1.03)
+        CFFX G 5 bright A_ScaleVelocity(0.7)
+        CFFX H 0 bright A_SetScale(scaleX * 1.03)
+        CFFX H 5 bright A_ScaleVelocity(0.7)
+        
+        CFFX I 0 bright A_ScaleVelocity(0.65)
+        CFFX IIII 1 bright A_FadeOut(0.025)
+        CFFX J 0 bright A_ScaleVelocity(0.65)
+        CFFX JJJJ 1 bright A_FadeOut(0.025)
+        CFFX K 0 bright A_ScaleVelocity(0.65)
+        CFFX KKKK 1 bright A_FadeOut(0.025)
+        CFFX L 0 bright A_ScaleVelocity(0.65)
+        CFFX LLLL 1 bright A_FadeOut(0.025)
+        stop
+    }
+}
+
+
+actor BonfireHealFlame_Outer
+{
+    +NOINTERACTION
+    +CLIENTSIDEONLY
+    
+    RenderStyle Add
+    Alpha 0.3
+    Scale 0.7
+    
+    States
+    {
+      Spawn:
+        CFFX A 0
+        CFFX AAAA 1 bright A_FadeIn(0.125)
+        CFFX B 0 bright A_SetScale(scaleX * 1.05)
+        CFFX B 4 bright A_ScaleVelocity(0.75)
+        CFFX C 0 bright A_SetScale(scaleX * 1.05)
+        CFFX C 4 bright A_ScaleVelocity(0.75)
+        CFFX D 0 bright A_SetScale(scaleX * 1.05)
+        CFFX D 4 bright A_ScaleVelocity(0.75)
+        CFFX E 0 bright A_SetScale(scaleX * 1.05)
+        CFFX E 4 bright A_ScaleVelocity(0.75)
+        CFFX F 0 bright A_SetScale(scaleX * 1.05)
+        CFFX F 4 bright A_ScaleVelocity(0.75)
+        CFFX G 0 bright A_SetScale(scaleX * 1.05)
+        CFFX G 4 bright A_ScaleVelocity(0.75)
+        CFFX H 0 bright A_SetScale(scaleX * 1.05)
+        CFFX H 4 bright A_ScaleVelocity(0.75)
+        
+        CFFX I 0 bright A_ScaleVelocity(0.6)
+        CFFX IIII 1 bright A_FadeOut(0.05)
+        CFFX J 0 bright A_ScaleVelocity(0.6)
+        CFFX JJJJ 1 bright A_FadeOut(0.05)
+        CFFX K 0 bright A_ScaleVelocity(0.6)
+        CFFX KKKK 1 bright A_FadeOut(0.05)
+        CFFX L 0 bright A_ScaleVelocity(0.6)
+        CFFX LLLL 1 bright A_FadeOut(0.05)
+        stop
+    }
+}
+
+
+actor BonfireInvulnerability: PowerProtection
+{
+    DamageFactor "None",         0
+    DamageFactor "Normal",       0
+    DamageFactor "InstantDeath", 1
+    DamageFactor "Falling",      1
+    DamageFactor "Suicide",      1
+    DamageFactor "Exit",         1
+    DamageFactor "Crush",        1
+    
+    Powerup.Duration 0x7FFFFFFF
+}
