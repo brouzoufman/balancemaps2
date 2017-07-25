@@ -307,19 +307,26 @@ actor ForgeNoKnockBack: DoomImpBall
 
 actor BaronBallNew: BaronBall
 {
-	Damage (30)
+	+NODAMAGETHRUST
+	Scale 0.5
+	Radius 8
+	Height 8
+	Damage (20)
 }
 
-actor BaronBallTrap: BaronBall
+actor BaronBallTrap: BaronBallNew
 {
     +HITTRACER
+	Scale 0.85
+	Radius 10
+	Height 10
     
     Damage 0
     
     States
     {
       Death:
-        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", 35, AAPTR_TRACER)
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", 25, AAPTR_TRACER)
         "----" A 0 ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_TRACER)
         goto Super::Death
     }
