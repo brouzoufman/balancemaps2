@@ -79,7 +79,7 @@ script "Bonfire_RadiusHeal" (int radius, int pointOrder, int whenToSet)
 
 script "Bonfire_Heal" (void)
 {
-    SetActorProperty(0, APROP_Health, getMaxHealth());
+    giveHealth(getMaxHealth());
     if (CheckInventory("BonfireCooldownTicker")) { terminate; }
     
     if (CheckInventory("BonfireInvulnTicker"))

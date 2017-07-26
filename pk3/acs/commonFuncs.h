@@ -527,7 +527,7 @@ function int getMaxHealth(void)
 
 function int giveHealth(int amount)
 {
-    return giveHealthMax(amount, 0);
+    return giveHealthMax(amount, getMaxHealth());
 }
 
 function int giveHealthFactor(int amount, int maxFactor)

@@ -1,5 +1,6 @@
-server noarchive bool bmaps_debug_botscount = false;
-server noarchive bool bmaps_debug_nofail    = false;
+server noarchive bool bmaps_debug_botscount   = false;
+server noarchive bool bmaps_debug_nofail      = false;
+server           bool bmaps_debug_notsurvival = false;
 
 user bool bmaps_cl_notitlecard = false;
 user bool bmaps_cl_shitpost    = false;

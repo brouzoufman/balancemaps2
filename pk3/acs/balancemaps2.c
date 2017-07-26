@@ -39,7 +39,7 @@ script "BMaps_Open" open
 			ConsoleCommand("alwaysapplydmflags 1");
 		}
         
-        if (!GetCVar("survival"))
+        if (!(GetCVar("survival") || GetCVar("bmaps_debug_notsurvival")))
         {
             if (ConsolePlayerNumber() == -1)
             {
