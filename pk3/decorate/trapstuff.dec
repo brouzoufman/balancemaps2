@@ -308,18 +308,14 @@ actor ForgeNoKnockBack: DoomImpBall
 actor BaronBallNew: BaronBall
 {
 	+NODAMAGETHRUST
-	Scale 0.5
-	Radius 8
-	Height 8
+	Radius 6
+	Height 6
 	Damage (20)
 }
 
 actor BaronBallTrap: BaronBallNew
 {
     +HITTRACER
-	Scale 0.85
-	Radius 10
-	Height 10
     
     Damage 0
     
