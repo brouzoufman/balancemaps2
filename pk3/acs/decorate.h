@@ -47,7 +47,7 @@ script "Bonfire_RadiusHeal" (int radius, int pointOrder, int whenToSet)
         if (!PlayerInGame(i)) { continue; }
         
         SetActivatorToPlayer(i);
-        if (isDead(0)) { continue; }
+        if (isDead(0) || CheckInventory("ShouldBeGhost")) { continue; }
         
         // check from the bonfire, since the edge of the player might be sticking out
         if (!CheckSight(myTID, 0, 0)) { continue; }
@@ -110,7 +110,6 @@ script "Bonfire_Heal" (void)
 
 script "Bonfire_HealEffect" (void) clientside
 {
-    
     LocalAmbientSound("balancemaps/bonfire_heal_local", 96);
     ActivatorSound("balancemaps/bonfire_heal_world", 96);
     Delay(4);

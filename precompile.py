@@ -22,7 +22,7 @@ alias bmaps_version "echo \\\"Balancemaps 2, \\civ{major}.{minor}.{bugfix}\\c-, 
 
 VERSION_MAJOR   = 0
 VERSION_MINOR   = 7
-VERSION_BUGFIX  = 0
+VERSION_BUGFIX  = 1
 
 GIT_BRANCH      = open(".git/HEAD").read()[len("ref: refs/heads/"):].strip()
 GIT_COMMIT_LONG = open(".git/refs/heads/" + GIT_BRANCH).read().strip()
