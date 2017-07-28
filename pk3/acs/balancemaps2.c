@@ -78,7 +78,7 @@ script "BMaps_Enter" enter
     BDeath_SetDeaths(pln, 0);
     BReturn_SetupDefaultPoint(pln);
     
-    BReturn_ReturnToPoint(true, false);
+    BReturn_ReturnToPoint(true, true);
     
     if (!isDead(0)) { BMaps_SpawnTic[pln] = Timer() + 1; }
     

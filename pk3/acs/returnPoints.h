@@ -284,7 +284,7 @@ function int BReturn_TeleportToDefault(int tid, int pln, int nofog, int nohook)
 }
 
 
-function int BReturn_ReturnToPoint(int nofog, int usedefault)
+function int BReturn_ReturnToPoint(int nofog, int nodefault)
 {
     int pln = PlayerNumber();
     if (pln < 0) { return -1; }
@@ -296,8 +296,8 @@ function int BReturn_ReturnToPoint(int nofog, int usedefault)
     
     if (hookedPoint == -1)
     {
-        if (usedefault) { return BReturn_TeleportToDefault(0, pln, nofog, true); }
-        else { return false; }
+        if (nodefault) { return false; }
+        else { return BReturn_TeleportToDefault(0, pln, nofog, true); }
     }
     
     return BReturn_TeleportToPoint(0, hookedPoint, nofog, true);
@@ -328,4 +328,4 @@ script "BReturn_MaxOrder" (void) { SetResultValue(BReturn_MaxOrder()); }
 
 script "BReturn_TeleportToPoint"   (int tid, int pointID, int nofog) { SetResultValue(BReturn_TeleportToPoint(tid, pointID, nofog, false)); }
 script "BReturn_TeleportToDefault" (int tid, int pln,     int nofog) { SetResultValue(BReturn_TeleportToDefault(tid, pln, nofog, false)); }
-script "BReturn_ReturnToPoint"     (int nofog, int usedefault)       { SetResultValue(BReturn_ReturnToPoint(nofog, usedefault)); }
+script "BReturn_ReturnToPoint"     (int nofog, int nodefault)        { SetResultValue(BReturn_ReturnToPoint(nofog, nodefault)); }
