@@ -77,3 +77,11 @@ map WAP02 "t r i a n g l e s"
     music = "M_WAP02"
     sky1  = "FIREBLU1"
 }
+
+
+map WAP03 "WAGGLR"
+{
+	music = "BESTSONG"
+	sky1  = "SKY4"
+	UsePlayerStartZ
+}
