@@ -29,3 +29,46 @@ actor BigFloatColumn : Column 29503
 	+NOGRAVITY
 	Radius 64
 }
+
+actor PillarVisual
+{
+	PROJECTILE
+	+RIPPER
+	-NOTELEPORT
+	+CEILINGHUGGER
+	Height 1
+	Radius 16
+	Damage (0)
+	
+	States
+	{
+		Spawn:
+			PLLR A 4
+			loop
+		Death:
+			PLLR A 1
+			stop
+	}
+}
+
+actor PillarProjectile
+{
+	PROJECTILE
+	+RIPPER
+	+CEILINGHUGGER
+	-NOTELEPORT
+	Height 368
+	Radius 32
+	Alpha 0
+	Damage (100)
+	
+	States
+	{
+		Spawn:
+			TNT1 A 4
+			loop
+		Death:
+			TNT1 A 1
+			stop
+	}
+}
