@@ -1,5 +1,5 @@
 balancemaps/nosound             dsempty
-balancemaps/bonfire             sounds/bonfire.mp3
+balancemaps/bonfire             sounds/bonfire.ogg
 balancemaps/bonfire_heal_local  sounds/bonfire_heal.mp3
 balancemaps/bonfire_heal_world  sounds/bonfire_heal_world.ogg
 
