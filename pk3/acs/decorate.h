@@ -184,3 +184,59 @@ script "Bonfire_FlameSize" (void)
         Delay(random(1,8) * 8);
     }
 }
+
+
+script "BMaps_TurnFlamethrower" (int yawspeed, int pitchspeed)
+{
+    yawspeed   = itof(yawspeed)   / (35 * 360);
+    pitchspeed = itof(pitchspeed) / (35 * 360);
+    
+    SetUserVariable(0, "user_angle", GetActorAngle(0));
+    SetUserVariable(0, "user_pitch", GetActorPitch(0));
+    
+    while (true)
+    {
+        int curAngle = GetActorAngle(0);
+        int curPitch = GetActorPitch(0);
+        
+        int desiredAngle = GetUserVariable(0, "user_angle");
+        int desiredPitch = GetUserVariable(0, "user_pitch");
+        
+        int angDiff   = angleDifference(curAngle, desiredAngle);
+        int pitchDiff = angleDifference(curPitch, desiredPitch);
+        
+        if (angDiff != 0)
+        {
+            if (abs(angDiff) <= yawspeed)
+            {
+                SetActorAngle(0, desiredAngle);
+            }
+            else if (angDiff < 0)
+            {
+                SetActorAngle(0, curAngle - yawspeed);
+            }
+            else
+            {
+                SetActorAngle(0, curAngle + yawspeed);
+            }
+        }
+        
+        if (pitchDiff != 0)
+        {
+            if (abs(pitchDiff) <= pitchspeed)
+            {
+                SetActorPitch(0, desiredPitch);
+            }
+            else if (pitchDiff < 0)
+            {
+                SetActorPitch(0, curPitch - pitchspeed);
+            }
+            else
+            {
+                SetActorPitch(0, curPitch + pitchspeed);
+            }
+        }
+        
+        Delay(1);
+    }
+}

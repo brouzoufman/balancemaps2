@@ -3,6 +3,18 @@ balancemaps/bonfire             sounds/bonfire.ogg
 balancemaps/bonfire_heal_local  sounds/bonfire_heal.mp3
 balancemaps/bonfire_heal_world  sounds/bonfire_heal_world.ogg
 
+balancemaps/flamethrower_on         sounds/flamethrower_fireon.ogg
+balancemaps/flamethrower_off        sounds/flamethrower_fireoff.ogg
+balancemaps/flamethrower_loop       sounds/flamethrower_fireloop.ogg
+balancemaps/flamethrower_puff       sounds/flamethrower_puff.ogg
+balancemaps/flamethrower_crackle    sounds/flamethrower_crackle.ogg
+
+$limit balancemaps/flamethrower_on          3   512
+$limit balancemaps/flamethrower_off         3   512
+$limit balancemaps/flamethrower_puff        3   512
+$limit balancemaps/flamethrower_loop        0
+$limit balancemaps/flamethrower_crackle     0
+
 mapsound/illusorywall       sounds/illusorywall.mp3
 mapsound/slamdry            sounds/slam_dry.ogg
 mapsound/slamwet            sounds/slam_wet.ogg

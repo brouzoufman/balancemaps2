@@ -43,14 +43,12 @@ function int safeAdd(int a, int b)
 
 function int abs(int x)
 {
-    if (x < 0) { return -x; }
-    return x;
+    return x & 0x7FFFFFFF;
 }
 
 function int sign(int x)
 {
-    if (x < 0) { return -1; }
-    return 1;
+    return 1 - ((x & 0x80000000) >> 30);
 }
 
 function int randSign(void)
@@ -1023,12 +1021,10 @@ function int angleDifference(int ang1, int ang2)
     ang1 = mod(ang1, 1.0);
     ang2 = mod(ang2, 1.0);
 
-    int angLow  = min(ang1, ang2);
-    int angHigh = max(ang1, ang2);
-
-    int angDiff = angHigh - angLow;
-    if (angDiff > 0.5) { angDiff = 1.0 - angDiff; }
-
+    int angDiff = ang2 - ang1;
+    
+    if (angDiff >= 0.5) { return angDiff - 1.0; }
+    if (angDiff < -0.5) { return angDiff + 1.0; }
     return angDiff;
 }
 
