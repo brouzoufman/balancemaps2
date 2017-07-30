@@ -9,6 +9,8 @@ balancemaps/flamethrower_loop       sounds/flamethrower_fireloop.ogg
 balancemaps/flamethrower_puff       sounds/flamethrower_puff.ogg
 balancemaps/flamethrower_crackle    sounds/flamethrower_crackle.ogg
 
+balancemaps/chainswitch         sounds/chainswitch.ogg
+
 $limit balancemaps/flamethrower_on          0
 $limit balancemaps/flamethrower_off         0
 $limit balancemaps/flamethrower_puff        0

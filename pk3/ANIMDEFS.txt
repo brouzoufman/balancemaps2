@@ -1,0 +1,14 @@
+switch SW_OL1
+    on
+        sound balancemaps/chainswitch
+        PIC SW_OL2 tics 3
+        PIC SW_OL3 tics 3
+        PIC SW_OL4 tics 3
+        PIC SW_OL5 tics 0
+        
+    off
+        sound balancemaps/chainswitch
+        PIC SW_OL4 tics 3
+        PIC SW_OL3 tics 3
+        PIC SW_OL2 tics 3
+        PIC SW_OL1 tics 0
