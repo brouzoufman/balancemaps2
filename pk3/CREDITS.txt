@@ -5,9 +5,9 @@ the sequel nobody asked for
 CODE
 =====
 
-ijon: most of the ACS, some DECORATE
-Synert: some ACS, most of the DECORATE
-HeXaGoN: some ACS
+ijon: most of the code, a map
+Synert: some code, most of the maps
+HeXaGoN: some code, some maps
 
 
 
@@ -45,10 +45,20 @@ MAP06 (Balancemaps Redux): by Synert
 HEX01 (THE WAGGLENING): by HeXaGoN
 - Music: Secret Course, from Super Mario Sunshine
 
+HEX03 (It's Pretty Crate): by HeXaGoN
+- Orange/green crate textures: cc4-tex.wad
+
 
 WAP01 (Balancemaps OG): by Synert, CrazyApple, and whoever else worked on the original
 - seriously it's been 10 years, this is why you keep a credits list
 
+
+WAP02 (T R I A N G L E S): by ijon
+- Music: mock2.wad
+
+
+WAP03 (WAGGLR): by HeXaGoN
+- same as HEX01
 
 
 GRAPHICS
@@ -68,3 +78,9 @@ SOUNDS
 Bonfire sounds: from Dark Souls
 Flamethrower trap sounds: from Painkiller
 Chain switch sound: from Hexen
+
+
+MUSIC
+======
+
+M_DEJAVU (HE'S GOING TOO FAST!): Initial D
