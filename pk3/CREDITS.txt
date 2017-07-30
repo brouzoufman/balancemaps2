@@ -58,10 +58,13 @@ Boxy SMALLFONT: by Jimmy
 Miniplicity font: by Jimmy and Agent Spork
 Status Report font: still Jimmy
 Duke Nukem 3D font: from Duke Nukem 3D (surprise)
-Bonfire flame sprites: from Hexen
+Flame sprites (bonfire and flamethrower trap): from Hexen
+Chain switch: from Hexen
 
 
 SOUNDS
 =======
 
 Bonfire sounds: from Dark Souls
+Flamethrower trap sounds: from Painkiller
+Chain switch sound: from Hexen
