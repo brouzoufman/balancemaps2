@@ -9,11 +9,13 @@ balancemaps/flamethrower_loop       sounds/flamethrower_fireloop.ogg
 balancemaps/flamethrower_puff       sounds/flamethrower_puff.ogg
 balancemaps/flamethrower_crackle    sounds/flamethrower_crackle.ogg
 
-$limit balancemaps/flamethrower_on          3   512
-$limit balancemaps/flamethrower_off         3   512
-$limit balancemaps/flamethrower_puff        3   512
+$limit balancemaps/flamethrower_on          0
+$limit balancemaps/flamethrower_off         0
+$limit balancemaps/flamethrower_puff        0
 $limit balancemaps/flamethrower_loop        0
 $limit balancemaps/flamethrower_crackle     0
+
+$rolloff balancemaps/flamethrower_loop      150 900
 
 mapsound/illusorywall       sounds/illusorywall.mp3
 mapsound/slamdry            sounds/slam_dry.ogg
