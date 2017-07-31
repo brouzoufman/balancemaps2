@@ -109,6 +109,12 @@ script "BSwitch_ActivateSwitch" (int switchID, int pln)
     GiveActorInventory(switchTID, "GhostSwitchOnCooldown", 1);
     SetActorState(switchTID, "SwitchOn");
     
+    if (switchCooldown < 0)
+    {
+        while (PlayerInGame(pln)) { Delay(1); }
+        terminate;
+    }
+    
     for (int tic = 0; tic < switchCooldown; tic++)
     {
         // Disassociation handled in disconnect script
