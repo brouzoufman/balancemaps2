@@ -28,13 +28,19 @@ mapsound/spikedown          sounds/spikedown.ogg
 mapsound/spikeslam          sounds/spikeslam.ogg
 mapsound/spikeup            sounds/spikeup.ogg
 mapsound/waterfall          sounds/waterfall.ogg
+mapsound/waterfall2         sounds/waterfall2.ogg
+mapsound/waterfall3         sounds/waterfall3.ogg
+mapsound/waterfall4         sounds/waterfall4.ogg
 mapsound/current            sounds/current.ogg
 
 $rolloff mapsound/jumppad_ambient   0 768
 
-$ambient 1 mapsound/waterfall       point continuous 1.0
+$ambient 1 mapsound/waterfall       point continuous 0.7
 $ambient 2 mapsound/jumppad_ambient point continuous 0.8
 $ambient 3 mapsound/current         point continuous 0.7
+$ambient 4 mapsound/waterfall2      point continuous 0.7
+$ambient 5 mapsound/waterfall3      point continuous 0.7
+$ambient 6 mapsound/waterfall4      point continuous 0.7
 
 $rolloff mapsound/slamdry 1024 3600
 $rolloff mapsound/slamwet 1024 7200
