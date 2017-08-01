@@ -313,7 +313,7 @@ script "BMaps_RewardKill" (int killedPln)
     
     int theirPoint = BReturn_GetPlayerPoint(killedPln);
     BReturn_SetPlayerPoint(pln, theirPoint);
-    BReturn_ReturnToPoint(false, true);
+    BReturn_ReturnToPoint(false, false);
     
 }
 
