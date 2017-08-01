@@ -334,7 +334,8 @@ actor FlamethrowerTrap: SwitchableDecoration 29505
 {
     //$Category "Balancemaps (traps)"
     //$Title "Flamethrower trap"
-    //$Color 7
+    //$Sprite CFCFC0
+    //$Color 4
     
     //$Arg0 "Turn speed (yaw)"
     //$Arg0Tooltip "In degrees/second."
@@ -379,7 +380,7 @@ actor FlamethrowerTrap: SwitchableDecoration 29505
       SkipWarmup:
         TNT1 A 0 A_PlaySound("balancemaps/flamethrower_on",       3, 0.6)
         TNT1 A 0 A_PlaySound("balancemaps/flamethrower_loop",     5, 0.05, true)
-        TNT1 A 0 A_PlaySound("balancemaps/flamethrower_crackle",  6, 0.3,  true)
+        TNT1 A 0 A_PlaySound("balancemaps/flamethrower_crackle",  6, 0.4,  true)
         TNT1 A 0 A_SetUserVar("user_active", 1)
         goto ActiveLoop
       

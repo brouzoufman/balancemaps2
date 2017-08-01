@@ -5,10 +5,13 @@ actor Bonfire 29504
 {
     //$Category "Balancemaps (MAP02)"
     //$Title "Bonfire"
-    //$Color 3
+    //$NotAngled
+    //$Color 17
     
     //$Arg0 "Healing radius"
     //$Arg0Tooltip "In map units."
+    //$Arg0RenderStyle "Circle"
+    //$Arg0RenderColor "FF9000"
     
     //$Arg1 "Point order"
     //$Arg1Tooltip "Uses BReturn_SetMyPoint internally."
