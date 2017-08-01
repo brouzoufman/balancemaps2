@@ -129,6 +129,37 @@ actor GravelordRevenantTracer: RevenantTracer
     }
 }
 
+actor BadRevenant : Revenant 29506
+{
+	States
+    {
+      Missile:
+        SKEL J 0 Bright A_FaceTarget
+        SKEL J 10 Bright A_FaceTarget
+        SKEL K 10 A_CustomMissile("BadRevenantTracer", 40)
+        SKEL K 10 A_FaceTarget
+        goto See
+	}
+}
+
+actor BadRevenantTracer: RevenantTracer
+{
+	+MTHRUSPECIES
+	Damage (25)
+    
+	States
+	{
+	Spawn:
+		FATB AB 1 bright A_Tracer
+		loop
+	}
+}
+
+actor Driver : BaronOfHell 29507
+{
+	Health 1
+}
+
 actor ExplosionTrap
 {
     Projectile
