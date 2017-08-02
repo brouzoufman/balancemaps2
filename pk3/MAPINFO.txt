@@ -6,6 +6,8 @@ gameinfo
 defaultmap
 {
     AllowRespawn
+    ResetHealth
+    ResetInventory
 }
 
 map TESTMAP "test map"
