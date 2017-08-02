@@ -440,6 +440,17 @@ actor FlamethrowerTrap: SwitchableDecoration 29505
     }
 }
 
+actor FlamethrowerTrap_Off: FlamethrowerTrap 29507
+{
+    //$Title "Flamethrower trap (off)"
+    
+    States
+    {
+      Spawn:
+        goto SetupInactive
+    }
+}
+
 actor FLTrapFlame
 {
     Radius 4
