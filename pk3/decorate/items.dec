@@ -1,0 +1,20 @@
+actor ButtonOfReturning: CustomInventory
+{
+    +INVBAR
+    +UNTOSSABLE
+    
+    Inventory.Icon "RTURNITM"
+    Inventory.MaxAmount 1
+    Tag "Button of Returning"
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+      
+      Use:
+        TNT1 A 0 ACS_NamedExecuteWithResult("BReturn_ReturnToPoint", false, false)
+        fail
+    }
+}
