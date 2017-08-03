@@ -240,3 +240,43 @@ script "BMaps_TurnFlamethrower" (int yawspeed, int pitchspeed)
         Delay(1);
     }
 }
+
+script "BMaps_RocketJumpOn" (void)
+{
+    SetActivatorToTarget(0);
+    int pln = PlayerNumber();
+    
+    for (int i = 0; i < PLAYERMAX; i++)
+    {
+        if (!PlayerInGame(i)) { continue; }
+        SetActivatorToPlayer(i);
+        
+        if (pln == i)
+        {
+            GiveInventory("RJInvulnerability", 1);
+        }
+        else if (CheckFlag(0, "SHOOTABLE"))
+        {
+            GiveInventory("RJMakeUnshootable", 1);
+        }
+    }
+}
+
+script "BMaps_RocketJumpOff" (void)
+{
+    for (int i = 0; i < PLAYERMAX; i++)
+    {
+        if (!PlayerInGame(i)) { continue; }
+        SetActivatorToPlayer(i);
+        
+        if (CheckInventory("RJInvulnerability"))
+        {
+            TakeInventory("RJInvulnerability", 1);
+        }
+        
+        if (CheckInventory("RJUnshootable"))
+        {
+            GiveInventory("RJMakeShootable", 1);
+        }
+    }
+}
