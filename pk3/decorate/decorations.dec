@@ -1,6 +1,6 @@
 actor BaronStatue 29501
 {
-    //$Category "Balancemaps (MAP02)"
+    //$Category "Balancemaps/Decoration"
     //$Title "Baron statue"
     //$Color 3
     
@@ -20,12 +20,20 @@ actor BaronStatue 29501
 
 actor FloatColumn : Column 29502
 {
+    //$Category "Balancemaps/Decoration"
+    //$Title "Floating column"
+    //$Color 3
+    
 	+NOGRAVITY
 	Radius 32
 }
 
 actor BigFloatColumn : Column 29503
 {
+    //$Category "Balancemaps/Decoration"
+    //$Title "Floating column (wide)"
+    //$Color 3
+    
 	+NOGRAVITY
 	Radius 64
 }

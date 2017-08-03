@@ -3,7 +3,7 @@ actor BonfireCooldownTicker: Counter {}
 
 actor Bonfire 29504
 {
-    //$Category "Balancemaps (MAP02)"
+    //$Category "Balancemaps/MAP02"
     //$Title "Bonfire"
     //$NotAngled
     //$Color 17

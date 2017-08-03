@@ -3,7 +3,7 @@ actor GhostSwitchDormant: Inventory {}
 
 actor GhostSwitch 27501
 {
-    //$Category "Balancemaps (control)"
+    //$Category "Balancemaps/Core"
     //$Title "Ghost switch"
     //$NotAngled
     //$Arg0 Script number

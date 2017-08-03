@@ -131,6 +131,10 @@ actor GravelordRevenantTracer: RevenantTracer
 
 actor BadRevenant : Revenant 29506
 {
+    //$Category "Balancemaps/Enemies"
+    //$Title "Revenant (rude)"
+    //$Color 12
+    
 	States
     {
       Missile:
@@ -157,6 +161,10 @@ actor BadRevenantTracer: RevenantTracer
 
 actor Driver : BaronOfHell 29507
 {
+    //$Category "Balancemaps/Enemies"
+    //$Title "Baron of Hell (1 health)"
+    //$Color 12
+    
 	Health 1
 }
 
@@ -207,8 +215,9 @@ actor FunhouseExplosion
 
 actor FunhouseWallBreak 28501
 {
-    //$Category "Balancemaps (MAP02)"
-    //$Title "Wall breaker"
+    //$Category "Balancemaps/MAP02"
+    //$Title "Funhouse wall breaker"
+    //$Sprite MISLB0
     //$NotAngled
     //$Color 7
     
@@ -361,12 +370,12 @@ actor BaronBallTrap: BaronBallNew
 
 
 
-actor FlamethrowerTrap: SwitchableDecoration 29505
+actor FlamethrowerTrap: SwitchableDecoration 29552
 {
-    //$Category "Balancemaps (traps)"
-    //$Title "Flamethrower trap"
+    //$Category "Balancemaps/Traps"
+    //$Title "Flamethrower"
     //$Sprite CFCFC0
-    //$Color 4
+    //$Color 12
     
     //$Arg0 "Turn speed (yaw)"
     //$Arg0Tooltip "In degrees/second."
@@ -440,9 +449,10 @@ actor FlamethrowerTrap: SwitchableDecoration 29505
     }
 }
 
-actor FlamethrowerTrap_Off: FlamethrowerTrap 29507
+actor FlamethrowerTrap_Off: FlamethrowerTrap 29553
 {
-    //$Title "Flamethrower trap (off)"
+    //$Title "Flamethrower (off)"
+    //$Sprite CFCFA0
     
     States
     {
