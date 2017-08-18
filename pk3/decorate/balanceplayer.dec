@@ -5,6 +5,10 @@ actor BalancePlayer: DoomPlayer
     
     +NOTELEFRAG
     DamageFactor "Telefrag", 0
+	
+	Player.StartItem "ButtonOfGhosting"
+	Player.StartItem "Pistol"
+	Player.StartItem "Fist"
     
     // This gets removed in ENTER/RESPAWN scripts
     +NODAMAGE

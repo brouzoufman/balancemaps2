@@ -18,3 +18,24 @@ actor ButtonOfReturning: CustomInventory
         fail
     }
 }
+
+actor ButtonOfGhosting: CustomInventory
+{
+    +INVBAR
+    +UNTOSSABLE
+    
+    Inventory.Icon "KILLSELF"
+    Inventory.MaxAmount 1
+    Tag "Button of Ghosting"
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+      
+      Use:
+        TNT1 A 0 ACS_NamedExecuteWithResult("BMaps_BecomeGhost", -1)
+        fail
+    }
+}
