@@ -9,6 +9,7 @@ actor BalancePlayer: DoomPlayer
 	Player.StartItem "ButtonOfGhosting"
 	Player.StartItem "Pistol"
 	Player.StartItem "Fist"
+	Player.StartItem "Clip", 50
     
     // This gets removed in ENTER/RESPAWN scripts
     +NODAMAGE
