@@ -825,12 +825,12 @@ function int roundAway(int i)
     return ftoi(i);
 }
 
-function int round(int i)
+function int oldRound(int i)
 {
     return ftoi(i + 0.5);
 }
 
-function int ceil(int i)
+function int oldCeil(int i)
 {
     return ftoi(i + 0xFFFF);
 }
