@@ -8,6 +8,7 @@ actor GhostSwitch 27501
     //$NotAngled
     //$Arg0 Script number
     //$Arg1 Cooldown (tics)
+    //$Arg2 Script argument
     //$Color 10
     
     RenderStyle Add
@@ -49,6 +50,7 @@ actor GhostSwitch 27501
 actor GhostSwitch_Red: GhostSwitch 27503
 {
     //$Title "Ghost switch (red)"
+    //$Color 12
     Translation "192:207=169:191"
 }
 
