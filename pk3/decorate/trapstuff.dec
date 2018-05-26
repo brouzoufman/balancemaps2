@@ -69,7 +69,7 @@ actor CacodemonBall_Trap_NoKnock : CacodemonBall_Trap
 	States
     {
       Death:
-        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", 15, AAPTR_TRACER)
+        "----" A 0 ACS_NamedExecuteWithResult("BMark_DealDamage", 10, AAPTR_TRACER)
         "----" A 0 ACS_NamedExecuteWithResult("BMark_MarkFromProjectile", 175, AAPTR_TRACER)
         goto Super::Death
     }
