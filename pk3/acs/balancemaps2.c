@@ -24,6 +24,7 @@ function int IsZand(void)
 #include "mapscripts.h"
 #include "returnPoints.h"
 #include "timer.h"
+#include "gotoplayer.h"
 
 #include "decorate.h"
 

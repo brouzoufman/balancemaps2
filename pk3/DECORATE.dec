@@ -77,6 +77,7 @@ actor DeathMarkTracker: Counter {}
 
 #include "decorate/ghostswitch.dec"
 #include "decorate/returnpoint.dec"
+#include "decorate/gotoplayer.dec"
 
 #include "decorate/balanceplayer.dec"
 #include "decorate/SpookyGhost.dec"
