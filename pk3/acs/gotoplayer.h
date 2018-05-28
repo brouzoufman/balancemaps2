@@ -109,8 +109,7 @@ script "BGoto_WarpCamera" (int plnToView) clientside
             MoveAlongLine_KeepSight(camTID, headTID, headX,headY,headZ, dx,dy,dz, -1.0);
         }
         
-        MoveAlongLine_KeepSight(camTID, headTID, GetActorX(camTID), GetActorY(camTID), GetActorZ(camTID), 0, 0, 16.0, 0);
-        
+        SetActorPosition(camTID, GetActorX(camTID), GetActorY(camTID), min(GetActorZ(camTID) + 16.0, GetActorCeilingZ(camTID)), false);
         
         Thing_Remove(headTID);
         Delay(1);
