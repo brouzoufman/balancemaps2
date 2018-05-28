@@ -10,6 +10,8 @@ int BMaps_RanEnter[PLAYERMAX];
 int BMaps_SpawnTic[PLAYERMAX];
 int BMaps_FinishTimes[PLAYERMAX];
 
+int IsServer;
+
 function int IsZand(void)
 {
     SetDBEntry("balancemaps", "iszand", 18271);
@@ -30,6 +32,8 @@ function int IsZand(void)
 
 script "BMaps_Open" open
 {
+    IsServer = true;
+    
     if (IsZand())
     {
 		if (!GetCVar("sv_unblockplayers")) { ConsoleCommand("sv_unblockplayers 1"); }

@@ -1173,3 +1173,11 @@ function str timeString(int tics, int withMS)
     
     return StrParam(s:hourStr, s:minuteStr, s:secondStr);
 }
+
+
+function int ActivatorToPlayer(int i)
+{
+    if (i < 0 || i >= PLAYERMAX) { return false; }
+    if (i < 8) { SetActivator(0, AAPTR_PLAYER1 << i); }
+    return SetActivatorToPlayer(i);
+}

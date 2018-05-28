@@ -10,6 +10,8 @@ str GotoCamTextures[PLAYERMAX] =
     "TPVIEW56", "TPVIEW57", "TPVIEW58", "TPVIEW59", "TPVIEW60", "TPVIEW61", "TPVIEW62", "TPVIEW63",
 };
 
+
+
 function int MoveAlongLine_KeepSight(int camTID, int sightTID, int startX, int startY, int startZ, int dx, int dy, int dz, int endShift)
 {
     int mag = VectorLength(VectorLength(dx, dy), dz);
@@ -20,6 +22,7 @@ function int MoveAlongLine_KeepSight(int camTID, int sightTID, int startX, int s
     int testMag     = mag >> 1;
     int shiftFactor = 2;
     
+    int camAngle = GetActorAngle(camTID);
     int lastX, lastY, lastZ;
     int wasVisible = false;
     
@@ -29,7 +32,7 @@ function int MoveAlongLine_KeepSight(int camTID, int sightTID, int startX, int s
         int testY = startY + FixedMul(ny, testMag);
         int testZ = startZ + FixedMul(nz, testMag);
         
-        int warped = Warp(camTID, testX, testY, testZ, 0, WARPF_MOVEPTR | WARPF_ABSOLUTEPOSITION | WARPF_COPYINTERPOLATION);
+        int warped = Warp(camTID, testX, testY, testZ, camAngle, WARPF_MOVEPTR | WARPF_ABSOLUTEPOSITION | WARPF_ABSOLUTEANGLE | WARPF_COPYINTERPOLATION);
         
         if (warped && CheckSight(camTID, sightTID, 0))
         {
@@ -46,7 +49,7 @@ function int MoveAlongLine_KeepSight(int camTID, int sightTID, int startX, int s
             
             if (wasVisible)
             {
-                Warp(camTID, lastX, lastY, lastZ, 0, WARPF_MOVEPTR | WARPF_ABSOLUTEPOSITION | WARPF_COPYINTERPOLATION);
+                Warp(camTID, lastX, lastY, lastZ, camAngle, WARPF_MOVEPTR | WARPF_ABSOLUTEPOSITION | WARPF_ABSOLUTEANGLE | WARPF_COPYINTERPOLATION);
             }    
         }
         
@@ -62,11 +65,75 @@ function int MoveAlongLine_KeepSight(int camTID, int sightTID, int startX, int s
         testMag = max(0, testMag + endShift);
         
         Warp(camTID, startX + FixedMul(nx, testMag), startY + FixedMul(ny, testMag), startZ + FixedMul(nz, testMag),
-                     0, WARPF_MOVEPTR | WARPF_NOCHECKPOSITION | WARPF_ABSOLUTEPOSITION | WARPF_COPYINTERPOLATION);
+                     camAngle, WARPF_MOVEPTR | WARPF_NOCHECKPOSITION | WARPF_ABSOLUTEPOSITION | WARPF_ABSOLUTEANGLE | WARPF_COPYINTERPOLATION);
     }
     
     return testMag;
 }
+
+
+
+
+script "BGoto_CanWarpTo" (int pln)
+{
+    if (!PlayerInGame(pln)) { SetResultValue(false); terminate; }
+    ActivatorToPlayer(pln);
+    
+    SetResultValue(!CheckActorClass(0, "SpookyGhost"));
+}
+
+
+
+script "BGoto_GetNearestPlayer" (int noghost)
+{
+    int myX      = GetActorX(0);
+    int myY      = GetActorY(0);
+    int myZ      = GetActorZ(0);
+    int myRadius = GetActorProperty(0, APROP_Radius);
+    int myHeight = GetActorProperty(0, APROP_Height);
+    int myPln    = PlayerNumber();
+    
+    int nearestPln  = -1;
+    int nearestDist = 0x7FFFFFFF;
+    
+    for (int i = 0; i < PLAYERMAX; i++)
+    {
+        if (i == myPln || !PlayerInGame(i)) { continue; }
+        
+        ActivatorToPlayer(i);
+        if (noghost && CheckActorClass(0, "SpookyGhost")) { continue; }
+        
+        int plX      = GetActorX(0);
+        int plY      = GetActorY(0);
+        int plZ      = GetActorZ(0);
+        int plRadius = GetActorProperty(0, APROP_Radius);
+        int plHeight = GetActorProperty(0, APROP_Height);
+        
+        int myNearestX = middle(myX - myRadius, plX, myX + myRadius);
+        int myNearestY = middle(myY - myRadius, plY, myY + myRadius);
+        int myNearestZ = middle(myZ,            plZ, myZ + myHeight);
+        
+        int plNearestX = middle(plX - plRadius, myX, plX + myRadius);
+        int plNearestY = middle(plY - plRadius, myY, plY + myRadius);
+        int plNearestZ = middle(plZ,            myZ, plZ + myHeight);
+        
+        int dx = myNearestX - plNearestX;
+        int dy = myNearestY - plNearestY;
+        int dz = myNearestZ - plNearestZ;
+        
+        int dist = VectorLength(VectorLength(dx, dy), dz);
+        
+        if (dist < NearestDist)
+        {
+            nearestPln  = i;
+            nearestDist = dist;
+        }
+    }
+    
+    SetResultValue(nearestPln);
+}
+
+
 
 script "BGoto_WarpCamera" (int plnToView) clientside
 {
@@ -79,16 +146,13 @@ script "BGoto_WarpCamera" (int plnToView) clientside
     
     SetResultValue(camTID);
     
+    // when locked, it stays directly behind its target
+    // when unlocked, it can rotate on its own
+    SetUserVariable(camTID, "user_unlocked", false);
+    
     while (IsTIDUsed(camTID))
     {
         if (!PlayerInGame(plnToView)) { break; }
-        
-        // plan here: start at player's head, put the camera at the desired position,
-        // and if the camera can't see his head, move it closer or further (binary chop)
-        // until the optimal position is found
-        //
-        // player's view height is 41 units by default, so +9 puts it at 50 units,
-        // just about where his eyes actually are on the sprite
         
         int headHeight = GetActorViewHeight(0);
         
@@ -97,8 +161,24 @@ script "BGoto_WarpCamera" (int plnToView) clientside
         int headY   = GetActorY(0);
         int headZ   = GetActorZ(0) + headHeight;
         
+        int camAngle;
+        
+        if (GetUserVariable(camTID, "user_unlocked"))
+        {
+            camAngle = GetUserVariable(camTID, "user_angle");
+        }
+        else
+        {
+            camAngle = GetActorAngle(0);
+            SetUserVariable(camTID, "user_angle", camAngle);
+        }
+        
+        int camX = headX + (96 * cos(camAngle + 0.5));
+        int camY = headY + (96 * sin(camAngle + 0.5));
+        int camZ = headZ;
+        
         SpawnForced("GotoPlayer_SightChecker", headX, headY, headZ, headTID);
-        int warped = Warp(camTID, -96.0, 0, headHeight, 0, WARPF_MOVEPTR | WARPF_NOCHECKPOSITION | WARPF_COPYINTERPOLATION);
+        int warped = Warp(camTID, camX, camY, camZ, camAngle, WARPF_MOVEPTR | WARPF_ABSOLUTEPOSITION | WARPF_ABSOLUTEANGLE | WARPF_NOCHECKPOSITION | WARPF_COPYINTERPOLATION);
         
         if (!(warped && CheckSight(camTID, headTID, 0)))
         {
@@ -110,6 +190,7 @@ script "BGoto_WarpCamera" (int plnToView) clientside
         }
         
         SetActorPosition(camTID, GetActorX(camTID), GetActorY(camTID), min(GetActorZ(camTID) + 16.0, GetActorCeilingZ(camTID)), false);
+        SetActorAngle(camTID, camAngle); // this shouldn't be necessary
         
         Thing_Remove(headTID);
         Delay(1);
@@ -117,6 +198,210 @@ script "BGoto_WarpCamera" (int plnToView) clientside
     
     if (IsTIDUsed(camTID)) { Thing_Remove(camTID); }
 }
+
+
+
+#define GOTOID_CAMERA   19828
+#define GOTOID_NAME     19829
+#define GOTOID_CONTROLS 19827
+
+int WarpMenuLocks[PLAYERMAX];
+
+script "BGoto_ChoosePlayer" (void) net clientside
+{
+    int pln = PlayerNumber();
+    if (pln == -1) { terminate; }
+    if (pln != ConsolePlayerNumber()) { terminate; }
+    
+    if (!CheckActorClass(0, "SpookyGhost"))
+    { 
+        Print(s:"Hey, only ghosts can warp!");
+        terminate;
+    }
+    
+    int selectedPln = ACS_NamedExecuteWithResult("BGoto_GetNearestPlayer", true);
+    
+    // if there's no closest player, then there's no other players
+    if (selectedPln == -1)
+    {
+        Print(s:"No players to warp to.");
+        terminate;
+    }
+    
+    SetPlayerProperty(false, true, PROP_TOTALLYFROZEN);
+    SetHudSize(640, 480, true);
+    
+    int camTID      = 0;
+    int camUnlocked = false;
+    str camTexName  = GotoCamTextures[pln];
+    
+    int leftDownTime  = 0;
+    int rightDownTime = 0;
+    
+    int warpLock = WarpMenuLocks[pln] + 1;
+    WarpMenuLocks[pln] = warpLock;
+    
+    while (WarpMenuLocks[pln] == warpLock)
+    {
+        // input handling
+        
+        if (keyPressed(BT_FORWARD))
+        {
+            if (IsServer)
+            {
+                ACS_NamedExecuteAlways("BGoto_WarpToPlayer", 0, selectedPln);
+            }
+            else
+            {
+                NamedRequestScriptPuke("BGoto_WarpToPlayer", selectedPln);
+            }
+            break;
+        }
+        
+        if (keyPressed(BT_BACK))
+        {
+            break;
+        }
+        
+        if (keyDown(BT_MOVELEFT))  { leftDownTime += 1; }
+        else                       { leftDownTime  = 0; }
+        
+        if (keyDown(BT_MOVERIGHT)) { rightDownTime += 1; }
+        else                       { rightDownTime  = 0; }
+        
+        // 1 if cycling right, -1 if cycling left
+        int cycleDirection = 0;
+        
+        if (rightDownTime == 1 || (rightDownTime > 12 && (rightDownTime % 4 == 0)))
+        {
+            cycleDirection += 1;
+        }
+        
+        if (leftDownTime == 1 || (leftDownTime > 12 && (leftDownTime % 4 == 0)))
+        {
+            cycleDirection -= 1;
+        }
+        
+        if (!(cycleDirection || ACS_NamedExecuteWithResult("BGoto_CanWarpTo", selectedPln)))
+        {
+            cycleDirection = 1;
+        }
+        
+        if (cycleDirection)
+        {
+            for (int i = 1; i < PLAYERMAX; i++)
+            {
+                int checkPln = mod(selectedPln + (i * cycleDirection), PLAYERMAX);
+                if (pln == checkPln || !ACS_NamedExecuteWithResult("BGoto_CanWarpTo", checkPln)) { continue; }
+                
+                selectedPln = checkPln;
+                Thing_Remove(camTID);
+                camTID = 0;
+                break;
+            }
+        }
+        
+        if (!ACS_NamedExecuteWithResult("BGoto_CanWarpTo", selectedPln))
+        {
+            break;
+        }
+        
+        
+        camUnlocked ^= keyPressed(BT_JUMP);
+        if (camTID) { SetUserVariable(camTID, "user_unlocked", camUnlocked); }
+        
+        
+        int dyaw = GetPlayerInput(-1, INPUT_YAW) * 2;
+        if (camTID) { SetUserVariable(camTID, "user_angle", GetUserVariable(camTID, "user_angle") + dyaw); }
+        
+        
+        // display
+        
+        if (camTID == 0)
+        {
+            camTID = ACS_NamedExecuteWithResult("BGoto_WarpCamera", selectedPln);
+            
+            if (camTID)
+            { 
+                SetCameraToTexture(camTID, camTexName, 90);
+                SetUserVariable(camTID, "user_unlocked", camUnlocked);
+            }
+        }
+        
+        if (camTID)
+        {
+            SetFont(camTexName);
+            HudMessage(s:"A"; HUDMSG_PLAIN, GOTOID_CAMERA, CR_UNTRANSLATED, 490.4, 350.2, 1.0);
+            
+            SetFont("SMALLFONT");
+            HudMessage(s:"Now viewing: ", n:selectedPln+1; HUDMSG_PLAIN, GOTOID_NAME, CR_YELLOW, 490.4, 354.1, 1.0);
+        }
+        else
+        {
+            HudMessage(s:""; HUDMSG_PLAIN, GOTOID_CAMERA, 0,0,0,0);
+            
+            SetFont("SMALLFONT");
+            HudMessage(s:"Not viewing: ", n:selectedPln+1; HUDMSG_PLAIN, GOTOID_NAME, CR_YELLOW, 490.4, 354.1, 1.0);
+        }
+        
+        str aimStr = cond(camUnlocked, "Jump to \cadisable\c- camera aim", "Jump to \cdenable\c- camera aim");
+        
+        HudMessage(s:"Move left/right to switch players\nMove up to warp, move down to cancel\n", s:aimStr;
+                HUDMSG_PLAIN, GOTOID_CONTROLS, CR_WHITE, 490.4, 366.1, 1.0);
+        
+        Delay(1);
+    }
+    
+    if (camTID) { Thing_Remove(camTID); }
+    
+    // if we didn't get booted out, do this
+    
+    if (WarpMenuLocks[pln] == warpLock)
+    {
+        HudMessage(s:""; HUDMSG_PLAIN, GOTOID_CAMERA,   0,0,0,0);
+        HudMessage(s:""; HUDMSG_PLAIN, GOTOID_NAME,     0,0,0,0);
+        HudMessage(s:""; HUDMSG_PLAIN, GOTOID_CONTROLS, 0,0,0,0);
+        
+        Delay(3);
+        SetPlayerProperty(false, false, PROP_TOTALLYFROZEN);
+    }
+}
+
+
+
+script "BGoto_WarpToPlayer" (int warpPln) net
+{
+    int pln = PlayerNumber();
+    if (pln == -1) { terminate; }
+    
+    if (!CheckActorClass(0, "SpookyGhost"))
+    {
+        Print(s:"Hey, only ghosts can warp!");
+        terminate;
+    }
+    
+    if (!PlayerInGame(warpPln))
+    {
+        Print(s:"No player with ID ", d:warpPln, s:" currently ingame.");
+        terminate;
+    }
+    
+    ActivatorToPlayer(warpPln);
+    int warpX     = GetActorX(0);
+    int warpY     = GetActorY(0);
+    int warpZ     = GetActorZ(0);
+    int warpAngle = GetActorAngle(0);
+    
+    ActivatorToPlayer(pln);
+    Warp(0, warpX, warpY, warpZ, warpAngle, WARPF_ABSOLUTEPOSITION | WARPF_ABSOLUTEANGLE | WARPF_NOCHECKPOSITION | WARPF_STOP);
+    SetActorAngle(0, warpAngle);
+    SetActorPitch(0, 0);
+    
+    LocalAmbientSound("vile/firestrt", 127);
+    FadeRange(91, 164, 220, 0.33, 91, 164, 220, 0, 0.33);
+}
+
+
 
 script "BGoto_DebugCamera" (void) clientside
 {

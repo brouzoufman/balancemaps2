@@ -1,12 +1,14 @@
 actor GotoPlayer_Camera
 {
-    +CLIENTSIDEONLY
-    +NOINTERACTION
-    
     Radius 1
     Height 0
     
     RenderStyle None
+    +CLIENTSIDEONLY
+    +NOINTERACTION
+    
+    var int user_angle;
+    var int user_unlocked;
     
     States
     {
