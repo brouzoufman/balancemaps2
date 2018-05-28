@@ -91,6 +91,7 @@ actor SpookyGhostMorphPackage: Trigger
         TNT1 A 0 SetPlayerProperty(0, 1, PROP_BUDDHA)
         TNT1 A 0 SetPlayerProperty(0, 1, PROP_NOTARGET)
         TNT1 A 0 A_GiveInventory("GhostSwitchActivator")
+        TNT1 A 0 A_GiveInventory("ButtonOfWarping")
 		TNT1 A 0 A_TakeInventory("ButtonOfGhosting")
         stop
     }
@@ -105,6 +106,7 @@ actor SpookyGhostUnmorphPackage: Trigger
         TNT1 A 0 SetPlayerProperty(0, 0, PROP_BUDDHA)
         TNT1 A 0 SetPlayerProperty(0, 0, PROP_NOTARGET)
         TNT1 A 0 A_TakeInventory("GhostSwitchActivator")
+        TNT1 A 0 A_TakeInventory("ButtonOfWarping")
 		TNT1 A 0 A_GiveInventory("ButtonOfGhosting")
         stop
     }

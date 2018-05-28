@@ -30,3 +30,36 @@ actor GotoPlayer_SightChecker
         stop
     }
 }
+
+actor PreWarpStop: PowerSpeed
+{
+    +NOTRAIL
+    +UNDROPPABLE
+    
+    Powerup.Duration 0x7FFFFFFF
+    Speed 0
+}
+
+actor InWarpMenu: Boolean { +INTERHUBSTRIP }
+
+
+actor ButtonOfWarping: CustomInventory
+{
+    +INVBAR
+    +UNTOSSABLE
+    
+    Inventory.Icon "TFOGA0"
+    Inventory.MaxAmount 1
+    Tag "Button of Warping"
+    
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        stop
+      
+      Use:
+        TNT1 A 0 ACS_NamedExecuteWithResult("BGoto_WarpItem")
+        fail
+    }
+}

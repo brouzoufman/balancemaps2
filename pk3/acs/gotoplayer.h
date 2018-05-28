@@ -201,13 +201,34 @@ script "BGoto_WarpCamera" (int plnToView) clientside
 
 
 
+script "BGoto_WarpItem" (void)
+{
+    int pln = PlayerNumber();
+    if (pln == -1) { terminate; }
+    
+    if (CheckInventory("InWarpMenu")) { terminate; }
+    
+    GiveInventory("InWarpMenu", 1);
+    SetPlayerProperty(false, true, PROP_TOTALLYFROZEN);
+    ACS_NamedExecuteAlways("BGoto_ChoosePlayer", 0);
+}
+
+script "BGoto_WarpMenuDone" (void) net
+{
+    if (!CheckInventory("InWarpMenu")) { terminate; }
+    
+    Delay(3);
+    TakeInventory("InWarpMenu", 1);
+    SetPlayerProperty(false, false, PROP_TOTALLYFROZEN);
+}
+
+
+
 #define GOTOID_CAMERA   19828
 #define GOTOID_NAME     19829
 #define GOTOID_CONTROLS 19827
 
-int WarpMenuLocks[PLAYERMAX];
-
-script "BGoto_ChoosePlayer" (void) net clientside
+script "BGoto_ChoosePlayer" (void) clientside
 {
     int pln = PlayerNumber();
     if (pln == -1) { terminate; }
@@ -216,6 +237,7 @@ script "BGoto_ChoosePlayer" (void) net clientside
     if (!CheckActorClass(0, "SpookyGhost"))
     { 
         Print(s:"Hey, only ghosts can warp!");
+        NamedRequestScriptPuke("BGoto_WarpMenuDone");
         terminate;
     }
     
@@ -225,10 +247,10 @@ script "BGoto_ChoosePlayer" (void) net clientside
     if (selectedPln == -1)
     {
         Print(s:"No players to warp to.");
+        NamedRequestScriptPuke("BGoto_WarpMenuDone");
         terminate;
     }
     
-    SetPlayerProperty(false, true, PROP_TOTALLYFROZEN);
     SetHudSize(640, 480, true);
     
     int camTID      = 0;
@@ -238,12 +260,9 @@ script "BGoto_ChoosePlayer" (void) net clientside
     int leftDownTime  = 0;
     int rightDownTime = 0;
     
-    int warpLock = WarpMenuLocks[pln] + 1;
-    WarpMenuLocks[pln] = warpLock;
-    
-    while (WarpMenuLocks[pln] == warpLock)
+    while (true)
     {
-        // input handling
+        // input/event handling
         
         if (keyPressed(BT_FORWARD))
         {
@@ -258,7 +277,7 @@ script "BGoto_ChoosePlayer" (void) net clientside
             break;
         }
         
-        if (keyPressed(BT_BACK))
+        if (keyPressed(BT_BACK) || isDead(0))
         {
             break;
         }
@@ -356,14 +375,17 @@ script "BGoto_ChoosePlayer" (void) net clientside
     
     // if we didn't get booted out, do this
     
-    if (WarpMenuLocks[pln] == warpLock)
+    HudMessage(s:""; HUDMSG_PLAIN, GOTOID_CAMERA,   0,0,0,0);
+    HudMessage(s:""; HUDMSG_PLAIN, GOTOID_NAME,     0,0,0,0);
+    HudMessage(s:""; HUDMSG_PLAIN, GOTOID_CONTROLS, 0,0,0,0);
+    
+    if (IsServer)
     {
-        HudMessage(s:""; HUDMSG_PLAIN, GOTOID_CAMERA,   0,0,0,0);
-        HudMessage(s:""; HUDMSG_PLAIN, GOTOID_NAME,     0,0,0,0);
-        HudMessage(s:""; HUDMSG_PLAIN, GOTOID_CONTROLS, 0,0,0,0);
-        
-        Delay(3);
-        SetPlayerProperty(false, false, PROP_TOTALLYFROZEN);
+        ACS_NamedExecuteAlways("BGoto_WarpMenuDone", 0);
+    }
+    else
+    {
+        NamedRequestScriptPuke("BGoto_WarpMenuDone");
     }
 }
 
