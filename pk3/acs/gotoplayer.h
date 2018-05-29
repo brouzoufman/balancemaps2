@@ -208,6 +208,18 @@ script "BGoto_WarpItem" (void)
     
     if (CheckInventory("InWarpMenu")) { terminate; }
     
+    if (!CheckActorClass(0, "SpookyGhost"))
+    { 
+        Print(s:"Hey, only ghosts can warp!");
+        terminate;
+    }
+    
+    if (ACS_NamedExecuteWithResult("BGoto_GetNearestPlayer", true) == -1)
+    {
+        Print(s:"No players to warp to.");
+        terminate;
+    }
+    
     GiveInventory("InWarpMenu", 1);
     SetPlayerProperty(false, true, PROP_TOTALLYFROZEN);
     ACS_NamedExecuteAlways("BGoto_ChoosePlayer", 0);
