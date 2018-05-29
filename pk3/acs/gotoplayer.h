@@ -1,13 +1,28 @@
-str GotoCamTextures[PLAYERMAX] =
+#define CAMTEX_NORMAL   0
+#define CAMTEX_SMALL    1
+
+str GotoCamTextures[2][PLAYERMAX] =
 {
-    "TPVIEW00", "TPVIEW01", "TPVIEW02", "TPVIEW03", "TPVIEW04", "TPVIEW05", "TPVIEW06", "TPVIEW07", 
-    "TPVIEW08", "TPVIEW09", "TPVIEW10", "TPVIEW11", "TPVIEW12", "TPVIEW13", "TPVIEW14", "TPVIEW15", 
-    "TPVIEW16", "TPVIEW17", "TPVIEW18", "TPVIEW19", "TPVIEW20", "TPVIEW21", "TPVIEW22", "TPVIEW23", 
-    "TPVIEW24", "TPVIEW25", "TPVIEW26", "TPVIEW27", "TPVIEW28", "TPVIEW29", "TPVIEW30", "TPVIEW31", 
-    "TPVIEW32", "TPVIEW33", "TPVIEW34", "TPVIEW35", "TPVIEW36", "TPVIEW37", "TPVIEW38", "TPVIEW39", 
-    "TPVIEW40", "TPVIEW41", "TPVIEW42", "TPVIEW43", "TPVIEW44", "TPVIEW45", "TPVIEW46", "TPVIEW47", 
-    "TPVIEW48", "TPVIEW49", "TPVIEW50", "TPVIEW51", "TPVIEW52", "TPVIEW53", "TPVIEW54", "TPVIEW55", 
-    "TPVIEW56", "TPVIEW57", "TPVIEW58", "TPVIEW59", "TPVIEW60", "TPVIEW61", "TPVIEW62", "TPVIEW63",
+    {
+        "TPVIEW00", "TPVIEW01", "TPVIEW02", "TPVIEW03", "TPVIEW04", "TPVIEW05", "TPVIEW06", "TPVIEW07", 
+        "TPVIEW08", "TPVIEW09", "TPVIEW10", "TPVIEW11", "TPVIEW12", "TPVIEW13", "TPVIEW14", "TPVIEW15", 
+        "TPVIEW16", "TPVIEW17", "TPVIEW18", "TPVIEW19", "TPVIEW20", "TPVIEW21", "TPVIEW22", "TPVIEW23", 
+        "TPVIEW24", "TPVIEW25", "TPVIEW26", "TPVIEW27", "TPVIEW28", "TPVIEW29", "TPVIEW30", "TPVIEW31", 
+        "TPVIEW32", "TPVIEW33", "TPVIEW34", "TPVIEW35", "TPVIEW36", "TPVIEW37", "TPVIEW38", "TPVIEW39", 
+        "TPVIEW40", "TPVIEW41", "TPVIEW42", "TPVIEW43", "TPVIEW44", "TPVIEW45", "TPVIEW46", "TPVIEW47", 
+        "TPVIEW48", "TPVIEW49", "TPVIEW50", "TPVIEW51", "TPVIEW52", "TPVIEW53", "TPVIEW54", "TPVIEW55", 
+        "TPVIEW56", "TPVIEW57", "TPVIEW58", "TPVIEW59", "TPVIEW60", "TPVIEW61", "TPVIEW62", "TPVIEW63",
+    },
+    {
+        "TPTINY00", "TPTINY01", "TPTINY02", "TPTINY03", "TPTINY04", "TPTINY05", "TPTINY06", "TPTINY07", 
+        "TPTINY08", "TPTINY09", "TPTINY10", "TPTINY11", "TPTINY12", "TPTINY13", "TPTINY14", "TPTINY15", 
+        "TPTINY16", "TPTINY17", "TPTINY18", "TPTINY19", "TPTINY20", "TPTINY21", "TPTINY22", "TPTINY23", 
+        "TPTINY24", "TPTINY25", "TPTINY26", "TPTINY27", "TPTINY28", "TPTINY29", "TPTINY30", "TPTINY31", 
+        "TPTINY32", "TPTINY33", "TPTINY34", "TPTINY35", "TPTINY36", "TPTINY37", "TPTINY38", "TPTINY39", 
+        "TPTINY40", "TPTINY41", "TPTINY42", "TPTINY43", "TPTINY44", "TPTINY45", "TPTINY46", "TPTINY47", 
+        "TPTINY48", "TPTINY49", "TPTINY50", "TPTINY51", "TPTINY52", "TPTINY53", "TPTINY54", "TPTINY55", 
+        "TPTINY56", "TPTINY57", "TPTINY58", "TPTINY59", "TPTINY60", "TPTINY61", "TPTINY62", "TPTINY63",
+    },
 };
 
 
@@ -265,9 +280,10 @@ script "BGoto_ChoosePlayer" (void) clientside
     
     SetHudSize(640, 480, true);
     
+    str camTexName;
     int camTID      = 0;
+    int dyaw        = 0;
     int camUnlocked = false;
-    str camTexName  = GotoCamTextures[pln];
     
     int leftDownTime  = 0;
     int rightDownTime = 0;
@@ -339,11 +355,7 @@ script "BGoto_ChoosePlayer" (void) clientside
         
         
         camUnlocked ^= keyPressed(BT_JUMP);
-        if (camTID) { SetUserVariable(camTID, "user_unlocked", camUnlocked); }
-        
-        
-        int dyaw = GetPlayerInput(-1, INPUT_YAW) * 2;
-        if (camTID) { SetUserVariable(camTID, "user_angle", GetUserVariable(camTID, "user_angle") + dyaw); }
+        dyaw = GetPlayerInput(-1, INPUT_YAW) * 2;
         
         
         // display
@@ -351,34 +363,48 @@ script "BGoto_ChoosePlayer" (void) clientside
         if (camTID == 0)
         {
             camTID = ACS_NamedExecuteWithResult("BGoto_WarpCamera", selectedPln);
-            
-            if (camTID)
-            { 
-                SetCameraToTexture(camTID, camTexName, 90);
-                SetUserVariable(camTID, "user_unlocked", camUnlocked);
-            }
+        }
+        
+        int screenRatio = itof(GetScreenWidth()) / GetScreenHeight();
+        int screenWidth = oldRound(480 * screenRatio);
+        int centerLine  = itof(320 + (screenWidth / 2) - 150) + 0.4;
+        
+        if (screenWidth < 1024)
+        {
+            camTexName = GotoCamTextures[CAMTEX_SMALL][pln];
+        }
+        else
+        {
+            camTexName = GotoCamTextures[CAMTEX_NORMAL][pln];
+        }
+        
+        if (camTID)
+        { 
+            SetCameraToTexture(camTID, camTexName, 90);
+            SetUserVariable(camTID, "user_unlocked", camUnlocked);
+            SetUserVariable(camTID, "user_angle", GetUserVariable(camTID, "user_angle") + dyaw);
         }
         
         if (camTID)
         {
             SetFont(camTexName);
-            HudMessage(s:"A"; HUDMSG_PLAIN, GOTOID_CAMERA, CR_UNTRANSLATED, 490.4, 350.2, 1.0);
+            HudMessage(s:"A"; HUDMSG_PLAIN, GOTOID_CAMERA, CR_UNTRANSLATED, centerLine, 350.2, 1.0);
             
             SetFont("SMALLFONT");
-            HudMessage(s:"Now viewing: ", n:selectedPln+1; HUDMSG_PLAIN, GOTOID_NAME, CR_YELLOW, 490.4, 354.1, 1.0);
+            HudMessage(s:"Now viewing: ", n:selectedPln+1; HUDMSG_PLAIN, GOTOID_NAME, CR_YELLOW, centerLine, 354.1, 1.0);
         }
         else
         {
             HudMessage(s:""; HUDMSG_PLAIN, GOTOID_CAMERA, 0,0,0,0);
             
             SetFont("SMALLFONT");
-            HudMessage(s:"Not viewing: ", n:selectedPln+1; HUDMSG_PLAIN, GOTOID_NAME, CR_YELLOW, 490.4, 354.1, 1.0);
+            HudMessage(s:"Not viewing: ", n:selectedPln+1; HUDMSG_PLAIN, GOTOID_NAME, CR_YELLOW, centerLine, 354.1, 1.0);
         }
         
         str aimStr = cond(camUnlocked, "Jump to \cadisable\c- camera aim", "Jump to \cdenable\c- camera aim");
         
         HudMessage(s:"Move left/right to switch players\nMove up to warp, move down to cancel\n", s:aimStr;
-                HUDMSG_PLAIN, GOTOID_CONTROLS, CR_WHITE, 490.4, 366.1, 1.0);
+                HUDMSG_PLAIN, GOTOID_CONTROLS, CR_WHITE, centerLine, 366.1, 1.0);
         
         Delay(1);
     }
@@ -432,22 +458,4 @@ script "BGoto_WarpToPlayer" (int warpPln, int warpAngle) net
     
     LocalAmbientSound("vile/firestrt", 127);
     FadeRange(91, 164, 220, 0.33, 91, 164, 220, 0, 0.33);
-}
-
-
-
-script "BGoto_DebugCamera" (void) clientside
-{
-    int pln        = PlayerNumber();
-    int camTID     = ACS_NamedExecuteWithResult("BGoto_WarpCamera", pln);
-    str camTexName = GotoCamTextures[pln];
-    
-    if (camTID)
-    {
-        SetCameraToTexture(camTID, camTexName, 90);
-        
-        SetHudSize(800, 600, true);
-        SetFont(camTexName);
-        HudMessage(s:"A"; HUDMSG_PLAIN, 19828, CR_UNTRANSLATED, 600.4, 300.0, 0);
-    }
 }
