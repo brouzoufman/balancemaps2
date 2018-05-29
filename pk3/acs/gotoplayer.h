@@ -264,7 +264,9 @@ script "BGoto_ChoosePlayer" (void) clientside
     if (!CheckActorClass(0, "SpookyGhost"))
     { 
         Print(s:"Hey, only ghosts can warp!");
-        NamedRequestScriptPuke("BGoto_WarpMenuDone");
+        if (IsServer) { ACS_NamedExecuteAlways("BGoto_WarpMenuDone", 0); }
+        else          { NamedRequestScriptPuke("BGoto_WarpMenuDone");    }
+        
         terminate;
     }
     
@@ -274,7 +276,9 @@ script "BGoto_ChoosePlayer" (void) clientside
     if (selectedPln == -1)
     {
         Print(s:"No players to warp to.");
-        NamedRequestScriptPuke("BGoto_WarpMenuDone");
+        if (IsServer) { ACS_NamedExecuteAlways("BGoto_WarpMenuDone", 0); }
+        else          { NamedRequestScriptPuke("BGoto_WarpMenuDone");    }
+        
         terminate;
     }
     
@@ -294,14 +298,9 @@ script "BGoto_ChoosePlayer" (void) clientside
         
         if (keyPressed(BT_FORWARD))
         {
-            if (IsServer)
-            {
-                ACS_NamedExecuteAlways("BGoto_WarpToPlayer", 0, selectedPln, GetUserVariable(camTID, "user_angle"));
-            }
-            else
-            {
-                NamedRequestScriptPuke("BGoto_WarpToPlayer", selectedPln, GetUserVariable(camTID, "user_angle"));
-            }
+            if (IsServer) { ACS_NamedExecuteAlways("BGoto_WarpToPlayer", 0, selectedPln, GetUserVariable(camTID, "user_angle")); }
+            else          { NamedRequestScriptPuke("BGoto_WarpToPlayer",    selectedPln, GetUserVariable(camTID, "user_angle")); }
+            
             break;
         }
         
@@ -407,14 +406,8 @@ script "BGoto_ChoosePlayer" (void) clientside
     HudMessage(s:""; HUDMSG_PLAIN, GOTOID_NAME,     0,0,0,0);
     HudMessage(s:""; HUDMSG_PLAIN, GOTOID_CONTROLS, 0,0,0,0);
     
-    if (IsServer)
-    {
-        ACS_NamedExecuteAlways("BGoto_WarpMenuDone", 0);
-    }
-    else
-    {
-        NamedRequestScriptPuke("BGoto_WarpMenuDone");
-    }
+    if (IsServer) { ACS_NamedExecuteAlways("BGoto_WarpMenuDone", 0); }
+    else          { NamedRequestScriptPuke("BGoto_WarpMenuDone");    }
 }
 
 
