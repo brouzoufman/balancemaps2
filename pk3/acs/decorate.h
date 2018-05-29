@@ -188,8 +188,8 @@ script "Bonfire_FlameSize" (void)
 
 script "BMaps_TurnFlamethrower" (int yawspeed, int pitchspeed)
 {
-    yawspeed   = itof(yawspeed)   / (35 * 360);
-    pitchspeed = itof(pitchspeed) / (35 * 360);
+    yawspeed   = itofDiv(yawspeed,   35 * 360);
+    pitchspeed = itofDiv(pitchspeed, 35 * 360);
     
     SetUserVariable(0, "user_angle", GetActorAngle(0));
     SetUserVariable(0, "user_pitch", GetActorPitch(0));
@@ -207,7 +207,7 @@ script "BMaps_TurnFlamethrower" (int yawspeed, int pitchspeed)
         
         if (angDiff != 0)
         {
-            if (abs(angDiff) <= yawspeed)
+            if (yawspeed == 0 || abs(angDiff) <= yawspeed)
             {
                 SetActorAngle(0, desiredAngle);
             }
@@ -223,7 +223,7 @@ script "BMaps_TurnFlamethrower" (int yawspeed, int pitchspeed)
         
         if (pitchDiff != 0)
         {
-            if (abs(pitchDiff) <= pitchspeed)
+            if (pitchspeed == 0 || abs(pitchDiff) <= pitchspeed)
             {
                 SetActorPitch(0, desiredPitch);
             }
