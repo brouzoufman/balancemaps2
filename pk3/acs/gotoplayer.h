@@ -280,11 +280,11 @@ script "BGoto_ChoosePlayer" (void) clientside
         {
             if (IsServer)
             {
-                ACS_NamedExecuteAlways("BGoto_WarpToPlayer", 0, selectedPln);
+                ACS_NamedExecuteAlways("BGoto_WarpToPlayer", 0, selectedPln, GetUserVariable(camTID, "user_angle"));
             }
             else
             {
-                NamedRequestScriptPuke("BGoto_WarpToPlayer", selectedPln);
+                NamedRequestScriptPuke("BGoto_WarpToPlayer", selectedPln, GetUserVariable(camTID, "user_angle"));
             }
             break;
         }
@@ -403,7 +403,7 @@ script "BGoto_ChoosePlayer" (void) clientside
 
 
 
-script "BGoto_WarpToPlayer" (int warpPln) net
+script "BGoto_WarpToPlayer" (int warpPln, int warpAngle) net
 {
     int pln = PlayerNumber();
     if (pln == -1) { terminate; }
@@ -424,7 +424,6 @@ script "BGoto_WarpToPlayer" (int warpPln) net
     int warpX     = GetActorX(0);
     int warpY     = GetActorY(0);
     int warpZ     = GetActorZ(0);
-    int warpAngle = GetActorAngle(0);
     
     ActivatorToPlayer(pln);
     Warp(0, warpX, warpY, warpZ, warpAngle, WARPF_ABSOLUTEPOSITION | WARPF_ABSOLUTEANGLE | WARPF_NOCHECKPOSITION | WARPF_STOP);
