@@ -360,33 +360,23 @@ script "BGoto_ChoosePlayer" (void) clientside
         
         // display
         
-        if (camTID == 0)
-        {
-            camTID = ACS_NamedExecuteWithResult("BGoto_WarpCamera", selectedPln);
-        }
-        
         int screenRatio = itof(GetScreenWidth()) / GetScreenHeight();
         int screenWidth = oldRound(480 * screenRatio);
         int centerLine  = itof(320 + (screenWidth / 2) - 150) + 0.4;
         
-        if (screenWidth < 1024)
+        if (camTID == 0 || !CheckActorClass(camTID, "GotoPlayer_Camera"))
         {
-            camTexName = GotoCamTextures[CAMTEX_SMALL][pln];
-        }
-        else
-        {
-            camTexName = GotoCamTextures[CAMTEX_NORMAL][pln];
+            camTID = ACS_NamedExecuteWithResult("BGoto_WarpCamera", selectedPln);
         }
         
         if (camTID)
         { 
-            SetCameraToTexture(camTID, camTexName, 90);
             SetUserVariable(camTID, "user_unlocked", camUnlocked);
             SetUserVariable(camTID, "user_angle", GetUserVariable(camTID, "user_angle") + dyaw);
-        }
-        
-        if (camTID)
-        {
+            
+            
+            camTexName = GotoCamTextures[cond(screenWidth < 1024, CAMTEX_SMALL, CAMTEX_NORMAL)][pln];
+            SetCameraToTexture(camTID, camTexName, 90);
             SetFont(camTexName);
             HudMessage(s:"A"; HUDMSG_PLAIN, GOTOID_CAMERA, CR_UNTRANSLATED, centerLine, 350.2, 1.0);
             
