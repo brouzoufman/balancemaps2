@@ -44,6 +44,14 @@ function int BReturn_GetPlayerPoint(int pln)
     return BReturn_PlayerPoints[pln];
 }
 
+
+function int BReturn_GetPlayerPointOrder(int pln)
+{
+    if(pln < 0 || pln >= PLAYERMAX) return -1;
+    return BReturn_GetPointOrder(BReturn_GetPlayerPoint(pln));
+}
+
+
 function int BReturn_SetPlayerPoint(int pln, int pointID)
 {
     if(pln < 0 || pln >= PLAYERMAX) return 0;
@@ -53,10 +61,10 @@ function int BReturn_SetPlayerPoint(int pln, int pointID)
     return 1;
 }
 
-function int BReturn_SetMyPoint(int pointOrder, int direction)
+
+function int BReturn_SetPlayerPointByOrder(int pln, int pointOrder, int direction)
 {
-    int pln = PlayerNumber();
-    if (pln < 0) { return 0; }
+    if (pln < 0 || pln >= PLAYERMAX) { return 0; }
     
     int pointID = BReturn_FirstPointWithOrder(pointOrder);
     if (pointID == -1)
@@ -85,6 +93,13 @@ function int BReturn_SetMyPoint(int pointOrder, int direction)
     
     return 0;
 }
+
+
+function int BReturn_SetMyPoint(int pointOrder, int direction)
+{
+    return BReturn_SetPlayerPointByOrder(PlayerNumber(), pointOrder, direction);
+}
+
 
 
 // Called on enter
@@ -312,9 +327,11 @@ script "BReturn_PointCount" (void) { SetResultValue(BReturn_PointCount); }
 script "BReturn_GetPointTID"   (int pointID) { SetResultValue(BReturn_GetPointTID(pointID)); }
 script "BReturn_GetPointOrder" (int pointID) { SetResultValue(BReturn_GetPointOrder(pointID)); }
 
-script "BReturn_GetPlayerPoint" (int pln)                    { SetResultValue(BReturn_GetPlayerPoint(pln)); }
-script "BReturn_SetPlayerPoint" (int pln, int pointID)       { SetResultValue(BReturn_SetPlayerPoint(pln, pointID)); }
-script "BReturn_SetMyPoint"     (int pointOrder, int onlyUp) { SetResultValue(BReturn_SetMyPoint(pointOrder, onlyUp)); }
+script "BReturn_GetPlayerPoint"        (int pln)                                { SetResultValue(BReturn_GetPlayerPoint(pln)); }
+script "BReturn_GetPlayerPointOrder"   (int pln)                                { SetResultValue(BReturn_GetPlayerPointOrder(pln)); }
+script "BReturn_SetPlayerPoint"        (int pln, int pointID)                   { SetResultValue(BReturn_SetPlayerPoint(pln, pointID)); }
+script "BReturn_SetPlayerPointByOrder" (int pln, int pointOrder, int direction) { SetResultValue(BReturn_SetPlayerPointByOrder(pln, pointOrder, direction)); }
+script "BReturn_SetMyPoint"            (int pointOrder, int direction)          { SetResultValue(BReturn_SetMyPoint(pointOrder, direction)); }
 
 script "BReturn_FindPointsWithOrder" (int order) { SetResultValue(BReturn_FindPointsWithOrder(order)); }
 script "BReturn_FirstPointWithOrder" (int order) { SetResultValue(BReturn_FirstPointWithOrder(order)); }
